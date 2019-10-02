@@ -2,3 +2,5 @@
 .idea/
 
 FEUP-AIAD.iml
+
+*.class
