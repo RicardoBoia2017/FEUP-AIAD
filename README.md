@@ -3,7 +3,9 @@
 Bus (..)
 
 **Objetivo**
+
 Implementar uma simulação baseada em agentes para estudar uma forma inovadora de transportes envolvendo autocarros que se adaptam às necessidades dos passageiros.
+
 
 **Váriaveis independentes**
 
@@ -14,6 +16,7 @@ Implementar uma simulação baseada em agentes para estudar uma forma inovadora 
  Capacidade de autocarros
  
  Origem e destino de passageiros
+ 
  
  **Variaveis dependentes**
  
