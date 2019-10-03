@@ -4,7 +4,7 @@ Bus (..)
 
 **Objetivo**
 
-Tem-se como objetivo neste projeto, a criação de uma simulação baseada em agentes para estudar um sistema inovador de autocarros que se adaptam às necessidades dos passageiros. 
+Tem-se como objetivo neste projeto, a criação de um sistema multi-agentes que irá ser utilizado para estudar a viabilidade de um sistema inovador de autocarros que se adaptam às necessidades dos passageiros. 
 
 Em vez de seguirem um itinerário fixo, o percurso destes autocarros é determinado de acordo com os destinos dos passageiros que se encontram dentro do veículo. Também é possível que o autocarro altere o seu percurso para recolher novos passageiros, mas apenas se o desvio necessário para o fazer não for significativo. 
 
