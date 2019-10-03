@@ -1,4 +1,6 @@
+import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
@@ -18,19 +20,31 @@ public class PassengerAgent extends Agent {
             System.out.println("Current stop: " + startStop);
             System.out.println("Ending stop: " + endStop + "\n");
 
-            // Register the client in the yellow pages
-            DFAgentDescription dfd = new DFAgentDescription();
-            dfd.setName(getAID());
-            ServiceDescription sd = new ServiceDescription();
-            sd.setType("bus-agency"); //TODO define type of service
-            sd.setName("JADE-bus-agency");
-            dfd.addServices(sd);
-            try {
-                DFService.register(this, dfd);
-            }
-            catch (FIPAException fe) {
-                fe.printStackTrace();
-            }
+            // Add a TickerBehaviour that checks for bus
+            addBehaviour(new TickerBehaviour(this, 10000) {
+                protected void onTick() {
+
+                    DFAgentDescription template = new DFAgentDescription();
+                    ServiceDescription sd = new ServiceDescription();
+                    sd.setType("bus-agency");
+                    template.addServices(sd);
+
+                    try {
+                        DFAgentDescription[] result = DFService.search(myAgent, template);
+                        System.out.println("Found the following bus:");
+
+                        AID [] sellerAgents = new AID[result.length];
+
+                        for (int i = 0; i < result.length; ++i) {
+                            sellerAgents[i] = result[i].getName();
+                            System.out.println(sellerAgents[i].getName());
+                        }
+                    }
+                    catch (FIPAException fe) {
+                        fe.printStackTrace();
+                    }
+                }
+            } );
 
         } else {
             // Make the agent terminate
@@ -40,6 +54,13 @@ public class PassengerAgent extends Agent {
     }
 
     protected void takeDown() {
+        try {
+            DFService.deregister(this);
+        }
+        catch (FIPAException fe) {
+            fe.printStackTrace();
+        }
+
         System.out.println("Passenger reached his destination");
     }
 }

@@ -1,6 +1,4 @@
-import jade.core.AID;
 import jade.core.Agent;
-import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
@@ -17,32 +15,18 @@ public class BusAgent extends Agent{
         this.coords = new Coordinates(0,0); //TODO define starting point
         System.out.println("Bus started");
 
-        // Add a TickerBehaviour that schedules a request to seller agents every minute
-        addBehaviour(new TickerBehaviour(this, 10000) {
-            protected void onTick() {
-                System.out.println("Checking new passengers");
-                // Update the list of seller agents
-                DFAgentDescription template = new DFAgentDescription();
-                ServiceDescription sd = new ServiceDescription();
-                sd.setType("bus-agency"); //TODO define type of service
-                template.addServices(sd);
-                try {
-                    DFAgentDescription[] result = DFService.search(myAgent, template);
-                    System.out.println("Found the following customers:");
-                    AID[] customers = new AID[result.length];
-
-                    for (int i = 0; i < result.length; ++i) {
-                        customers[i] = result[i].getName();
-                        System.out.println(customers[i].getName());
-                    }
-
-                    System.out.println("");
-                }
-                catch (FIPAException fe) {
-                    fe.printStackTrace();
-                }
-            }
-        } );
+        DFAgentDescription dfd = new DFAgentDescription();
+        dfd.setName(getAID());
+        ServiceDescription sd = new ServiceDescription();
+        sd.setType("bus-agency");
+        sd.setName("JADE-bus-agency");
+        dfd.addServices(sd);
+        try {
+            DFService.register(this, dfd);
+        }
+        catch (FIPAException fe) {
+            fe.printStackTrace();
+        }
 
     }
 
