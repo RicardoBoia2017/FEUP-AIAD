@@ -4,14 +4,20 @@ Bus (..)
 
 **Objetivo**
 
-Implementar uma simulação baseada em agentes para estudar uma forma inovadora de transportes envolvendo autocarros que se adaptam às necessidades dos passageiros. Estes autocarros, contrariamente ao tradicional percurso fixo, baseiam o seu itinerário à procura atual da parte dos passageiros. Um passageiro desloca-se a uma certa paragem verifica a existência de autocarros disponiveis com paragem naquele local, caso não existam irá fazer um pedido global e o autocarro que irá efetuar um menor desvio adiciona a nova paragem ao seu percurso... caso exista envia uma mensagem a esse autocarro. 
+Tem-se como objetivo neste projeto, a criação de uma simulação baseada em agentes para estudar um sistema inovador de autocarros que se adaptam às necessidades dos passageiros. 
+
+Em vez de seguirem um itinerário fixo, o percurso destes autocarros é determinado de acordo com os destinos dos passageiros que se encontram dentro do veículo. Também é possível que o autocarro altere o seu percurso para recolher novos passageiros, mas apenas se o desvio necessário para o fazer não for significativo. 
+
+Quando um passageiro chega a uma certa paragem, é enviada uma mensagem aos autocarros que possuem esse local no seu itinerário, com as informações do passageiro. No caso de nenhum autocarro efetuar paragem no local, esta mensagem será enviada para todos os autocarros. 
+
 O autocarro pode ou não aceitar o pedido dependendo do desvio do itenerário atual e da sua lotação.
-Caso o autocarro percorra todas as paragens faz um percurso aleatório procurando novos passageiros.
+
+Caso o autocarro termine o seu itinerário, este irá faz um percurso aleatório na tentativa de recolher novos passageiros.
 
 
 **Váriaveis independentes**
 
- Paragens
+ Localização das paragens
  
  Número de autocarros
  
@@ -27,6 +33,5 @@ Caso o autocarro percorra todas as paragens faz um percurso aleatório procurand
   Tempo de viagem
   
   Ocupação do autocarro
-  
   
   Percurso do autocarro
