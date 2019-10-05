@@ -1,6 +1,6 @@
 # FEUP-AIAD
 
-Bus (..)
+## MyBus
 
 **Objetivo**
 
@@ -10,28 +10,14 @@ Em vez de seguirem um itinerário fixo, o percurso destes autocarros é determin
 
 Quando um passageiro chega a uma certa paragem, é enviada uma mensagem aos autocarros que possuem esse local no seu itinerário, com as informações do passageiro. No caso de nenhum autocarro efetuar paragem no local, esta mensagem será enviada para todos os autocarros. 
 
-O autocarro pode ou não aceitar o pedido dependendo do desvio do itenerário atual e da sua lotação.
+O autocarro pode ou não aceitar o pedido dependendo do desvio do itinerário atual e da sua lotação.
 
-Caso o autocarro termine o seu itinerário, este irá faz um percurso aleatório na tentativa de recolher novos passageiros.
+Caso o autocarro termine o seu itinerário, este irá fazer um percurso aleatório na tentativa de recolher novos passageiros.
 
 
-**Váriaveis independentes**
-
- Localização das paragens
- 
- Número de autocarros
- 
- Capacidade de autocarros
- 
- Origem e destino de passageiros
- 
- 
- **Variaveis dependentes**
- 
-  Tempo de espera
-  
-  Tempo de viagem
-  
-  Ocupação do autocarro
-  
-  Percurso do autocarro
+| Variáveis independentes   |  Variaveis dependentes |
+| ------------------------- | ---------------------- |
+| Localização das paragens  | Tempo de espera |
+| Número de autocarros      | Tempo de viagem |
+| Capacidade de autocarros | Ocupação do autocarro |
+| Origem e destino de passageiros | Percurso do autocarro |
