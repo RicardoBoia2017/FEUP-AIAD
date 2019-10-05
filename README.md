@@ -15,7 +15,7 @@ O autocarro pode ou não aceitar o pedido dependendo do desvio do itinerário at
 Caso o autocarro termine o seu itinerário, este irá fazer um percurso aleatório na tentativa de recolher novos passageiros.
 
 
-| Variáveis independentes   |  Variaveis dependentes |
+| Variáveis independentes   |  Variáveis dependentes |
 | ------------------------- | ---------------------- |
 | Localização das paragens  | Tempo de espera |
 | Número de autocarros      | Tempo de viagem |
