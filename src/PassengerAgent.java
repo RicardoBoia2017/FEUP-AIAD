@@ -94,10 +94,11 @@ public class PassengerAgent extends Agent {
                     for (int i = 0; i < targetBuses.length; ++i) {
                         cfp.addReceiver(targetBuses[i]);
                     }
-                    cfp.setContent(String.valueOf(startStop));
+                    cfp.setContent(String.valueOf(startStop) + " " + String.valueOf(endStop));
                     cfp.setConversationId("bus-agency");
                     cfp.setReplyWith("cfp"+System.currentTimeMillis()); // Unique value
                     myAgent.send(cfp);
+
                     // Prepare the template to get proposals
                     mt = MessageTemplate.and(MessageTemplate.MatchConversationId("bus-agency"),
                             MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
@@ -132,7 +133,7 @@ public class PassengerAgent extends Agent {
                     // Send the purchase order to the seller that provided the best offer
                     ACLMessage order = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
                     order.addReceiver(bestBus);
-                    order.setContent(String.valueOf(startStop));
+                    order.setContent(String.valueOf(startStop) + " " + String.valueOf(endStop));
                     order.setConversationId("bus-agency");
                     order.setReplyWith("order"+System.currentTimeMillis());
                     myAgent.send(order);
@@ -161,8 +162,6 @@ public class PassengerAgent extends Agent {
                     else {
                         block();
                     }
-                    System.out.println("Bus: " + bestBus);
-                    System.out.println("Time: " + bestTime);
                     break;
             }
         }

@@ -48,10 +48,10 @@ public class BusAgent extends Agent{
 
     /**
      Inner class OfferRequestsServer.
-     This is the behaviour used by Book-seller agents to serve incoming requests
+     This is the behaviour used by Bus agents to serve incoming requests
      for offer from buyer agents.
-     If the requested book is in the local catalogue the seller agent replies
-     with a PROPOSE message specifying the price. Otherwise a REFUSE message is
+     If the bus can pick the client, then it replies
+     with a PROPOSE message specifying the time/price. Otherwise a REFUSE message is
      sent back.
      */
     private class OfferRequestsServer extends CyclicBehaviour {
@@ -59,23 +59,30 @@ public class BusAgent extends Agent{
             MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
+                String[] stops;
+                String startStop, endStop;
                 // CFP Message received. Process it
-                String title = msg.getContent();
+                stops = msg.getContent().split("");
+
+                startStop = stops[0];
+                endStop = stops[2];
+
+                System.out.println("Stops : " + startStop + ", " + endStop);
                 ACLMessage reply = msg.createReply();
 
-                Integer price = (int)(Math.random() * 30);
-                System.out.println(getLocalName() + " " + price);
+                Integer price = (int)(Math.random() * 30); //Time or price of the trip
+
                 if (price != null) {
-                    // The requested book is available for sale. Reply with the price
+                    // The bus can give a lift to the passenger
                     reply.setPerformative(ACLMessage.PROPOSE);
                     reply.setContent(String.valueOf(price));
                 }
                 else {
-                    // The requested book is NOT available for sale.
+                    // The bus is not available for that passenger
                     reply.setPerformative(ACLMessage.REFUSE);
                     reply.setContent("not-available");
                 }
-                System.out.println(reply);
+
                 myAgent.send(reply);
             }
             else {
