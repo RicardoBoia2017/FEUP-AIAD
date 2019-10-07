@@ -6,6 +6,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import static jade.lang.acl.MessageTemplate.and;
 
 import java.util.ArrayList;
 
@@ -18,6 +19,7 @@ public class BusAgent extends Agent{
         this.coords = new Coordinates(0,0); //TODO define starting point
         System.out.println("Bus started");
 
+        //register bus directly on main DF
         DFAgentDescription dfd = new DFAgentDescription();
         dfd.setName(getAID());
         ServiceDescription sd = new ServiceDescription();
@@ -30,8 +32,11 @@ public class BusAgent extends Agent{
         catch (FIPAException fe) {
             fe.printStackTrace();
         }
-
+        
+     
         addBehaviour(new OfferRequestsServer());
+        
+        addBehaviour(new ReservationOrdersServer());
 
     }
 
@@ -57,6 +62,7 @@ public class BusAgent extends Agent{
     private class OfferRequestsServer extends CyclicBehaviour {
         public void action() {
             MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);
+            
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
                 String[] stops;
@@ -82,6 +88,45 @@ public class BusAgent extends Agent{
                     reply.setPerformative(ACLMessage.REFUSE);
                     reply.setContent("not-available");
                 }
+
+                myAgent.send(reply);
+            }
+            else {
+                block();
+            }
+        }
+    }  // End of inner class OfferRequestsServer
+    
+    
+    
+    /**
+     */
+    private class ReservationOrdersServer extends CyclicBehaviour {
+        public void action() {
+            MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.ACCEPT_PROPOSAL);
+            
+            ACLMessage msg = myAgent.receive(mt);
+            if (msg != null) {
+                String[] stops;
+                String startStop, endStop;
+                // CFP Message received. Process it
+                stops = msg.getContent().split("");
+
+                startStop = stops[0];
+                endStop = stops[2];
+
+                System.out.println("Accepts Stops : " + startStop + ", " + endStop);
+                ACLMessage reply = msg.createReply();
+
+                //if (price != null) {
+                    // The bus can give a lift to the passenger
+                    reply.setPerformative(ACLMessage.INFORM);
+                //}
+                //else {
+                    // The bus is not available for that passenger
+                  //  reply.setPerformative(ACLMessage.REFUSE);
+                  //  reply.setContent("not-available");
+                //}
 
                 myAgent.send(reply);
             }
