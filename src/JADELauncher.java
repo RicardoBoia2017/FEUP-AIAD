@@ -2,6 +2,8 @@ import jade.core.Agent;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
+import jade.domain.DFService;
+import jade.domain.df;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
@@ -36,9 +38,18 @@ public class JADELauncher {
                 
                 AgentController ac4;
 		try {
-                        Object[] coords = {20,30};
+                        Object[] coords = {"",20,30};
 			ac4 = mainContainer.createNewAgent("1", "StopAgent", coords);
 			ac4.start();
+		} catch (StaleProxyException e) {
+                    e.printStackTrace();
+		}
+                
+                AgentController ac5;
+		try {
+                        Object[] coords = {"",40,50};
+			ac5 = mainContainer.createNewAgent("2", "StopAgent", coords);
+			ac5.start();
 		} catch (StaleProxyException e) {
                     e.printStackTrace();
 		}
@@ -50,7 +61,9 @@ public class JADELauncher {
 			ac3.start();
 		} catch (StaleProxyException e) {
 			e.printStackTrace();
-		}
+		} 
+ 
+               
 	}
 
 }
