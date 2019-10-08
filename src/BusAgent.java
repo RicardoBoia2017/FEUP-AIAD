@@ -1,3 +1,4 @@
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
@@ -117,7 +118,37 @@ public class BusAgent extends Agent{
 
                 System.out.println("Accepts Stops : " + startStop + ", " + endStop);
                 ACLMessage reply = msg.createReply();
+                
+                //TODO: Bus tries to register on DF of respective stops
+                DFAgentDescription templateStart = new DFAgentDescription();
+                ServiceDescription sdStart = new ServiceDescription();
+                sdStart.setType("stop");
+                sdStart.setName(startStop);
+                templateStart.addServices(sdStart);
+                
+                DFAgentDescription templateEnd = new DFAgentDescription();
+                ServiceDescription sdEnd = new ServiceDescription();
+                sdEnd.setType("stop");
+                sdEnd.setName(endStop);
+                templateEnd.addServices(sdEnd);
 
+                try {
+                    DFAgentDescription[] resultStartStop = DFService.search(myAgent, templateStart);
+                    DFAgentDescription[] resultEndStop = DFService.search(myAgent, templateEnd);
+                    
+                    if(resultStartStop.length == 0){
+                        System.err.println("Start stop doesn't exist");
+                    }
+                    
+                    if(resultEndStop.length == 0){
+                        System.err.println("End stop doesn't exist");
+                    }
+                }
+                catch (FIPAException fe) {
+                    fe.printStackTrace();
+                }
+                
+                
                 //if (price != null) {
                     // The bus can give a lift to the passenger
                     reply.setPerformative(ACLMessage.INFORM);
