@@ -65,11 +65,11 @@ public class PassengerAgent extends Agent {
     }
 
     protected void takeDown() {
-        try {
+        /*try {
             DFService.deregister(this);
         }
         catch (FIPAException fe) {
-        }
+        }*/
 
         System.out.println("Passenger reached his destination");
     }
