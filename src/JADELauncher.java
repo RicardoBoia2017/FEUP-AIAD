@@ -29,7 +29,6 @@ public class JADELauncher {
                 
                 AgentController ac2;
 		try {
-                        Object[] stops = {1,2};
 			ac2 = mainContainer.acceptNewAgent("bus1", new BusAgent());
 			ac2.start();
 		} catch (StaleProxyException e) {

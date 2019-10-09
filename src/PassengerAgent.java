@@ -55,7 +55,7 @@ public class PassengerAgent extends Agent {
                                 System.out.println(targetBuses[i].getName());
                             }
 
-                            System.out.println("");
+                            System.out.println();
                         }
 
                         else
@@ -76,7 +76,7 @@ public class PassengerAgent extends Agent {
                                 System.out.println(targetBuses[i].getName());
                             }
 
-                            System.out.println("");
+                            System.out.println();
                         }
                     }
                     catch (FIPAException fe) {
@@ -122,10 +122,10 @@ public class PassengerAgent extends Agent {
                 case 0:
                     // Send the cfp to all sellers
                     ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
-                    for (int i = 0; i < targetBuses.length; ++i) {
-                        cfp.addReceiver(targetBuses[i]);
+                    for (AID bus: targetBuses) {
+                        cfp.addReceiver(bus);
                     }
-                    cfp.setContent(String.valueOf(startStop) + " " + String.valueOf(endStop));
+                    cfp.setContent(startStop + " " + endStop);
                     cfp.setConversationId("bus-agency");
                     cfp.setReplyWith("cfp"+System.currentTimeMillis()); // Unique value
                     myAgent.send(cfp);
@@ -164,7 +164,7 @@ public class PassengerAgent extends Agent {
                     // Send the purchase order to the seller that provided the best offer
                     ACLMessage order = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
                     order.addReceiver(bestBus);
-                    order.setContent(String.valueOf(startStop) + " " + String.valueOf(endStop));
+                    order.setContent(startStop + " " + endStop);
                     order.setConversationId("bus-agency");
                     order.setReplyWith("order"+System.currentTimeMillis());
                     myAgent.send(order);

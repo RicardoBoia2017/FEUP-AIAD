@@ -1,4 +1,3 @@
-import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
@@ -7,7 +6,6 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import static jade.lang.acl.MessageTemplate.and;
 
 import java.util.ArrayList;
 
@@ -15,6 +13,7 @@ public class BusAgent extends Agent{
 
     private Coordinates coords;
     private ArrayList<Integer> itinerary = new ArrayList<>();
+    private int availableSeats = 40; //TODO this value can change
 
     protected void setup() {
         this.coords = new Coordinates(0,0); //TODO define starting point
@@ -77,9 +76,9 @@ public class BusAgent extends Agent{
                 System.out.println("Stops : " + startStop + ", " + endStop);
                 ACLMessage reply = msg.createReply();
 
-                Integer price = (int)(Math.random() * 30); //Time or price of the trip
+                Integer price = (int)(Math.random() * 30); //TODO this value is not random
 
-                if (price != null) {
+                if (availableSeats > 0) {
                     // The bus can give a lift to the passenger
                     reply.setPerformative(ACLMessage.PROPOSE);
                     reply.setContent(String.valueOf(price));
@@ -106,7 +105,7 @@ public class BusAgent extends Agent{
 
         BusAgent currentBus;
 
-        public ReservationOrdersServer(BusAgent currentBus) {
+        private ReservationOrdersServer(BusAgent currentBus) {
             this.currentBus = currentBus;
         }
   
@@ -177,7 +176,7 @@ public class BusAgent extends Agent{
             dfd.addServices(sd);
 
             try {
-                DFAgentDescription results [] = DFService.search(myAgent, stop.getName(), dfd);
+                DFAgentDescription[] results = DFService.search(myAgent, stop.getName(), dfd);
 
                 if(results.length == 0)
                     DFService.register(currentBus,stop.getName(), dfd );
@@ -186,8 +185,6 @@ public class BusAgent extends Agent{
                 System.err.println(fe.toString());
                 fe.printStackTrace(); 
             }
-
-            return;
         }
         
     }  // End of inner class OfferRequestsServer

@@ -1,15 +1,11 @@
 
 import jade.core.AID;
-import jade.core.Agent;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.core.behaviours.*;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.domain.FIPANames;
 import jade.domain.df;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class StopAgent extends df{
 
@@ -19,8 +15,8 @@ public class StopAgent extends df{
 
         Object[] coordArgs = getArguments();
         
-        int len = 0;
-        byte[] buffer = new byte[1024];
+        //int len = 0;
+        //byte[] buffer = new byte[1024];
         
         if (coordArgs != null && coordArgs.length == 3) {
              coords = new Coordinates((int)coordArgs[1],(int)coordArgs[2]);
@@ -67,13 +63,13 @@ public class StopAgent extends df{
     }
 
     
-    protected void register (DFAgentDescription dfd){
+    /*protected void register (DFAgentDescription dfd){
         try{
             DFService.register(this,dfd);
         }catch(FIPAException fe){
             fe.printStackTrace();
         }
-    }
+    }*/
     
     public Coordinates getCoords() {
         return coords;
