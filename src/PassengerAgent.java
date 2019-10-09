@@ -32,21 +32,52 @@ public class PassengerAgent extends Agent {
 
                     DFAgentDescription template = new DFAgentDescription();
                     ServiceDescription sd = new ServiceDescription();
-                    sd.setType("bus-agency");
+                    sd.setType("bus");
                     template.addServices(sd);
 
+                    DFAgentDescription templateStartStop = new DFAgentDescription();
+                    ServiceDescription sdStart = new ServiceDescription();
+                    sdStart.setType("stop");
+                    sdStart.setName("stop" + startStop);
+                    templateStartStop.addServices(sdStart);
+
                     try {
-                        DFAgentDescription[] result = DFService.search(myAgent, template);
-                        System.out.println("Found the following buses:");
+                        DFAgentDescription stopDF = DFService.search(myAgent, templateStartStop)[0];
+                        DFAgentDescription[] result = DFService.search(myAgent, stopDF.getName(), template);
 
-                        targetBuses = new AID[result.length];
+                        if(result.length > 0) {
+                            System.out.println("Found the following buses:");
 
-                        for (int i = 0; i < result.length; ++i) {
-                            targetBuses[i] = result[i].getName();
-                            System.out.println(targetBuses[i].getName());
+                            targetBuses = new AID[result.length];
+
+                            for (int i = 0; i < result.length; ++i) {
+                                targetBuses[i] = result[i].getName();
+                                System.out.println(targetBuses[i].getName());
+                            }
+
+                            System.out.println("");
                         }
 
-                        System.out.println("");
+                        else
+                        {
+                            DFAgentDescription templateGlobal = new DFAgentDescription();
+                            ServiceDescription sdGlobal = new ServiceDescription();
+                            sdGlobal.setType("bus-agency");
+                            sdGlobal.setName("JADE-bus-agency");
+                            templateGlobal.addServices(sdGlobal);
+
+                            result = DFService.search(myAgent, templateGlobal);
+                            System.out.println("Found the following buses (global):");
+
+                            targetBuses = new AID[result.length];
+
+                            for (int i = 0; i < result.length; ++i) {
+                                targetBuses[i] = result[i].getName();
+                                System.out.println(targetBuses[i].getName());
+                            }
+
+                            System.out.println("");
+                        }
                     }
                     catch (FIPAException fe) {
                         fe.printStackTrace();

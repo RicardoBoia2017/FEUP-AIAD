@@ -39,7 +39,7 @@ public class JADELauncher {
                 AgentController ac4;
 		try {
                         Object[] coords = {"",20,30};
-			ac4 = mainContainer.createNewAgent("1", "StopAgent", coords);
+			ac4 = mainContainer.createNewAgent("stop1", "StopAgent", coords);
 			ac4.start();
 		} catch (StaleProxyException e) {
                     e.printStackTrace();
@@ -48,7 +48,7 @@ public class JADELauncher {
                 AgentController ac5;
 		try {
                         Object[] coords = {"",40,50};
-			ac5 = mainContainer.createNewAgent("2", "StopAgent", coords);
+			ac5 = mainContainer.createNewAgent("stop2", "StopAgent", coords);
 			ac5.start();
 		} catch (StaleProxyException e) {
                     e.printStackTrace();

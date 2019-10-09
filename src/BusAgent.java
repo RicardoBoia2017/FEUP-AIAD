@@ -130,13 +130,13 @@ public class BusAgent extends Agent{
                 DFAgentDescription templateStart = new DFAgentDescription();
                 ServiceDescription sdStart = new ServiceDescription();
                 sdStart.setType("stop");
-                sdStart.setName(startStop);
+                sdStart.setName("stop" + startStop);
                 templateStart.addServices(sdStart);
                 
                 DFAgentDescription templateEnd = new DFAgentDescription();
                 ServiceDescription sdEnd = new ServiceDescription();
                 sdEnd.setType("stop");
-                sdEnd.setName(endStop);
+                sdEnd.setName("stop" + endStop);
                 templateEnd.addServices(sdEnd);
 
                 //bus registers in both start and end stops of the passenger
