@@ -172,12 +172,15 @@ public class BusAgent extends Agent{
             DFAgentDescription dfd = new DFAgentDescription();
             dfd.setName( currentBus.getAID() );
             ServiceDescription sd  = new ServiceDescription();
-            sd.setType( "bus" );
+            sd.setType("bus");
             sd.setName( currentBus.getLocalName() );
             dfd.addServices(sd);
 
-            try {  
-                DFService.register(currentBus,stop.getName(), dfd );  
+            try {
+                DFAgentDescription results [] = DFService.search(myAgent, stop.getName(), dfd);
+
+                if(results.length == 0)
+                    DFService.register(currentBus,stop.getName(), dfd );
             }
             catch (FIPAException fe) {
                 System.err.println(fe.toString());
