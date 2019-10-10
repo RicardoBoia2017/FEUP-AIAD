@@ -1,18 +1,24 @@
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.Property;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class BusAgent extends Agent{
 
     private Coordinates coords;
-    private ArrayList<Integer> itinerary = new ArrayList<>();
+    private float speed = 1; //cells per second //TODO: Dynamic speed
+    private java.util.Map<String,Coordinates> itinerary = new HashMap<>();
     private int availableSeats = 40; //TODO this value can change
 
     protected void setup() {
@@ -37,8 +43,21 @@ public class BusAgent extends Agent{
         addBehaviour(new OfferRequestsServer());
         
         addBehaviour(new ReservationOrdersServer(this));
+        
+        float timeOnCell= (1/this.speed)*1000; //time (in milliseconds) spent in a cell
+        
+        //moves a cell at a time
+        addBehaviour(new TickerBehaviour(this, (long) timeOnCell) {
 
+            protected void onTick() {
+                
+                
+            }
+        });
+        
     }
+
+    
 
     protected void takeDown() {
         try {
@@ -159,6 +178,7 @@ public class BusAgent extends Agent{
                     fe.printStackTrace();
                 }
                 
+                
                 reply.setPerformative(ACLMessage.INFORM);
                 myAgent.send(reply);
             }
@@ -185,6 +205,23 @@ public class BusAgent extends Agent{
                 System.err.println(fe.toString());
                 fe.printStackTrace(); 
             }
+            
+            //find the stop coordinates in its DFAgentDescription
+            Iterator serviceIterator = stop.getAllServices();
+            serviceIterator.next();
+            serviceIterator.remove(); //skips first service
+            
+            ServiceDescription serviceStop = (ServiceDescription) serviceIterator.next();
+             
+            Iterator propertyIterator = serviceStop.getAllProperties();
+            Coordinates stopCoords = new Coordinates();
+            stopCoords.setX(Integer.parseInt((String)(((Property)propertyIterator.next()).getValue())));
+            propertyIterator.remove();
+            stopCoords.setY(Integer.parseInt((String)(((Property)propertyIterator.next()).getValue())));
+            
+            
+            //add stop to itenerary
+            currentBus.itinerary.put(stop.getName().getLocalName(),stopCoords);
         }
         
     }  // End of inner class OfferRequestsServer

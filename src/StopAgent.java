@@ -2,10 +2,12 @@
 import jade.core.AID;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.DFService;
+import jade.domain.FIPAAgentManagement.Property;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.domain.FIPANames;
 import jade.domain.df;
+import jdk.internal.util.xml.PropertiesDefaultHandler;
 
 public class StopAgent extends df{
 
@@ -37,9 +39,18 @@ public class StopAgent extends df{
             sdFIPA.setOwnership("JADE");
             dfd.addServices(sdFIPA);
             
+            //Service description with coordinates as properties
             ServiceDescription sd = new ServiceDescription();
             sd.setName(getLocalName());
             sd.setType("stop");
+            Property coordCol = new Property();
+            coordCol.setName("Col");
+            coordCol.setValue(coords.getX());
+            Property coordLine = new Property();
+            coordLine.setName("Line");
+            coordLine.setValue(coords.getY());
+            sd.addProperties(coordCol);
+            sd.addProperties(coordLine);
             dfd.addServices(sd);
            
             setDescriptionOfThisDF(dfd);
