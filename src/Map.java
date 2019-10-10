@@ -20,5 +20,11 @@ public class Map {
 	        }
 	        System.out.println();
 	    }
- }
+        }
+        
+        //calculates distance between 2 stops
+        static int getDistance(Coordinates stop1, Coordinates stop2){
+            return Math.abs(stop1.getX()-stop2.getX()) + Math.abs(stop2.getY()-stop2.getY());
+        }
+        
 }

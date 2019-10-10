@@ -26,5 +26,13 @@ public class Coordinates {
         this.y = y;
     }
     
-    
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof Coordinates))
+            return false;
+        Coordinates other = (Coordinates)o;
+        return this.x == other.x && this.y == other.y;
+    }
 }

@@ -13,14 +13,17 @@ import jade.lang.acl.MessageTemplate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
 
 public class BusAgent extends Agent{
 
     private Coordinates coords;
     private float speed = 1; //cells per second //TODO: Dynamic speed
-    private java.util.Map<String,Coordinates> itinerary = new HashMap<>();
+    private java.util.Map<String,Coordinates> itinerary = new LinkedHashMap<>();
     private int availableSeats = 40; //TODO this value can change
-
+   
     protected void setup() {
         this.coords = new Coordinates(0,0); //TODO define starting point
         System.out.println("Bus started");
@@ -48,16 +51,49 @@ public class BusAgent extends Agent{
         
         //moves a cell at a time
         addBehaviour(new TickerBehaviour(this, (long) timeOnCell) {
-
+            BusAgent currentBus = (BusAgent)myAgent;
             protected void onTick() {
-                
+                //if there is a next stop
+                if(currentBus.getItinerary().size()>0){
+                    currentBus.setCoords(currentBus.getNextPosition());
+                    System.out.println(currentBus.getLocalName()+" CURRENT POSITION : "+currentBus.getCoords().getX()+" "+currentBus.getCoords().getY());
+
+                    String nextStop = currentBus.itinerary.entrySet().iterator().next().getKey();
+                    Coordinates nextStopCoords = (Coordinates)currentBus.itinerary.entrySet().iterator().next().getValue();
+                    
+                    //arrived to stop, remove it from itinerary
+                    if(currentBus.getCoords().equals(nextStopCoords)){
+                        System.out.println(currentBus.getLocalName()+" ARRIVED AT "+ nextStop);
+                        currentBus.getItinerary().remove(nextStop);
+                    }
+                }
                 
             }
         });
         
     }
 
-    
+    //bus next position based on next stop
+    private Coordinates getNextPosition(){
+        Coordinates ret = this.coords;
+        Coordinates nextStop = this.itinerary.entrySet().iterator().next().getValue();
+        
+        //verify the line
+        if(this.coords.getY()<nextStop.getY()){
+            ret.setY(ret.getY()+1);
+        }else if(this.coords.getY()>nextStop.getY()){
+            ret.setY(ret.getY()-1);
+        }
+        
+        //verify the column
+        if(this.coords.getX()<nextStop.getX()){
+            ret.setX(ret.getX()+1);
+        }else if(this.coords.getX()>nextStop.getX()){
+            ret.setX(ret.getX()-1);
+        }
+        
+        return ret;
+    }
 
     protected void takeDown() {
         try {
@@ -226,4 +262,20 @@ public class BusAgent extends Agent{
         
     }  // End of inner class OfferRequestsServer
 
+
+    public Map<String, Coordinates> getItinerary() {
+        return itinerary;
+    }
+
+    public Coordinates getCoords() {
+        return coords;
+    }
+    
+    
+
+    public void setCoords(Coordinates coords) {
+        this.coords = coords;
+    }
+
+    
 }
