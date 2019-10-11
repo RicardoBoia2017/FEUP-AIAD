@@ -7,7 +7,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.domain.FIPANames;
 import jade.domain.df;
-import jdk.internal.util.xml.PropertiesDefaultHandler;
+//import jdk.internal.util.xml.PropertiesDefaultHandler;
 
 public class StopAgent extends df{
 
