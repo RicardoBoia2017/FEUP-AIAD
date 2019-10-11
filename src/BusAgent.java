@@ -64,7 +64,9 @@ public class BusAgent extends Agent{
                     //arrived to stop, remove it from itinerary
                     if(currentBus.getCoords().equals(nextStopCoords)){
                         System.out.println(currentBus.getLocalName()+" ARRIVED AT "+ nextStop);
+
                         currentBus.getItinerary().remove(nextStop);
+                        deregisterFromStop(nextStop);
                     }
                 }
                 
@@ -270,12 +272,34 @@ public class BusAgent extends Agent{
     public Coordinates getCoords() {
         return coords;
     }
-    
-    
 
     public void setCoords(Coordinates coords) {
         this.coords = coords;
     }
 
-    
+    private void deregisterFromStop(String nextStop) {
+
+        DFAgentDescription template = new DFAgentDescription();
+        ServiceDescription sdEnd = new ServiceDescription();
+        sdEnd.setType("stop");
+        sdEnd.setName(nextStop);
+        template.addServices(sdEnd);
+
+        try {
+            DFAgentDescription stop = DFService.search(this, template)[0];
+
+            DFAgentDescription dfd = new DFAgentDescription();
+            dfd.setName(getAID());
+            ServiceDescription sd  = new ServiceDescription();
+            sd.setType("bus");
+            sd.setName(getLocalName());
+            dfd.addServices(sd);
+
+            DFService.deregister(this, stop.getName(), dfd);
+
+        } catch (FIPAException e) {
+            e.printStackTrace();
+        }
+
+    }
 }
