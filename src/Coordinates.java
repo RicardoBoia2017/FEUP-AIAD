@@ -26,9 +26,10 @@ public class Coordinates {
         this.y = y;
     }
 
-    public double calculateDistance(Coordinates destination)
+    public int calculateDistance(Coordinates destination)
     {
-        return Math.sqrt((destination.getY() - this.y) * (destination.getY() - this.y) + (destination.getX() - this.x) * (destination.getX() - this.x));
+        double value = Math.sqrt((destination.getY() - this.y) * (destination.getY() - this.y) + (destination.getX() - this.x) * (destination.getX() - this.x));
+        return (int) Math.ceil(value);
     }
 
     @Override

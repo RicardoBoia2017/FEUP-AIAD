@@ -149,11 +149,10 @@ public class BusAgent extends Agent{
 
                 Coordinates stopCoords = getStopCoordinates(startStopTemplate);
 
-                System.out.println("Stops : " + startStop + ", " + endStop);
                 ACLMessage reply = msg.createReply();
 
                 //Integer time = (int) (Math.random() * 30); //TODO this value is not random
-                Double distance = currentBus.getCoords().calculateDistance(stopCoords);
+                int distance = currentBus.getCoords().calculateDistance(stopCoords);
 
                 System.out.println(currentBus.getCoords() + " - " + stopCoords + " = " + distance);
 
@@ -199,7 +198,6 @@ public class BusAgent extends Agent{
                 startStop = stops[0];
                 endStop = stops[2];
 
-                System.out.println("Accepts Stops : " + startStop + ", " + endStop);
                 ACLMessage reply = msg.createReply();
                 
                 //Bus tries to register on DF of respective stops
