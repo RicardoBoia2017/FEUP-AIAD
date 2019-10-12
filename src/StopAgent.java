@@ -1,4 +1,3 @@
-
 import jade.core.AID;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.DFService;

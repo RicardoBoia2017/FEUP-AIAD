@@ -1,4 +1,3 @@
-import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
@@ -9,19 +8,15 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 
 public class BusAgent extends Agent{
 
     private Coordinates coords;
     private float speed = 1; //cells per second //TODO: Dynamic speed
-    private java.util.Map<String,Coordinates> itinerary = new LinkedHashMap<>();
+    private Map<String,Coordinates> itinerary = new LinkedHashMap<>();
     private int availableSeats = 40; //TODO this value can change
    
     protected void setup() {
@@ -153,9 +148,7 @@ public class BusAgent extends Agent{
             }
         }
     }  // End of inner class OfferRequestsServer
-    
-    
-    
+
     /**
      */
     private class ReservationOrdersServer extends CyclicBehaviour {
@@ -226,44 +219,48 @@ public class BusAgent extends Agent{
         }
         
         private void registerInStop(DFAgentDescription stop){
-            DFAgentDescription dfd = new DFAgentDescription();
-            dfd.setName( currentBus.getAID() );
+            DFAgentDescription busTemplate = new DFAgentDescription();
+            busTemplate.setName( currentBus.getAID() );
             ServiceDescription sd  = new ServiceDescription();
             sd.setType("bus");
             sd.setName( currentBus.getLocalName() );
-            dfd.addServices(sd);
+            busTemplate.addServices(sd);
 
             try {
-                DFAgentDescription[] results = DFService.search(myAgent, stop.getName(), dfd);
+                DFAgentDescription[] results = DFService.search(myAgent, stop.getName(), busTemplate);
 
                 if(results.length == 0)
-                    DFService.register(currentBus,stop.getName(), dfd );
+                    DFService.register(currentBus,stop.getName(), busTemplate );
             }
             catch (FIPAException fe) {
                 System.err.println(fe.toString());
                 fe.printStackTrace(); 
             }
-            
+
+            addStopToItinerary(stop);
+        }
+
+        private void addStopToItinerary(DFAgentDescription stop)
+        {
             //find the stop coordinates in its DFAgentDescription
             Iterator serviceIterator = stop.getAllServices();
             serviceIterator.next();
             serviceIterator.remove(); //skips first service
-            
+
             ServiceDescription serviceStop = (ServiceDescription) serviceIterator.next();
-             
+
             Iterator propertyIterator = serviceStop.getAllProperties();
             Coordinates stopCoords = new Coordinates();
             stopCoords.setX(Integer.parseInt((String)(((Property)propertyIterator.next()).getValue())));
             propertyIterator.remove();
             stopCoords.setY(Integer.parseInt((String)(((Property)propertyIterator.next()).getValue())));
-            
-            
+
+
             //add stop to itenerary
             currentBus.itinerary.put(stop.getName().getLocalName(),stopCoords);
         }
-        
-    }  // End of inner class OfferRequestsServer
 
+    }  // End of inner class OfferRequestsServer
 
     public Map<String, Coordinates> getItinerary() {
         return itinerary;
@@ -279,23 +276,23 @@ public class BusAgent extends Agent{
 
     private void deregisterFromStop(String nextStop) {
 
-        DFAgentDescription template = new DFAgentDescription();
+        DFAgentDescription stopTemplate = new DFAgentDescription();
         ServiceDescription sdEnd = new ServiceDescription();
         sdEnd.setType("stop");
         sdEnd.setName(nextStop);
-        template.addServices(sdEnd);
+        stopTemplate.addServices(sdEnd);
 
-        try {
-            DFAgentDescription stop = DFService.search(this, template)[0];
+        try { 
+            DFAgentDescription stopDF = DFService.search(this, stopTemplate)[0];
 
-            DFAgentDescription dfd = new DFAgentDescription();
-            dfd.setName(getAID());
+            DFAgentDescription busTemplate = new DFAgentDescription();
+            busTemplate.setName(getAID());
             ServiceDescription sd  = new ServiceDescription();
             sd.setType("bus");
             sd.setName(getLocalName());
-            dfd.addServices(sd);
+            busTemplate.addServices(sd);
 
-            DFService.deregister(this, stop.getName(), dfd);
+            DFService.deregister(this, stopDF.getName(), busTemplate);
 
         } catch (FIPAException e) {
             e.printStackTrace();

@@ -1,9 +1,6 @@
-import jade.core.Agent;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
-import jade.domain.DFService;
-import jade.domain.df;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
@@ -12,6 +9,8 @@ public class JADELauncher {
 
 	public static void main(String[] args) {
 		Runtime rt = Runtime.instance();
+
+		Map m = new Map(5, 5);
 
 		Profile p1 = new ProfileImpl();
 		//p1.setParameter(...);
