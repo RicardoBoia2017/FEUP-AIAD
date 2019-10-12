@@ -25,7 +25,17 @@ public class Coordinates {
     public void setY(int y) {
         this.y = y;
     }
-    
+
+    public double calculateDistance(Coordinates destination)
+    {
+        return Math.sqrt((destination.getY() - this.y) * (destination.getY() - this.y) + (destination.getX() - this.x) * (destination.getX() - this.x));
+    }
+
+    @Override
+    public String toString() {
+        return this.x + " " + this.y;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)

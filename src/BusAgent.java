@@ -38,7 +38,7 @@ public class BusAgent extends Agent{
         }
         
      
-        addBehaviour(new OfferRequestsServer());
+        addBehaviour(new OfferRequestsServer(this));
         
         addBehaviour(new ReservationOrdersServer(this));
         
@@ -112,6 +112,13 @@ public class BusAgent extends Agent{
      sent back.
      */
     private class OfferRequestsServer extends CyclicBehaviour {
+
+        BusAgent currentBus;
+
+        private OfferRequestsServer(BusAgent currentBus) {
+            this.currentBus = currentBus;
+        }
+
         public void action() {
             MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);
             
@@ -125,17 +132,36 @@ public class BusAgent extends Agent{
                 startStop = stops[0];
                 endStop = stops[2];
 
+                //Bus tries to register on DF of respective stops
+                DFAgentDescription templateStart = new DFAgentDescription();
+                ServiceDescription sdStart = new ServiceDescription();
+                sdStart.setType("stop");
+                sdStart.setName("stop" + startStop);
+                templateStart.addServices(sdStart);
+
+                DFAgentDescription startStopTemplate = null;
+
+                try {
+                    startStopTemplate = DFService.search(myAgent, templateStart)[0];
+                } catch (FIPAException e) {
+                    e.printStackTrace();
+                }
+
+                Coordinates stopCoords = getStopCoordinates(startStopTemplate);
+
                 System.out.println("Stops : " + startStop + ", " + endStop);
                 ACLMessage reply = msg.createReply();
 
-                Integer price = (int)(Math.random() * 30); //TODO this value is not random
+                //Integer time = (int) (Math.random() * 30); //TODO this value is not random
+                Double distance = currentBus.getCoords().calculateDistance(stopCoords);
+
+                System.out.println(currentBus.getCoords() + " - " + stopCoords + " = " + distance);
 
                 if (availableSeats > 0) {
                     // The bus can give a lift to the passenger
                     reply.setPerformative(ACLMessage.PROPOSE);
-                    reply.setContent(String.valueOf(price));
-                }
-                else {
+                    reply.setContent(String.valueOf(distance/ currentBus.speed));
+                } else {
                     // The bus is not available for that passenger
                     reply.setPerformative(ACLMessage.REFUSE);
                     reply.setContent("not-available");
@@ -147,6 +173,7 @@ public class BusAgent extends Agent{
                 block();
             }
         }
+
     }  // End of inner class OfferRequestsServer
 
     /**
@@ -237,26 +264,9 @@ public class BusAgent extends Agent{
                 fe.printStackTrace(); 
             }
 
-            addStopToItinerary(stop);
-        }
+            currentBus.availableSeats--;
 
-        private void addStopToItinerary(DFAgentDescription stop)
-        {
-            //find the stop coordinates in its DFAgentDescription
-            Iterator serviceIterator = stop.getAllServices();
-            serviceIterator.next();
-            serviceIterator.remove(); //skips first service
-
-            ServiceDescription serviceStop = (ServiceDescription) serviceIterator.next();
-
-            Iterator propertyIterator = serviceStop.getAllProperties();
-            Coordinates stopCoords = new Coordinates();
-            stopCoords.setX(Integer.parseInt((String)(((Property)propertyIterator.next()).getValue())));
-            propertyIterator.remove();
-            stopCoords.setY(Integer.parseInt((String)(((Property)propertyIterator.next()).getValue())));
-
-
-            //add stop to itenerary
+            Coordinates stopCoords = getStopCoordinates(stop);
             currentBus.itinerary.put(stop.getName().getLocalName(),stopCoords);
         }
 
@@ -298,5 +308,22 @@ public class BusAgent extends Agent{
             e.printStackTrace();
         }
 
+    }
+
+    private Coordinates getStopCoordinates(DFAgentDescription stop)
+    {
+        Iterator serviceIterator = stop.getAllServices();
+        serviceIterator.next();
+        serviceIterator.remove(); //skips first service
+
+        ServiceDescription serviceStop = (ServiceDescription) serviceIterator.next();
+
+        Iterator propertyIterator = serviceStop.getAllProperties();
+        Coordinates stopCoords = new Coordinates();
+        stopCoords.setX(Integer.parseInt((String)(((Property)propertyIterator.next()).getValue())));
+        propertyIterator.remove();
+        stopCoords.setY(Integer.parseInt((String)(((Property)propertyIterator.next()).getValue())));
+
+        return stopCoords;
     }
 }
