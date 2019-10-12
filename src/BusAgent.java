@@ -20,53 +20,64 @@ public class BusAgent extends Agent{
     private int availableSeats = 40; //TODO this value can change
    
     protected void setup() {
-        this.coords = new Coordinates(0,0); //TODO define starting point
-        System.out.println("Bus started");
 
-        //register bus directly on main DF
-        DFAgentDescription dfd = new DFAgentDescription();
-        dfd.setName(getAID());
-        ServiceDescription sd = new ServiceDescription();
-        sd.setType("bus-agency");
-        sd.setName("JADE-bus-agency");
-        dfd.addServices(sd);
-        try {
-            DFService.register(this, dfd);
+        Object[] args = getArguments();
+
+        System.out.println("Length" + args.length);
+
+        if(args == null || args.length != 2) {
+            System.out.println("No starting stop and/or ending stop specified");
+            doDelete();
         }
-        catch (FIPAException fe) {
-            fe.printStackTrace();
-        }
-        
-     
-        addBehaviour(new OfferRequestsServer(this));
-        
-        addBehaviour(new ReservationOrdersServer(this));
-        
-        float timeOnCell= (1/this.speed)*1000; //time (in milliseconds) spent in a cell
-        
-        //moves a cell at a time
-        addBehaviour(new TickerBehaviour(this, (long) timeOnCell) {
-            BusAgent currentBus = (BusAgent)myAgent;
-            protected void onTick() {
-                //if there is a next stop
-                if(currentBus.getItinerary().size()>0){
-                    currentBus.setCoords(currentBus.getNextPosition());
-                    System.out.println(currentBus.getLocalName()+" CURRENT POSITION : "+currentBus.getCoords().getX()+" "+currentBus.getCoords().getY());
+        else {
+            coords = new Coordinates((int) args[0], (int) args[1]);
+            System.out.println("Bus started");
 
-                    String nextStop = currentBus.itinerary.entrySet().iterator().next().getKey();
-                    Coordinates nextStopCoords = (Coordinates)currentBus.itinerary.entrySet().iterator().next().getValue();
-                    
-                    //arrived to stop, remove it from itinerary
-                    if(currentBus.getCoords().equals(nextStopCoords)){
-                        System.out.println(currentBus.getLocalName()+" ARRIVED AT "+ nextStop);
-
-                        currentBus.getItinerary().remove(nextStop);
-                        deregisterFromStop(nextStop);
-                    }
-                }
-                
+            //register bus directly on main DF
+            DFAgentDescription dfd = new DFAgentDescription();
+            dfd.setName(getAID());
+            ServiceDescription sd = new ServiceDescription();
+            sd.setType("bus-agency");
+            sd.setName("JADE-bus-agency");
+            dfd.addServices(sd);
+            try {
+                DFService.register(this, dfd);
+            } catch (FIPAException fe) {
+                fe.printStackTrace();
             }
-        });
+
+
+            addBehaviour(new OfferRequestsServer(this));
+
+            addBehaviour(new ReservationOrdersServer(this));
+
+            float timeOnCell = (1 / this.speed) * 1000; //time (in milliseconds) spent in a cell
+
+            //moves a cell at a time
+            addBehaviour(new TickerBehaviour(this, (long) timeOnCell) {
+                BusAgent currentBus = (BusAgent) myAgent;
+
+                protected void onTick() {
+                    //if there is a next stop
+                    if (currentBus.getItinerary().size() > 0) {
+                        currentBus.setCoords(currentBus.getNextPosition());
+                        System.out.println(currentBus.getLocalName() + " CURRENT POSITION : " + currentBus.getCoords().getX() + " " + currentBus.getCoords().getY());
+
+                        String nextStop = currentBus.itinerary.entrySet().iterator().next().getKey();
+                        Coordinates nextStopCoords = (Coordinates) currentBus.itinerary.entrySet().iterator().next().getValue();
+
+                        //arrived to stop, remove it from itinerary
+                        if (currentBus.getCoords().equals(nextStopCoords)) {
+                            System.out.println(currentBus.getLocalName() + " ARRIVED AT " + nextStop);
+
+                            currentBus.getItinerary().remove(nextStop);
+                            deregisterFromStop(nextStop);
+                        }
+                    }
+
+                }
+            });
+        }
         
     }
 
@@ -93,12 +104,12 @@ public class BusAgent extends Agent{
     }
 
     protected void takeDown() {
-        try {
+       /* try {
             DFService.deregister(this);
         }
         catch (FIPAException fe) {
             fe.printStackTrace();
-        }
+        }*/
 
         System.out.println("Bus stopped operating");
     }

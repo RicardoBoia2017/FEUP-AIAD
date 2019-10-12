@@ -28,12 +28,21 @@ public class JADELauncher {
                 
                 AgentController ac2;
 		try {
-			ac2 = mainContainer.acceptNewAgent("bus1", new BusAgent());
+			Object[] coords = {15,10};
+			ac2 = mainContainer.createNewAgent("bus1", "BusAgent",coords);
 			ac2.start();
 		} catch (StaleProxyException e) {
                     e.printStackTrace();
 		}
-                
+
+		AgentController ac6;
+		try {
+			Object[] coords = {14,10};
+			ac6 = mainContainer.createNewAgent("bus2", "BusAgent",coords);
+			ac6.start();
+		} catch (StaleProxyException e) {
+			e.printStackTrace();
+		}
                 AgentController ac4;
 		try {
                         Object[] coords = {"",10,10};
