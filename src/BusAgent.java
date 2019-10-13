@@ -145,36 +145,9 @@ public class BusAgent extends Agent{
 
                 startStop = stops[0];
                 endStop = stops[2];
-
-                //Bus tries to register on DF of respective stops
-                DFAgentDescription templateStart = new DFAgentDescription();
-                ServiceDescription sdStart = new ServiceDescription();
-                sdStart.setType("stop");
-                sdStart.setName("stop" + startStop);
-                templateStart.addServices(sdStart);
-
-                DFAgentDescription startStopTemplate = null;
-
-                try {
-                    startStopTemplate = DFService.search(myAgent, templateStart)[0];
-                } catch (FIPAException e) {
-                    e.printStackTrace();
-                }
                 
-                //Bus tries to register on DF of respective stops
-                DFAgentDescription templateEnd = new DFAgentDescription();
-                ServiceDescription sdEnd = new ServiceDescription();
-                sdEnd.setType("stop");
-                sdEnd.setName("stop" + endStop);
-                templateEnd.addServices(sdEnd);
-
-                DFAgentDescription endStopTemplate = null;
-
-                try {
-                    endStopTemplate = DFService.search(myAgent, templateEnd)[0];
-                } catch (FIPAException e) {
-                    e.printStackTrace();
-                }
+                DFAgentDescription startStopTemplate = currentBus.getStopAgentDescription("stop"+startStop);         
+                DFAgentDescription endStopTemplate = currentBus.getStopAgentDescription("stop"+endStop);
 
                 Coordinates stopCoords = getStopCoordinates(startStopTemplate);
 
