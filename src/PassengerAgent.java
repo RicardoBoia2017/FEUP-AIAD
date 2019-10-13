@@ -180,7 +180,7 @@ public class PassengerAgent extends Agent {
                         // Purchase order reply received
                         if (reply.getPerformative() == ACLMessage.INFORM) {
                             // Purchase successful. We can terminate
-                            System.out.println("Bus \" " + reply.getSender().getName() + " \" will arrive in " + bestTime + " seconds");
+                            System.out.println("Bus \" " + reply.getSender().getName() + " \" will arrive at the destination in " + bestTime + " seconds");
                             myAgent.doDelete();
                         }
                         else {

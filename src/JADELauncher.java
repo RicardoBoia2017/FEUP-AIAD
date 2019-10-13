@@ -60,6 +60,15 @@ public class JADELauncher {
 		} catch (StaleProxyException e) {
                     e.printStackTrace();
 		}
+                
+                AgentController ac7;
+		try {
+                        Object[] coords = {"",80,20};
+			ac7 = mainContainer.createNewAgent("stop3", "StopAgent", coords);
+			ac7.start();
+		} catch (StaleProxyException e) {
+                    e.printStackTrace();
+		}
 
                 
 		AgentController ac3;
