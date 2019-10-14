@@ -22,28 +22,18 @@ public class PassengerAgent extends Agent {
             startStop = Integer.parseInt((String)  args[0]);
             endStop = Integer.parseInt((String)  args[1]);
 
-            System.out.println("Client Name: " + getLocalName());
-            System.out.println("Current stop: " + startStop);
-            System.out.println("Ending stop: " + endStop + "\n");
+            System.out.println("Client Name: " + getLocalName() + " Stops: " + startStop + " -> " + endStop);
 
             // Add a TickerBehaviour that checks for bus
             addBehaviour(new TickerBehaviour(this, 5000) {
                 protected void onTick() {
-
-                    DFAgentDescription template = new DFAgentDescription();
-                    ServiceDescription sd = new ServiceDescription();
-                    sd.setType("bus");
-                    template.addServices(sd);
-
-                    DFAgentDescription templateStartStop = new DFAgentDescription();
-                    ServiceDescription sdStart = new ServiceDescription();
-                    sdStart.setType("stop");
-                    sdStart.setName("stop" + startStop);
-                    templateStartStop.addServices(sdStart);
+                    
+                    DFAgentDescription busTemplate = getTemplate("bus",null);
+                    DFAgentDescription startStopTemplate = getTemplate("stop", "stop" + startStop);
 
                     try {
-                        DFAgentDescription stopDF = DFService.search(myAgent, templateStartStop)[0];
-                        DFAgentDescription[] result = DFService.search(myAgent, stopDF.getName(), template);
+                        DFAgentDescription stopDF = DFService.search(myAgent, startStopTemplate)[0];
+                        DFAgentDescription[] result = DFService.search(myAgent, stopDF.getName(), busTemplate);
 
                         if(result.length > 0) {
                             System.out.println("Found the following buses:");
@@ -203,4 +193,19 @@ public class PassengerAgent extends Agent {
             return ((step == 2 && bestBus == null) || step == 4);
         }
     }  // End of inner class RequestPerformer
+
+    private DFAgentDescription getTemplate(String type, String name)
+    {
+        DFAgentDescription template = new DFAgentDescription();
+        ServiceDescription sdStart = new ServiceDescription();
+
+        if (type != null)
+            sdStart.setType(type);
+        if(name != null)
+            sdStart.setName(name);
+
+        template.addServices(sdStart);
+        
+        return template;
+    }
 }
