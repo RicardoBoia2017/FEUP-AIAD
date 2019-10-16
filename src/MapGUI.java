@@ -37,6 +37,8 @@ public class MapGUI extends javax.swing.JFrame {
         javax.swing.JPanel jPanel1 = new MapGUIPanel(this.currentMapInfo);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Bus System Map");
+        setAlwaysOnTop(true);
 
         jPanel1.setBackground(new java.awt.Color(204, 255, 204));
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
