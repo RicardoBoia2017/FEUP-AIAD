@@ -21,3 +21,11 @@ Caso o autocarro termine o seu itinerário, este irá fazer um percurso aleatór
 | Número de autocarros      | Tempo de viagem |
 | Capacidade de autocarros | Ocupação do autocarro |
 | Origem e destino de passageiros | Percurso do autocarro |
+
+## TODO
+Inserir stop no meio do itinerário, em vez de ser sempre no fim
+Itinerário aleatório quando fica sem stops (Inês)
+Não aceitar passageiro se o desvio for grande
+Implementar preço
+Mostrar mapa
+Testar 
