@@ -1,3 +1,4 @@
+import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
@@ -34,8 +35,9 @@ public class BusAgent extends Agent{
             coords = new Coordinates((int) args[0], (int) args[1]);
             System.out.println("Bus \"" + getLocalName() + "\" started");
 
-            DFAgentDescription dfd = getTemplate("bus-agency","JADE-bus-agency");
+            DFAgentDescription dfd = getTemplate("bus-agency","JADE-bus-agency",coords,this);
             dfd.setName(getAID());
+            
 
             try {
                 DFService.register(this, dfd);
@@ -75,6 +77,9 @@ public class BusAgent extends Agent{
                             deregisterFromStop(nextStop);
                         }
                     }
+                    
+                    //inform map of current position
+                    currentBus.updateServiceCoords();
 
                 }
             });
