@@ -12,13 +12,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Map extends Agent{
-        static final int REFRESH_RATE = 1000;
+        public static final int REFRESH_RATE = 10;
     
         private java.util.Map<String,Coordinates> busList = new LinkedHashMap<>();
         private java.util.Map<String,Coordinates> stopList = new LinkedHashMap<>();
+        private MapGUI myGUI;
         
          //TODO: periodically pools the DF for the data
         protected void setup() {
+            
+            myGUI = new MapGUI(this);
+            myGUI.setVisible(true);
             
             addBehaviour(new TickerBehaviour(this, (long) REFRESH_RATE) {
                     Map currentMap = (Map) myAgent;
@@ -69,4 +73,14 @@ public class Map extends Agent{
 
         return agentCoords;
     }
+
+    public java.util.Map<String, Coordinates> getBusList() {
+        return busList;
+    }
+
+    public java.util.Map<String, Coordinates> getStopList() {
+        return stopList;
+    }
+    
+    
 }
