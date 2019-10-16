@@ -29,6 +29,8 @@ Itinerário aleatório quando fica sem stops (Inês)
 
 Não aceitar passageiro se o desvio for grande
 
+Não verificar cegamente os lugares disponiveis. Ter em conta quando é que vão sair passageiros.
+
 Implementar preço
 
 Mostrar mapa
