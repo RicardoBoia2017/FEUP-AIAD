@@ -384,7 +384,8 @@ public class BusAgent extends Agent{
         return null;
     }
 
-    private DFAgentDescription getTemplate(String type, String name)
+
+    static DFAgentDescription getTemplate(String type, String name)
     {
         DFAgentDescription template = new DFAgentDescription();
         ServiceDescription sdStart = new ServiceDescription();
@@ -393,9 +394,50 @@ public class BusAgent extends Agent{
             sdStart.setType(type);
         if(name != null)
             sdStart.setName(name);
-
+        
         template.addServices(sdStart);
 
         return template;
+    }
+    
+    static DFAgentDescription getTemplate(String type, String name,Agent myAgent){
+       DFAgentDescription template = getTemplate(type, name);
+       template.setName(myAgent.getAID());
+       
+       return template;
+    }
+    
+    static DFAgentDescription getTemplate(String type,String name,Coordinates coords){
+        DFAgentDescription template = getTemplate(type, name);
+        
+        //Service description with coordinates as properties
+        ServiceDescription sd = (ServiceDescription) template.getAllServices().next();
+        Property coordCol = new Property();
+        coordCol.setName("Col");
+        coordCol.setValue(coords.getX());
+        Property coordLine = new Property();
+        coordLine.setName("Line");
+        coordLine.setValue(coords.getY());
+        sd.addProperties(coordCol);
+        sd.addProperties(coordLine);
+        
+        return template;
+    }
+    
+     static DFAgentDescription getTemplate(String type, String name,Coordinates coords,Agent myAgent){
+       DFAgentDescription template = getTemplate(type, name, coords);
+       template.setName(myAgent.getAID());
+       
+       return template;
+    }
+    
+    void updateServiceCoords(){
+        DFAgentDescription template = getTemplate("bus-agency", "JADE-bus-agency",this.coords,this);
+        
+        try {
+            DFService.modify(this, template);
+        } catch (FIPAException ex) {
+            Logger.getLogger(BusAgent.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
