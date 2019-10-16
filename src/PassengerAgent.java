@@ -27,7 +27,7 @@ public class PassengerAgent extends Agent {
             // Add a TickerBehaviour that checks for bus
             addBehaviour(new TickerBehaviour(this, 5000) {
                 protected void onTick() {
-                    
+
                     DFAgentDescription busTemplate = getTemplate("bus",null);
                     DFAgentDescription startStopTemplate = getTemplate("stop", "stop" + startStop);
 
@@ -57,7 +57,8 @@ public class PassengerAgent extends Agent {
                             templateGlobal.addServices(sdGlobal);
 
                             result = DFService.search(myAgent, templateGlobal);
-                            System.out.println("Found the following buses (global):");
+                            System.out.println("No bus has stop in itinerary. Sending message to all buses");
+                            System.out.println("Found the following buses:");
 
                             targetBuses = new AID[result.length];
 
@@ -86,12 +87,6 @@ public class PassengerAgent extends Agent {
     }
 
     protected void takeDown() {
-        /*try {
-            DFService.deregister(this);
-        }
-        catch (FIPAException fe) {
-        }*/
-
         System.out.println("Passenger reached his destination");
     }
 

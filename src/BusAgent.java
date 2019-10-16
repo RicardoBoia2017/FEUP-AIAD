@@ -8,9 +8,9 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
+import javafx.scene.paint.Stop;
+
+import java.util.*;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,7 +19,7 @@ public class BusAgent extends Agent{
 
     private Coordinates coords;
     private float speed = 1; //cells per second //TODO: Dynamic speed
-    private Map<String,Coordinates> itinerary = new LinkedHashMap<>();
+    private Map<String, StopDetails> itinerary = new LinkedHashMap<>();
     private int availableSeats = 40; //TODO this value can change
    
     protected void setup() {
@@ -59,13 +59,17 @@ public class BusAgent extends Agent{
                     if (currentBus.getItinerary().size() > 0) {
                         currentBus.setCoords(currentBus.getNextPosition());
                         System.out.println(currentBus.getLocalName() + " CURRENT POSITION : " + currentBus.getCoords().getX() + " " + currentBus.getCoords().getY());
+                        System.out.println("Available seats: " + currentBus.availableSeats);
 
                         String nextStop = currentBus.itinerary.entrySet().iterator().next().getKey();
-                        Coordinates nextStopCoords = currentBus.itinerary.entrySet().iterator().next().getValue();
+                        Coordinates nextStopCoords = currentBus.itinerary.entrySet().iterator().next().getValue().getCoords();
 
                         //arrived to stop, remove it from itinerary
                         if (currentBus.getCoords().equals(nextStopCoords)) {
                             System.out.println(currentBus.getLocalName() + " ARRIVED AT " + nextStop);
+
+                            currentBus.availableSeats += currentBus.getItinerary().get(nextStop).getLeavingPassengers();
+                            System.out.println("Available seats: " + currentBus.availableSeats);
 
                             currentBus.getItinerary().remove(nextStop);
                             deregisterFromStop(nextStop);
@@ -81,7 +85,7 @@ public class BusAgent extends Agent{
     //bus next position based on next stop
     private Coordinates getNextPosition(){
         Coordinates ret = this.coords;
-        Coordinates nextStop = this.itinerary.entrySet().iterator().next().getValue();
+        Coordinates nextStop = this.itinerary.entrySet().iterator().next().getValue().getCoords();
         
         //verify the line
         if(this.coords.getY()<nextStop.getY()){
@@ -143,7 +147,8 @@ public class BusAgent extends Agent{
                 DFAgentDescription startStopTemplate = currentBus.getStopAgentDescription("stop"+startStop);         
                 DFAgentDescription endStopTemplate = currentBus.getStopAgentDescription("stop"+endStop);
 
-                Coordinates stopCoords = getStopCoordinates(startStopTemplate);
+                //Coordinates stopCoords = getStopCoordinates(startStopTemplate);
+                Coordinates stopCoords = getStopCoordinates(startStopTemplate).getCoords();
 
                 ACLMessage reply = msg.createReply();
 
@@ -218,14 +223,17 @@ public class BusAgent extends Agent{
                     if(resultStartStop.length == 0){
                         System.err.println("Start stop doesn't exist");
                     }else{
-                        registerInStop(resultStartStop[0]);
+                        registerInStop(resultStartStop[0], false);
                     }
                     
                     if(resultEndStop.length == 0){
                         System.err.println("End stop doesn't exist");
                     }else{
-                        registerInStop(resultEndStop[0]);
+                        registerInStop(resultEndStop[0], true);
                     }
+
+                    currentBus.availableSeats--;
+
                 }
                 catch (FIPAException fe) {
                     fe.printStackTrace();
@@ -240,7 +248,7 @@ public class BusAgent extends Agent{
             }
         }
         
-        private void registerInStop(DFAgentDescription stop){
+        private void registerInStop(DFAgentDescription stop, boolean destiny){
             DFAgentDescription busTemplate = new DFAgentDescription();
             busTemplate.setName( currentBus.getAID() );
             ServiceDescription sd  = new ServiceDescription();
@@ -251,23 +259,28 @@ public class BusAgent extends Agent{
             try {
                 DFAgentDescription[] results = DFService.search(myAgent, stop.getName(), busTemplate);
 
-                if(results.length == 0)
-                    DFService.register(currentBus,stop.getName(), busTemplate );
+                if(results.length == 0) {
+                    DFService.register(currentBus, stop.getName(), busTemplate);
+                    StopDetails stopDetails = getStopCoordinates(stop);
+                    if(destiny)
+                        stopDetails.setLeavingPassengers(1);
+
+                    currentBus.itinerary.put(stop.getName().getLocalName(), stopDetails);
+                }
+
+                else if (destiny)
+                    this.currentBus.itinerary.get(stop.getName().getLocalName()).setLeavingPassengers(1);
             }
             catch (FIPAException fe) {
                 System.err.println(fe.toString());
                 fe.printStackTrace(); 
             }
 
-            currentBus.availableSeats--;
-
-            Coordinates stopCoords = getStopCoordinates(stop);
-            currentBus.itinerary.put(stop.getName().getLocalName(),stopCoords);
         }
 
     }  // End of inner class OfferRequestsServer
 
-    public Map<String, Coordinates> getItinerary() {
+    public  Map<String, StopDetails> getItinerary() {
         return itinerary;
     }
 
@@ -297,7 +310,7 @@ public class BusAgent extends Agent{
 
     }
 
-    private Coordinates getStopCoordinates(DFAgentDescription stop)
+    private StopDetails getStopCoordinates(DFAgentDescription stop)
     {
         Iterator serviceIterator = stop.getAllServices();
         serviceIterator.next();
@@ -311,14 +324,14 @@ public class BusAgent extends Agent{
         //propertyIterator.remove();
         stopCoords.setY(Integer.parseInt((String)(((Property)propertyIterator.next()).getValue())));
 
-        return stopCoords;
+        return new StopDetails(stopCoords, 0);
     }
     
     
     //gets distance from current position 2 to end stop in the current bus itinerary
     public int getPassengerTripDistance(DFAgentDescription startStop,DFAgentDescription endStop){
         //creates a possible itinerary if it would accept the passanger
-        Map<String,Coordinates> futureItinerary = new HashMap<>(this.itinerary);
+        Map<String,StopDetails> futureItinerary = new HashMap<>(this.itinerary);
 
         //if bus doesnt have start stop, adds it to itinerary
         if(futureItinerary.get(startStop.getName().getLocalName()) == null){
@@ -338,14 +351,14 @@ public class BusAgent extends Agent{
         String curStopName;
         DFAgentDescription curStop; //current stop
         
-        int distance = this.coords.calculateDistance(this.getStopCoordinates(prevStop)); //initial distance between bus position and next stop
+        int distance = this.coords.calculateDistance(this.getStopCoordinates(prevStop).getCoords()); //initial distance between bus position and next stop
         
         //goes around the itinerary to calculate total distance until the end stop
         while(itineraryIt.hasNext()){
              curStopName = itineraryIt.next();
              curStop = this.getStopAgentDescription(curStopName);
             
-            distance += this.getStopCoordinates(prevStop).calculateDistance(this.getStopCoordinates(curStop));
+            distance += this.getStopCoordinates(prevStop).getCoords().calculateDistance(this.getStopCoordinates(curStop).getCoords());
              
             //end of the trip for passenger
             if(curStopName.equals(endStop.getName().getLocalName())){
