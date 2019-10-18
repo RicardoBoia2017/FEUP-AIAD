@@ -43,10 +43,11 @@ public class MapGUIPanel extends JPanel implements ActionListener{
         timer.start();
         
         try {
-            URL url = getClass().getResource("img/bus.png");
+            //URL url = getClass().getResource("img/bus.png");
+            File url = new File("src/img/bus.png");
             busIcon = ImageIO.read(new File(url.getPath()));
             
-            url = getClass().getResource("img/stop.png");
+            url = new File("src/img/stop.png");
             stopIcon = ImageIO.read(new File(url.getPath()));
         } catch (IOException ex) {
             Logger.getLogger(MapGUIPanel.class.getName()).log(Level.SEVERE, null, ex);
