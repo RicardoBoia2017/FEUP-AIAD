@@ -52,5 +52,10 @@ Testar (cenários diferentes - variar nº e tipo de autocarros e passageiros)
 * desvio
 * ter em conta a lotação no cálculo do preço
 
+## Estatíticas
+* Tempo médio de espera
+* Ocupação média
+* Desvio entre tempo prometido e tempo real
+* Ganho
 
 
