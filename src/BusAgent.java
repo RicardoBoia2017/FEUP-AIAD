@@ -1,4 +1,3 @@
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
@@ -9,7 +8,6 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import javafx.scene.paint.Stop;
 
 import java.util.*;
 import java.util.Map;
@@ -22,6 +20,7 @@ public class BusAgent extends Agent{
     private float speed = 1; //cells per second //TODO: Dynamic speed
     private Map<String, StopDetails> itinerary = new LinkedHashMap<>();
     private int availableSeats = 40; //TODO this value can change
+    private int pricePerMinute = 10; //cents (its easier)
    
     protected void setup() {
 
@@ -61,7 +60,6 @@ public class BusAgent extends Agent{
                     if (currentBus.getItinerary().size() > 0) {
                         currentBus.setCoords(currentBus.getNextPosition());
                         System.out.println(currentBus.getLocalName() + " CURRENT POSITION : " + currentBus.getCoords().getX() + " " + currentBus.getCoords().getY());
-                        System.out.println("Available seats: " + currentBus.availableSeats);
 
                         String nextStop = currentBus.itinerary.entrySet().iterator().next().getKey();
                         Coordinates nextStopCoords = currentBus.itinerary.entrySet().iterator().next().getValue().getCoords();
@@ -165,8 +163,11 @@ public class BusAgent extends Agent{
 
                 if (availableSeats > 0) {
                     // The bus can give a lift to the passenger
+                    String time = String.valueOf(distance/ currentBus.speed);
+                    String price = String.valueOf((currentBus.pricePerMinute * Double.valueOf(time)) / 100);
+
                     reply.setPerformative(ACLMessage.PROPOSE);
-                    reply.setContent(String.valueOf(distance/ currentBus.speed));
+                    reply.setContent(time + " " + price);
                 } else {
                     // The bus is not available for that passenger
                     reply.setPerformative(ACLMessage.REFUSE);

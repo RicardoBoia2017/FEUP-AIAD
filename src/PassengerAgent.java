@@ -9,11 +9,14 @@ import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
+import java.util.ArrayList;
+
 public class PassengerAgent extends Agent {
 
     private AID[] targetBuses;
     private int startStop;
     private int endStop;
+    private float alpha = (float) 0.5;
 
     protected void setup() {
         Object[] args = getArguments();
@@ -96,11 +99,15 @@ public class PassengerAgent extends Agent {
      agents the target book.
      */
     private class RequestPerformer extends Behaviour {
-        private AID bestBus; // The agent who provides the best offer
-        private float bestTime;  // The best offered time
+        private BusProposal bestProposal = null; // The agent who provides the best offer
+        private ArrayList<BusProposal> proposals = new ArrayList<>();
         private int repliesCnt = 0; // The counter of replies from bus agents
         private MessageTemplate mt; // The template to receive replies
         private int step = 0;
+        private float minTime = 99999;
+        private float maxTime = 0;
+        private float minPrice = 99999;
+        private float maxPrice = 0;
 
         public void action() {
             switch (step) {
@@ -125,19 +132,30 @@ public class PassengerAgent extends Agent {
                     // Receive all proposals/refusals from seller agents
                     ACLMessage reply = myAgent.receive(mt);
                     if (reply != null) {
-                        // Reply received
                         if (reply.getPerformative() == ACLMessage.PROPOSE) {
-                            // This is an offer
-                            float time = Float.parseFloat(reply.getContent());
-                            if (bestBus == null || time < bestTime) {
-                                // This is the best offer at present
-                                bestTime = time;
-                                bestBus = reply.getSender();
-                            }
+                            String[] tokens = ((String) reply.getContent()).split(" ");
+                            float time = Float.parseFloat(tokens[0]);
+                            float price = Float.parseFloat(tokens[1]);
+
+                            proposals.add(new BusProposal(reply.getSender(), time, price));
+
+                            if(time < this.minTime)
+                                this.minTime = time;
+
+                            if (time > this.maxTime)
+                                this.maxTime = time;
+
+                            if(price < this.minPrice)
+                                this.minPrice = price;
+
+                            if (price > this.maxPrice)
+                                this.maxPrice = price;
+
                         }
                         repliesCnt++;
                         if (repliesCnt >= targetBuses.length) {
                             // We received all replies
+                            determineBestOffer();
                             step = 2;
                         }
                     }
@@ -148,7 +166,7 @@ public class PassengerAgent extends Agent {
                 case 2:
                     // Send the purchase order to the seller that provided the best offer
                     ACLMessage order = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
-                    order.addReceiver(bestBus);
+                    order.addReceiver(bestProposal.getBus());
                     order.setContent(startStop + " " + endStop);
                     order.setConversationId("bus-agency");
                     order.setReplyWith("order"+System.currentTimeMillis());
@@ -165,7 +183,7 @@ public class PassengerAgent extends Agent {
                         // Purchase order reply received
                         if (reply.getPerformative() == ACLMessage.INFORM) {
                             // Purchase successful. We can terminate
-                            System.out.println("Bus \" " + reply.getSender().getName() + " \" will arrive at the destination in " + bestTime + " seconds");
+                            System.out.println("Bus \" " + reply.getSender().getName() + " \" will arrive at the destination in " + bestProposal.getTime() + " seconds");
                             myAgent.doDelete();
                         }
                         else {
@@ -181,11 +199,28 @@ public class PassengerAgent extends Agent {
             }
         }
 
+        private void determineBestOffer() {
+
+            float bestValue = 999;
+
+            for(BusProposal bp: this.proposals)
+            {
+                float timeNormalization = (bp.getTime() - this.minTime) / (this.maxTime - this.minTime);
+                float priceNormalization = (bp.getPrice() - this.minPrice) / (this.maxPrice - this.minPrice);
+
+                float value = alpha * timeNormalization + (1 - alpha) * priceNormalization;
+
+                if(value < bestValue)
+                    bestProposal = bp;
+            }
+
+        }
+
         public boolean done() {
-            if (step == 2 && bestBus == null) {
+            if (step == 2 && proposals.isEmpty()) {
                 System.out.println("There are no buses");
             }
-            return ((step == 2 && bestBus == null) || step == 4);
+            return ((step == 2 && proposals.isEmpty()) || step == 4);
         }
     }  // End of inner class RequestPerformer
 
@@ -203,4 +238,5 @@ public class PassengerAgent extends Agent {
         
         return template;
     }
+
 }
