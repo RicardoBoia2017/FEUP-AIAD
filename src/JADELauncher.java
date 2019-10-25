@@ -10,14 +10,12 @@ public class JADELauncher {
     public static void main(String[] args) {
         Runtime rt = Runtime.instance();
 
-        //Map m = new Map(5, 5);
-
         Profile p1 = new ProfileImpl();
         ContainerController mainContainer = rt.createMainContainer(p1);
 
         AgentController ac1;
         try {
-            Object[] stops = {"1", "2"};
+            Object[] stops = {"1", "2", "50"};
             ac1 = mainContainer.createNewAgent("pass1", "PassengerAgent", stops);
             ac1.start();
         } catch (StaleProxyException e) {
@@ -27,7 +25,7 @@ public class JADELauncher {
 
         AgentController ac2;
         try {
-            Object[] coords = {15, 10};
+            Object[] coords = {"15", "10", "1","40","10","5"};
             ac2 = mainContainer.createNewAgent("bus1", "BusAgent", coords);
             ac2.start();
         } catch (StaleProxyException e) {
@@ -36,7 +34,7 @@ public class JADELauncher {
 
         AgentController ac6;
         try {
-            Object[] coords = {14, 10};
+            Object[] coords = {"10", "15", "1","30","10","0"};
             ac6 = mainContainer.createNewAgent("bus2", "BusAgent", coords);
             ac6.start();
         } catch (StaleProxyException e) {
@@ -52,14 +50,14 @@ public class JADELauncher {
             e.printStackTrace();
         }
         
-        AgentController ac9;
+        /*AgentController ac9;
         try {
             Object[] stops = {"1", "3"};
             ac9 = mainContainer.createNewAgent("pass2", "PassengerAgent", stops);
             ac9.start();
         } catch (StaleProxyException e) {
             e.printStackTrace();
-        }
+        }*/
         
         AgentController ac4;
         try {

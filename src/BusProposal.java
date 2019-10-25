@@ -3,10 +3,10 @@ import jade.core.AID;
 public class BusProposal {
 
     private AID bus;
-    private float time;
-    private float price;
+    private double time;
+    private double price;
 
-    BusProposal(AID bus, float time, float price)
+    BusProposal(AID bus, double time, double price)
     {
         this.bus = bus;
         this.time = time;
@@ -17,11 +17,11 @@ public class BusProposal {
         return bus;
     }
 
-    public float getTime() {
+    public double getTime() {
         return time;
     }
 
-    public float getPrice() {
+    public double getPrice() {
         return price;
     }
 }

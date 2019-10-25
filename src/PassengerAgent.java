@@ -16,18 +16,24 @@ public class PassengerAgent extends Agent {
     private AID[] targetBuses;
     private int startStop;
     private int endStop;
-    private float alpha = (float) 0.5;
+    private double alpha;
 
     protected void setup() {
         Object[] args = getArguments();
 
-        if (args != null && args.length == 2) {
-            startStop = Integer.parseInt((String)  args[0]);
-            endStop = Integer.parseInt((String)  args[1]);
+        if (args != null && args.length == 3) {
+            startStop = Integer.parseInt((String) args[0]);
+            endStop = Integer.parseInt((String) args[1]);
+            alpha = Double.parseDouble((String) args[2]) / 100;
+
+            if(alpha < 0 || alpha > 100)
+            {
+                System.out.println("Time preference value has to be between 0 and 100");
+                doDelete();
+            }
 
             System.out.println("Client Name: " + getLocalName() + " Stops: " + startStop + " -> " + endStop);
 
-            // Add a TickerBehaviour that checks for bus
             addBehaviour(new TickerBehaviour(this, 5000) {
                 protected void onTick() {
 
@@ -84,19 +90,17 @@ public class PassengerAgent extends Agent {
 
         } else {
             // Make the agent terminate
-            System.out.println("No starting stop and/or ending stop specified");
+            System.err.println("Incorrect number of arguments");
+            System.err.println("Passenger arguments: startStop endStop timePreference(0-5)");
             doDelete();
         }
     }
 
-    protected void takeDown() {
-        System.out.println("Passenger reached his destination");
-    }
+    protected void takeDown() {}
 
     /**
      Inner class RequestPerformer.
-     This is the behaviour used by Book-buyer agents to request seller
-     agents the target book.
+     This is the behaviour used by passenger agents to send requests to bus agents
      */
     private class RequestPerformer extends Behaviour {
         private BusProposal bestProposal = null; // The agent who provides the best offer
@@ -104,10 +108,10 @@ public class PassengerAgent extends Agent {
         private int repliesCnt = 0; // The counter of replies from bus agents
         private MessageTemplate mt; // The template to receive replies
         private int step = 0;
-        private float minTime = 99999;
-        private float maxTime = 0;
-        private float minPrice = 99999;
-        private float maxPrice = 0;
+        private double minTime = 99999;
+        private double maxTime = 0;
+        private double minPrice = 99999;
+        private double maxPrice = 0;
 
         public void action() {
             switch (step) {
@@ -134,8 +138,8 @@ public class PassengerAgent extends Agent {
                     if (reply != null) {
                         if (reply.getPerformative() == ACLMessage.PROPOSE) {
                             String[] tokens = ((String) reply.getContent()).split(" ");
-                            float time = Float.parseFloat(tokens[0]);
-                            float price = Float.parseFloat(tokens[1]);
+                            double time = Double.parseDouble(tokens[0]);
+                            double price = Double.parseDouble(tokens[1]);
 
                             proposals.add(new BusProposal(reply.getSender(), time, price));
 
@@ -152,9 +156,9 @@ public class PassengerAgent extends Agent {
                                 this.maxPrice = price;
 
                         }
+
                         repliesCnt++;
                         if (repliesCnt >= targetBuses.length) {
-                            // We received all replies
                             determineBestOffer();
                             step = 2;
                         }
@@ -171,23 +175,21 @@ public class PassengerAgent extends Agent {
                     order.setConversationId("bus-agency");
                     order.setReplyWith("order"+System.currentTimeMillis());
                     myAgent.send(order);
-                    // Prepare the template to get the purchase order reply
+
                     mt = MessageTemplate.and(MessageTemplate.MatchConversationId("bus-agency"),
                             MessageTemplate.MatchInReplyTo(order.getReplyWith()));
                     step = 3;
                     break;
+
                 case 3:
-                    // Receive the purchase order reply
                     reply = myAgent.receive(mt);
                     if (reply != null) {
-                        // Purchase order reply received
                         if (reply.getPerformative() == ACLMessage.INFORM) {
-                            // Purchase successful. We can terminate
                             System.out.println("Bus \" " + reply.getSender().getName() + " \" will arrive at the destination in " + bestProposal.getTime() + " seconds");
                             myAgent.doDelete();
                         }
                         else {
-                            System.out.println("Attempt failed: requested book already sold.");
+                            System.out.println("Attempt failed");
                         }
 
                         step = 4;
@@ -201,17 +203,30 @@ public class PassengerAgent extends Agent {
 
         private void determineBestOffer() {
 
-            float bestValue = 999;
+            double bestValue = 999;
+            //System.out.println("Time: " + minTime + ", " + maxTime);
+            //System.out.println("Price: " + minPrice + ", " + maxPrice);
 
             for(BusProposal bp: this.proposals)
             {
-                float timeNormalization = (bp.getTime() - this.minTime) / (this.maxTime - this.minTime);
-                float priceNormalization = (bp.getPrice() - this.minPrice) / (this.maxPrice - this.minPrice);
+                double timeNormalization = 0;
+                double priceNormalization = 0;
 
-                float value = alpha * timeNormalization + (1 - alpha) * priceNormalization;
+                if(this.minTime < this.maxTime)
+                    timeNormalization = (bp.getTime() - this.minTime) / (this.maxTime - this.minTime);
 
-                if(value < bestValue)
+                if(this.minPrice < this.maxPrice)
+                    priceNormalization = (bp.getPrice() - this.minPrice) / (this.maxPrice - this.minPrice);
+
+                double value = alpha * timeNormalization + (1 - alpha) * priceNormalization;
+
+                //System.out.println(bp.getBus() + ": " + bp.getTime() + ", " + bp.getPrice() + ", "  + value);
+                //System.out.println(timeNormalization + ", " + priceNormalization);
+
+                if(value < bestValue) {
                     bestProposal = bp;
+                    bestValue = value;
+                }
             }
 
         }
@@ -222,7 +237,7 @@ public class PassengerAgent extends Agent {
             }
             return ((step == 2 && proposals.isEmpty()) || step == 4);
         }
-    }  // End of inner class RequestPerformer
+    }
 
     private DFAgentDescription getTemplate(String type, String name)
     {

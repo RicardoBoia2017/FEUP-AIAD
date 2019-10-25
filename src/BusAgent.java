@@ -17,9 +17,9 @@ import java.util.logging.Logger;
 public class BusAgent extends Agent{
 
     private Coordinates coords;
-    private float speed = 1; //cells per second //TODO: Dynamic speed
+    private float speed; //cells per second //TODO: Dynamic speed
     private Map<String, StopDetails> itinerary = new LinkedHashMap<>();
-    private int availableSeats = 40; //TODO this value can change
+    private int availableSeats;
     private int pricePerMinute = 10; //cents (its easier)
     private float dishonestyDegree = (float) 0.5;
 
@@ -27,12 +27,25 @@ public class BusAgent extends Agent{
 
         Object[] args = getArguments();
 
-        if(args == null || args.length != 2) {
-            System.out.println("No starting stop and/or ending stop specified");
+        if(args == null || args.length != 6) {
+            System.err.println("Incorrect number of arguments");
+            System.err.println("Bus arguments: startStop endStop speed capacity pricePerMinute dishonestyDegree(0-5)");
             doDelete();
         }
+
         else {
-            coords = new Coordinates((int) args[0], (int) args[1]);
+            coords = new Coordinates(Integer.parseInt((String) args[0]), Integer.parseInt((String) args[1]));
+            speed = Float.parseFloat((String) args[2]);
+            availableSeats = Integer.parseInt((String) args[3]);
+            pricePerMinute = Integer.parseInt((String) args[4]);
+            dishonestyDegree = Float.parseFloat((String) args[5]) / 10;
+
+            if(dishonestyDegree < 0 || dishonestyDegree > 5)
+            {
+                System.out.println("Dishonesty degree value must be between 0 and 5");
+                doDelete();
+            }
+
             System.out.println("Bus \"" + getLocalName() + "\" started");
 
             DFAgentDescription dfd = getTemplate("bus-agency","JADE-bus-agency",coords,this);
@@ -50,7 +63,7 @@ public class BusAgent extends Agent{
 
             addBehaviour(new ReservationOrdersServer(this));
 
-            float timeOnCell = (1 / this.speed) * 1000; //time (in milliseconds) spent in a cell
+            double timeOnCell = (1 / this.speed) * 1000; //time (in milliseconds) spent in a cell
 
             //moves a cell at a time
             addBehaviour(new TickerBehaviour(this, (long) timeOnCell) {
@@ -161,7 +174,7 @@ public class BusAgent extends Agent{
 
                 if (availableSeats > 0) {
                     // The bus can give a lift to the passenger
-                    String time = String.valueOf((distance/ currentBus.speed) * this.currentBus.dishonestyDegree);
+                    String time = String.valueOf((distance/ currentBus.speed) * (1 - this.currentBus.dishonestyDegree));
                     String price = String.valueOf((currentBus.pricePerMinute * Double.valueOf(time)) / 100);
 
                     reply.setPerformative(ACLMessage.PROPOSE);
