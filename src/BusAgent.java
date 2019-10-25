@@ -21,7 +21,8 @@ public class BusAgent extends Agent{
     private Map<String, StopDetails> itinerary = new LinkedHashMap<>();
     private int availableSeats = 40; //TODO this value can change
     private int pricePerMinute = 10; //cents (its easier)
-   
+    private float dishonestyDegree = (float) 0.5;
+
     protected void setup() {
 
         Object[] args = getArguments();
@@ -150,20 +151,17 @@ public class BusAgent extends Agent{
                 DFAgentDescription startStopTemplate = currentBus.getStopAgentDescription("stop"+startStop);         
                 DFAgentDescription endStopTemplate = currentBus.getStopAgentDescription("stop"+endStop);
 
-                //Coordinates stopCoords = getStopCoordinates(startStopTemplate);
                 Coordinates stopCoords = getStopCoordinates(startStopTemplate).getCoords();
 
                 ACLMessage reply = msg.createReply();
 
-                //int distance = currentBus.getCoords().calculateDistance(stopCoords);
                 int distance = currentBus.getPassengerTripDistance(startStopTemplate, endStopTemplate);
                 
-                //System.out.println(currentBus.getCoords() + " - " + stopCoords + " = " + distance);
                 System.out.println(" NEW DISTANCE = " + currentBus.getPassengerTripDistance(startStopTemplate, endStopTemplate));
 
                 if (availableSeats > 0) {
                     // The bus can give a lift to the passenger
-                    String time = String.valueOf(distance/ currentBus.speed);
+                    String time = String.valueOf((distance/ currentBus.speed) * this.currentBus.dishonestyDegree);
                     String price = String.valueOf((currentBus.pricePerMinute * Double.valueOf(time)) / 100);
 
                     reply.setPerformative(ACLMessage.PROPOSE);
