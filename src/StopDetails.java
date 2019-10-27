@@ -1,6 +1,7 @@
 
 import jade.core.AID;
 import jade.core.AgentDescriptor;
+import jade.lang.acl.ACLMessage;
 import java.util.ArrayList;
 
 public class StopDetails {

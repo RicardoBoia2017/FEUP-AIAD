@@ -19,6 +19,7 @@ public class StatsAgent extends Agent{
     public static long REFRESH_RATE = 20;
     private double averageOcupancyRate;
     private double averageEstimatedTime = -1;
+    private double averageTimeDeviation = -1;
     
     protected void setup() {
         
@@ -80,13 +81,19 @@ public class StatsAgent extends Agent{
             MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
             
             ACLMessage msg = myAgent.receive(mt);
-            if (msg != null) {
+            if (msg != null) { 
                if(msg.getConversationId() == "estimated-time"){
                  double estimatedTime = Double.parseDouble(msg.getContent());
                 if(currentStats.averageEstimatedTime==-1)
                     currentStats.averageEstimatedTime=estimatedTime;
                 else
                     currentStats.averageEstimatedTime=(currentStats.averageEstimatedTime+estimatedTime)/2;
+               }else if(msg.getConversationId() == "estimated-time"){
+                    double deviation = Double.parseDouble(msg.getContent());
+                    if(currentStats.averageTimeDeviation==-1)
+                        currentStats.averageTimeDeviation=deviation;
+                    else
+                        currentStats.averageTimeDeviation=(currentStats.averageTimeDeviation+deviation)/2;
                }
             }
             else {

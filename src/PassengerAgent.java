@@ -8,6 +8,8 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import java.time.Duration;
+import java.time.Instant;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -20,6 +22,8 @@ public class PassengerAgent extends Agent {
     private int startStop;
     private int endStop;
     private double alpha;
+    private double estimatedTime;
+    private Instant instantOfEstimation; //Time instance where the bus gave the estimation
 
     protected void setup() {
         Object[] args = getArguments();
@@ -49,55 +53,56 @@ public class PassengerAgent extends Agent {
 
             addBehaviour(new TickerBehaviour(this, 5000) {
                 protected void onTick() {
+                    if(((PassengerAgent)myAgent).instantOfEstimation==null){
+                        DFAgentDescription busTemplate = getTemplate("bus",null);
+                        DFAgentDescription startStopTemplate = getTemplate("stop", "stop" + startStop);
 
-                    DFAgentDescription busTemplate = getTemplate("bus",null);
-                    DFAgentDescription startStopTemplate = getTemplate("stop", "stop" + startStop);
+                        try {
+                            DFAgentDescription stopDF = DFService.search(myAgent, startStopTemplate)[0];
+                            DFAgentDescription[] result = DFService.search(myAgent, stopDF.getName(), busTemplate);
 
-                    try {
-                        DFAgentDescription stopDF = DFService.search(myAgent, startStopTemplate)[0];
-                        DFAgentDescription[] result = DFService.search(myAgent, stopDF.getName(), busTemplate);
+                            if(result.length > 0) {
+                                System.out.println("Found the following buses:");
 
-                        if(result.length > 0) {
-                            System.out.println("Found the following buses:");
+                                targetBuses = new AID[result.length];
 
-                            targetBuses = new AID[result.length];
+                                for (int i = 0; i < result.length; ++i) {
+                                    targetBuses[i] = result[i].getName();
+                                    System.out.println(targetBuses[i].getName());
+                                }
 
-                            for (int i = 0; i < result.length; ++i) {
-                                targetBuses[i] = result[i].getName();
-                                System.out.println(targetBuses[i].getName());
+                                System.out.println();
                             }
 
-                            System.out.println();
-                        }
+                            else
+                            {
+                                DFAgentDescription templateGlobal = new DFAgentDescription();
+                                ServiceDescription sdGlobal = new ServiceDescription();
+                                sdGlobal.setType("bus-agency");
+                                sdGlobal.setName("JADE-bus-agency");
+                                templateGlobal.addServices(sdGlobal);
 
-                        else
-                        {
-                            DFAgentDescription templateGlobal = new DFAgentDescription();
-                            ServiceDescription sdGlobal = new ServiceDescription();
-                            sdGlobal.setType("bus-agency");
-                            sdGlobal.setName("JADE-bus-agency");
-                            templateGlobal.addServices(sdGlobal);
+                                result = DFService.search(myAgent, templateGlobal);
+                                System.out.println("No bus has stop in itinerary. Sending message to all buses");
+                                System.out.println("Found the following buses:");
 
-                            result = DFService.search(myAgent, templateGlobal);
-                            System.out.println("No bus has stop in itinerary. Sending message to all buses");
-                            System.out.println("Found the following buses:");
+                                targetBuses = new AID[result.length];
 
-                            targetBuses = new AID[result.length];
+                                for (int i = 0; i < result.length; ++i) {
+                                    targetBuses[i] = result[i].getName();
+                                    System.out.println(targetBuses[i].getName());
+                                }
 
-                            for (int i = 0; i < result.length; ++i) {
-                                targetBuses[i] = result[i].getName();
-                                System.out.println(targetBuses[i].getName());
+                                System.out.println();
                             }
-
-                            System.out.println();
                         }
-                    }
-                    catch (FIPAException fe) {
-                        fe.printStackTrace();
-                    }
+                        catch (FIPAException fe) {
+                            fe.printStackTrace();
+                        }
 
-                    // Perform the request
-                    myAgent.addBehaviour(new RequestPerformer());
+                        // Perform the request
+                        myAgent.addBehaviour(new RequestPerformer());
+                    }
                 }
             } );
 
@@ -109,7 +114,18 @@ public class PassengerAgent extends Agent {
         }
     }
 
-    protected void takeDown() {}
+    protected void takeDown() {
+        if(this.instantOfEstimation!=null){
+            Instant instanceArrivedAtDestination = Instant.now();
+            double actualTravelTime = (double)Duration.between(this.instantOfEstimation, instanceArrivedAtDestination).toMillis()/1000;
+
+            double timeDeviation = (actualTravelTime-this.estimatedTime)/this.estimatedTime;
+
+            this.informStats(String.valueOf(timeDeviation), "time-deviation");
+            System.out.println("ACTUAL TIME: "+actualTravelTime+" SECONDS");
+            System.out.println("DEVIATION: "+timeDeviation);
+        }
+    }
 
     /**
      Inner class RequestPerformer.
@@ -120,6 +136,7 @@ public class PassengerAgent extends Agent {
         private ArrayList<BusProposal> proposals = new ArrayList<>();
         private int repliesCnt = 0; // The counter of replies from bus agents
         private MessageTemplate mt; // The template to receive replies
+         private MessageTemplate mtDone; //The template for the arrived message
         private int step = 0;
         private double minTime = 99999;
         private double maxTime = 0;
@@ -142,6 +159,7 @@ public class PassengerAgent extends Agent {
                     // Prepare the template to get proposals
                     mt = MessageTemplate.and(MessageTemplate.MatchConversationId("bus-agency"),
                             MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
+                    mtDone = MessageTemplate.MatchContent("ARRIVED TO DESTINATION");
                     step = 1;
 
                     break;
@@ -200,13 +218,24 @@ public class PassengerAgent extends Agent {
                         if (reply.getPerformative() == ACLMessage.INFORM) {
                             System.out.println("Bus \" " + reply.getSender().getName() + " \" will arrive at the destination in " + bestProposal.getTime() + " seconds");
                             ((PassengerAgent)myAgent).informStats(String.valueOf(bestProposal.getTime()),"estimated-time");
-                            myAgent.doDelete();
+                            ((PassengerAgent)myAgent).estimatedTime = bestProposal.getTime();
+                            ((PassengerAgent)myAgent).instantOfEstimation = Instant.now();
                         }
                         else {
                             System.out.println("Attempt failed");
                         }
 
                         step = 4;
+                    }
+                    else {
+                        block();
+                    }
+                    break;
+                case 4:
+                    reply = myAgent.receive(mtDone);
+                    if (reply != null) {
+                        step=5;
+                        myAgent.doDelete();
                     }
                     else {
                         block();
@@ -249,7 +278,7 @@ public class PassengerAgent extends Agent {
             if (step == 2 && proposals.isEmpty()) {
                 System.out.println("There are no buses");
             }
-            return ((step == 2 && proposals.isEmpty()) || step == 4);
+            return ((step == 2 && proposals.isEmpty()) || step == 5);
         }
     }
 

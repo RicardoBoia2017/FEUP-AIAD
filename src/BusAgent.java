@@ -88,6 +88,7 @@ public class BusAgent extends Agent{
                             currentBus.availableSeats += currentBus.getItinerary().get(nextStop).getLeavingPassengers().size();
                             System.out.println("Available seats: " + currentBus.availableSeats);
 
+                            currentBus.informPassangersArrived(currentBus.getItinerary().get(nextStop).getLeavingPassengers());
                             currentBus.getItinerary().remove(nextStop);
                             deregisterFromStop(nextStop);
                         }
@@ -478,5 +479,15 @@ public class BusAgent extends Agent{
     double getOccupancyRate(){
         int occupiedSeats = this.totalSeats-this.availableSeats;
         return (double)occupiedSeats/this.totalSeats;
+    }
+    
+    
+    public void informPassangersArrived(ArrayList<AID> leavingPassengers){
+        ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+        for (AID passenger: leavingPassengers) {
+            message.addReceiver(passenger);
+        }
+        message.setContent("ARRIVED TO DESTINATION");
+        this.send(message);
     }
 }
