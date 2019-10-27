@@ -36,7 +36,7 @@ public class JADELauncher {
         try {
             Object[] coords = {"10", "15", "1","30","10","0"};
             ac6 = mainContainer.createNewAgent("bus2", "BusAgent", coords);
-            //ac6.start();
+            ac6.start();
         } catch (StaleProxyException e) {
             e.printStackTrace();
         }

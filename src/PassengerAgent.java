@@ -10,16 +10,29 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PassengerAgent extends Agent {
 
     private AID[] targetBuses;
+    private AID statsAgent;
     private int startStop;
     private int endStop;
     private double alpha;
 
     protected void setup() {
         Object[] args = getArguments();
+        
+        try {
+            DFAgentDescription statsTemplate = getTemplate("stats",null);
+            while(DFService.search(this, statsTemplate).length==0){}
+            
+            DFAgentDescription stats = DFService.search(this, statsTemplate)[0]; 
+            this.statsAgent = stats.getName();
+        } catch (FIPAException ex) {
+            Logger.getLogger(PassengerAgent.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         if (args != null && args.length == 3) {
             startStop = Integer.parseInt((String) args[0]);
@@ -186,6 +199,7 @@ public class PassengerAgent extends Agent {
                     if (reply != null) {
                         if (reply.getPerformative() == ACLMessage.INFORM) {
                             System.out.println("Bus \" " + reply.getSender().getName() + " \" will arrive at the destination in " + bestProposal.getTime() + " seconds");
+                            ((PassengerAgent)myAgent).informStats(String.valueOf(bestProposal.getTime()),"estimated-time");
                             myAgent.doDelete();
                         }
                         else {
@@ -252,6 +266,15 @@ public class PassengerAgent extends Agent {
         template.addServices(sdStart);
         
         return template;
+    }
+    
+    public void informStats(String content,String conversation){
+        ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+        message.addReceiver(this.statsAgent);
+        message.setContent(content);
+        message.setConversationId(conversation);
+        message.setReplyWith("cfp"+System.currentTimeMillis()); // Unique value
+        this.send(message);   
     }
 
 }
