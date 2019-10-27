@@ -18,9 +18,11 @@ import java.util.logging.Logger;
 public class StatsAgent extends Agent{
     public static long REFRESH_RATE = 20;
     private double averageOcupancyRate;
+    private double maxAverageOccupancyRate = -1;
     private double averageEstimatedTime = -1;
     private double averageTimeDeviation = -1;
     private double totalGain = 0;
+    private StatsGUI myGUI;
     
     protected void setup() {
         
@@ -30,6 +32,9 @@ public class StatsAgent extends Agent{
         service.setType("stats");
         service.setName("stats1");
         template.addServices(service);
+        
+        myGUI = new StatsGUI(this);
+        myGUI.setVisible(true);
 
         try {
             DFService.register(this, template);
@@ -60,10 +65,14 @@ public class StatsAgent extends Agent{
                         }
                                             
                         currentAgent.averageOcupancyRate = sumOccupancy/total;
+                        if(currentAgent.averageOcupancyRate>currentAgent.maxAverageOccupancyRate)
+                            currentAgent.maxAverageOccupancyRate=currentAgent.averageOcupancyRate;                      
                         currentAgent.totalGain = sumGain;
                     } catch (FIPAException ex) {
                         Logger.getLogger(Map.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                    
+                    currentAgent.myGUI.updateInfo();
                     
                     System.out.println("OCCUPANCY: "+currentAgent.averageOcupancyRate);
                     System.out.println("AVERAGE ESTIMATED TIME: "+currentAgent.averageEstimatedTime);
@@ -160,4 +169,27 @@ public class StatsAgent extends Agent{
         return (double)0.0;
     }
 
+    public double getAverageEstimatedTime() {
+        return averageEstimatedTime;
+    }
+
+    public double getAverageOcupancyRate() {
+        return averageOcupancyRate;
+    }
+
+    public double getAverageTimeDeviation() {
+        return averageTimeDeviation;
+    }
+
+    public double getTotalGain() {
+        return totalGain;
+    }
+
+    public double getMaxAverageOccupancyRate() {
+        return maxAverageOccupancyRate;
+    }
+    
+    
+
+    
 }
