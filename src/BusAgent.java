@@ -1,3 +1,4 @@
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
@@ -84,7 +85,7 @@ public class BusAgent extends Agent{
                         if (currentBus.getCoords().equals(nextStopCoords)) {
                             System.out.println(currentBus.getLocalName() + " ARRIVED AT " + nextStop);
 
-                            currentBus.availableSeats += currentBus.getItinerary().get(nextStop).getLeavingPassengers();
+                            currentBus.availableSeats += currentBus.getItinerary().get(nextStop).getLeavingPassengers().size();
                             System.out.println("Available seats: " + currentBus.availableSeats);
 
                             currentBus.getItinerary().remove(nextStop);
@@ -242,13 +243,13 @@ public class BusAgent extends Agent{
                     if(resultStartStop.length == 0){
                         System.err.println("Start stop doesn't exist");
                     }else{
-                        registerInStop(resultStartStop[0], false);
+                        registerInStop(resultStartStop[0], null);
                     }
                     
                     if(resultEndStop.length == 0){
                         System.err.println("End stop doesn't exist");
                     }else{
-                        registerInStop(resultEndStop[0], true);
+                        registerInStop(resultEndStop[0], msg.getSender());
                     }
 
                     currentBus.availableSeats--;
@@ -267,7 +268,7 @@ public class BusAgent extends Agent{
             }
         }
         
-        private void registerInStop(DFAgentDescription stop, boolean destiny){
+        private void registerInStop(DFAgentDescription stop, AID passangerDestiny){
             DFAgentDescription busTemplate = new DFAgentDescription();
             busTemplate.setName( currentBus.getAID() );
             ServiceDescription sd  = new ServiceDescription();
@@ -281,14 +282,14 @@ public class BusAgent extends Agent{
                 if(results.length == 0) {
                     DFService.register(currentBus, stop.getName(), busTemplate);
                     StopDetails stopDetails = getStopCoordinates(stop);
-                    if(destiny)
-                        stopDetails.setLeavingPassengers(1);
+                    if(passangerDestiny!=null)
+                        stopDetails.setLeavingPassenger(passangerDestiny);
 
                     currentBus.itinerary.put(stop.getName().getLocalName(), stopDetails);
                 }
 
-                else if (destiny)
-                    this.currentBus.itinerary.get(stop.getName().getLocalName()).setLeavingPassengers(1);
+                else if (passangerDestiny!=null)
+                    this.currentBus.itinerary.get(stop.getName().getLocalName()).setLeavingPassenger(passangerDestiny);
             }
             catch (FIPAException fe) {
                 System.err.println(fe.toString());
@@ -343,7 +344,7 @@ public class BusAgent extends Agent{
         //propertyIterator.remove();
         stopCoords.setY(Integer.parseInt((String)(((Property)propertyIterator.next()).getValue())));
 
-        return new StopDetails(stopCoords, 0);
+        return new StopDetails(stopCoords);
     }
     
     

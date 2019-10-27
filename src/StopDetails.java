@@ -1,21 +1,21 @@
+
+import jade.core.AID;
+import jade.core.AgentDescriptor;
+import java.util.ArrayList;
+
 public class StopDetails {
 
     private Coordinates coords;
-    private int leavingPassengers = 0;
+    private ArrayList<AID> leavingPassengers;
 
-    StopDetails(Coordinates coords, int leavingPassengers)
+    StopDetails(Coordinates coords)
     {
+        this.leavingPassengers = new ArrayList();
         this.coords = coords;
-        this.leavingPassengers = leavingPassengers;
     }
 
-    public void setLeavingPassengers(int leavingPassengers) {
-
-        if(leavingPassengers == 1)
-            this.leavingPassengers++;
-
-        else
-            this.leavingPassengers = leavingPassengers;
+    public void setLeavingPassenger(AID leavingPassenger) {
+        this.leavingPassengers.add(leavingPassenger);
     }
 
     public void setCoords(Coordinates coords) {
@@ -26,7 +26,9 @@ public class StopDetails {
         return coords;
     }
 
-    public int getLeavingPassengers() {
+    public ArrayList<AID> getLeavingPassengers() {
         return leavingPassengers;
     }
+
+    
 }
