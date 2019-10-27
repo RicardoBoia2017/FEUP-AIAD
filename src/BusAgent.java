@@ -24,6 +24,7 @@ public class BusAgent extends Agent{
     private int totalSeats;
     private int pricePerMinute = 10; //cents (its easier)
     private float dishonestyDegree = (float) 0.5;
+    private double gain=0; //monetary gain
 
     protected void setup() {
 
@@ -254,7 +255,13 @@ public class BusAgent extends Agent{
                     }
 
                     currentBus.availableSeats--;
-
+                    
+                    if((resultStartStop.length != 0)&&(resultEndStop.length != 0)){
+                        int distance = currentBus.getPassengerTripDistance(resultStartStop[0], resultEndStop[0]);
+                        String time = String.valueOf((distance/ currentBus.speed) * (1 - this.currentBus.dishonestyDegree));
+                        String price = String.valueOf((currentBus.pricePerMinute * Double.valueOf(time)) / 100);
+                        currentBus.gain+=Double.parseDouble(price);
+                    }
                 }
                 catch (FIPAException fe) {
                     fe.printStackTrace();
@@ -465,9 +472,22 @@ public class BusAgent extends Agent{
        return template;
     }
     
+    static DFAgentDescription getTemplate(String type, String name,Coordinates coords,Agent myAgent,double occupancyRate, double gain){
+       DFAgentDescription template = getTemplate(type, name, coords, myAgent, occupancyRate);
+       template.setName(myAgent.getAID());
+       
+        ServiceDescription sd = (ServiceDescription) template.getAllServices().next();
+        Property gainProp = new Property();
+        gainProp.setName("Gain");
+        gainProp.setValue(gain);
+        sd.addProperties(gainProp);
+       
+       return template;
+    }
+    
     
     void updateServiceInfo(){
-        DFAgentDescription template = getTemplate("bus-agency", "JADE-bus-agency",this.coords,this,this.getOccupancyRate());
+        DFAgentDescription template = getTemplate("bus-agency", "JADE-bus-agency",this.coords,this,this.getOccupancyRate(),this.gain);
         
         try {
             DFService.modify(this, template);

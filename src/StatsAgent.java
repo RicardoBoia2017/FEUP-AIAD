@@ -20,6 +20,7 @@ public class StatsAgent extends Agent{
     private double averageOcupancyRate;
     private double averageEstimatedTime = -1;
     private double averageTimeDeviation = -1;
+    private double totalGain = 0;
     
     protected void setup() {
         
@@ -48,21 +49,26 @@ public class StatsAgent extends Agent{
                     try {      
                         DFAgentDescription[] allBuses = DFService.search(myAgent, busTemplate);
                         
-                        double sum=0;
+                        double sumOccupancy=0;
+                        double sumGain=0;
                         double total=0;
                         
                         for(DFAgentDescription bus: allBuses) {
-                           sum+=StatsAgent.getBusOccupancyRate(bus);
+                           sumOccupancy+=StatsAgent.getBusOccupancyRate(bus);
+                           sumGain+=StatsAgent.getBusGain(bus);
                            total++;
                         }
                                             
-                        currentAgent.averageOcupancyRate = sum/total;
+                        currentAgent.averageOcupancyRate = sumOccupancy/total;
+                        currentAgent.totalGain = sumGain;
                     } catch (FIPAException ex) {
                         Logger.getLogger(Map.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     
                     System.out.println("OCCUPANCY: "+currentAgent.averageOcupancyRate);
                     System.out.println("AVERAGE ESTIMATED TIME: "+currentAgent.averageEstimatedTime);
+                    System.out.println("AVERAGE TIME DEVIATION: "+currentAgent.averageTimeDeviation);
+                    System.out.println("GAIN: "+currentAgent.totalGain);
                 }
                 
          });
@@ -88,7 +94,7 @@ public class StatsAgent extends Agent{
                     currentStats.averageEstimatedTime=estimatedTime;
                 else
                     currentStats.averageEstimatedTime=(currentStats.averageEstimatedTime+estimatedTime)/2;
-               }else if(msg.getConversationId() == "estimated-time"){
+               }else if(msg.getConversationId() == "time-deviation"){
                     double deviation = Double.parseDouble(msg.getContent());
                     if(currentStats.averageTimeDeviation==-1)
                         currentStats.averageTimeDeviation=deviation;
@@ -121,6 +127,33 @@ public class StatsAgent extends Agent{
         propertyIterator.next();
         
         //bus is not forced to have occupancy ***TO SEE AGAIN
+        if(propertyIterator.hasNext())
+          return Double.parseDouble((String)((Property)propertyIterator.next()).getValue());
+        
+        return (double)0.0;
+    }
+    
+    static double getBusGain(DFAgentDescription busAgent)
+    {
+        Iterator serviceIterator = busAgent.getAllServices();
+
+        ServiceDescription serviceAgent = (ServiceDescription) serviceIterator.next();
+        
+        //information service is always the last one
+        if(serviceIterator.hasNext())
+            serviceAgent = (ServiceDescription)serviceIterator.next();
+
+        Iterator propertyIterator = serviceAgent.getAllProperties();
+        
+        //skip coordinates properties
+        propertyIterator.next();
+        propertyIterator.next();
+        
+        //bus is not forced to have occupancy ***TO SEE AGAIN
+        if(propertyIterator.hasNext())
+            propertyIterator.next();
+        
+        //bus is not forced to have gain ***TO SEE AGAIN
         if(propertyIterator.hasNext())
           return Double.parseDouble((String)((Property)propertyIterator.next()).getValue());
         
