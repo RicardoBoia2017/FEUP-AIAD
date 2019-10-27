@@ -9,6 +9,7 @@ import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -22,7 +23,12 @@ public class StatsAgent extends Agent{
     private double averageEstimatedTime = -1;
     private double averageTimeDeviation = -1;
     private double totalGain = 0;
+    private HashMap<String,Double> allBusesGain;
     private StatsGUI myGUI;
+
+    public StatsAgent() {
+        this.allBusesGain = new HashMap();
+    }
     
     protected void setup() {
         
@@ -58,10 +64,13 @@ public class StatsAgent extends Agent{
                         double sumGain=0;
                         double total=0;
                         
+                        currentAgent.allBusesGain.clear();
+                        
                         for(DFAgentDescription bus: allBuses) {
                            sumOccupancy+=StatsAgent.getBusOccupancyRate(bus);
                            sumGain+=StatsAgent.getBusGain(bus);
                            total++;
+                           currentAgent.allBusesGain.put(bus.getName().getLocalName(), StatsAgent.getBusGain(bus));
                         }
                                             
                         currentAgent.averageOcupancyRate = sumOccupancy/total;
@@ -187,6 +196,10 @@ public class StatsAgent extends Agent{
 
     public double getMaxAverageOccupancyRate() {
         return maxAverageOccupancyRate;
+    }
+
+    public HashMap<String, Double> getAllBusesGain() {
+        return allBusesGain;
     }
     
     

@@ -1,5 +1,7 @@
 
+import jade.core.AID;
 import java.awt.HeadlessException;
+import java.util.Map.Entry;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -50,6 +52,8 @@ public class StatsGUI extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         maxAverageOccupancyRate = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        busList = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Live Statistics");
@@ -85,6 +89,10 @@ public class StatsGUI extends javax.swing.JFrame {
 
         jLabel10.setText("Maximum Average Bus Occupancy Rate:");
 
+        busList.setColumns(20);
+        busList.setRows(5);
+        jScrollPane1.setViewportView(busList);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -92,6 +100,7 @@ public class StatsGUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel6)
@@ -156,7 +165,9 @@ public class StatsGUI extends javax.swing.JFrame {
                     .addComponent(jLabel7)
                     .addComponent(totalGain)
                     .addComponent(jLabel8))
-                .addContainerGap(235, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(59, Short.MAX_VALUE))
         );
 
         pack();
@@ -168,6 +179,11 @@ public class StatsGUI extends javax.swing.JFrame {
         this.averageOccupancyRate.setText(String.valueOf(this.currentStatsInfo.getAverageOcupancyRate()*100));
         this.maxAverageOccupancyRate.setText(String.valueOf(this.currentStatsInfo.getMaxAverageOccupancyRate()*100));
         this.totalGain.setText(String.valueOf(this.currentStatsInfo.getTotalGain()));
+        
+        this.busList.setText("");
+        for(Entry<String,Double> curBus : this.currentStatsInfo.getAllBusesGain().entrySet()){
+            this.busList.append(curBus.getKey()+" "+curBus.getValue()+" €\n");
+        }
     }
     /**
      * @param args the command line arguments
@@ -208,6 +224,7 @@ public class StatsGUI extends javax.swing.JFrame {
     private javax.swing.JLabel averageEstimatedTime;
     private javax.swing.JLabel averageOccupancyRate;
     private javax.swing.JLabel averageTimeDeviation;
+    private javax.swing.JTextArea busList;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
@@ -218,6 +235,7 @@ public class StatsGUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel maxAverageOccupancyRate;
     private javax.swing.JLabel totalGain;
     // End of variables declaration//GEN-END:variables
