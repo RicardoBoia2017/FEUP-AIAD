@@ -20,6 +20,7 @@ public class BusAgent extends Agent{
     private float speed; //cells per second //TODO: Dynamic speed
     private Map<String, StopDetails> itinerary = new LinkedHashMap<>();
     private int availableSeats;
+    private int totalSeats;
     private int pricePerMinute = 10; //cents (its easier)
     private float dishonestyDegree = (float) 0.5;
 
@@ -36,7 +37,8 @@ public class BusAgent extends Agent{
         else {
             coords = new Coordinates(Integer.parseInt((String) args[0]), Integer.parseInt((String) args[1]));
             speed = Float.parseFloat((String) args[2]);
-            availableSeats = Integer.parseInt((String) args[3]);
+            totalSeats = Integer.parseInt((String) args[3]);
+            availableSeats=totalSeats;
             pricePerMinute = Integer.parseInt((String) args[4]);
             dishonestyDegree = Float.parseFloat((String) args[5]) / 10;
 
@@ -91,7 +93,7 @@ public class BusAgent extends Agent{
                     }
                     
                     //inform map of current position
-                    currentBus.updateServiceCoords();
+                    currentBus.updateServiceInfo();
 
                 }
             });
@@ -441,20 +443,39 @@ public class BusAgent extends Agent{
         return template;
     }
     
-     static DFAgentDescription getTemplate(String type, String name,Coordinates coords,Agent myAgent){
+    static DFAgentDescription getTemplate(String type, String name,Coordinates coords,Agent myAgent){
        DFAgentDescription template = getTemplate(type, name, coords);
        template.setName(myAgent.getAID());
        
        return template;
     }
+     
+    static DFAgentDescription getTemplate(String type, String name,Coordinates coords,Agent myAgent,double occupancyRate){
+       DFAgentDescription template = getTemplate(type, name, coords);
+       template.setName(myAgent.getAID());
+       
+        ServiceDescription sd = (ServiceDescription) template.getAllServices().next();
+        Property occupancy = new Property();
+        occupancy.setName("Occupancy");
+        occupancy.setValue(occupancyRate);
+        sd.addProperties(occupancy);
+       
+       return template;
+    }
     
-    void updateServiceCoords(){
-        DFAgentDescription template = getTemplate("bus-agency", "JADE-bus-agency",this.coords,this);
+    
+    void updateServiceInfo(){
+        DFAgentDescription template = getTemplate("bus-agency", "JADE-bus-agency",this.coords,this,this.getOccupancyRate());
         
         try {
             DFService.modify(this, template);
         } catch (FIPAException ex) {
             Logger.getLogger(BusAgent.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    double getOccupancyRate(){
+        int occupiedSeats = this.totalSeats-this.availableSeats;
+        return (double)occupiedSeats/this.totalSeats;
     }
 }

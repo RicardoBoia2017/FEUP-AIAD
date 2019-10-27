@@ -62,7 +62,7 @@ public class Map extends Agent{
 
         ServiceDescription serviceAgent = (ServiceDescription) serviceIterator.next();
         
-        //coordinates properties is always the last one
+        //information service is always the last one
         if(serviceIterator.hasNext())
             serviceAgent = (ServiceDescription)serviceIterator.next();
 

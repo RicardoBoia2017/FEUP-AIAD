@@ -36,16 +36,23 @@ public class JADELauncher {
         try {
             Object[] coords = {"10", "15", "1","30","10","0"};
             ac6 = mainContainer.createNewAgent("bus2", "BusAgent", coords);
-            ac6.start();
+            //ac6.start();
         } catch (StaleProxyException e) {
             e.printStackTrace();
         }
         
         AgentController ac8;
         try {
-            Object[] coords = {14, 10};
             ac8 = mainContainer.acceptNewAgent("map", new Map());
             ac8.start();
+        } catch (StaleProxyException e) {
+            e.printStackTrace();
+        }
+        
+        AgentController ac9;
+        try {
+            ac9 = mainContainer.acceptNewAgent("stats", new StatsAgent());
+            ac9.start();
         } catch (StaleProxyException e) {
             e.printStackTrace();
         }
