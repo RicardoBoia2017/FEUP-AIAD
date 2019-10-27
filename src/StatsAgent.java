@@ -8,10 +8,13 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -82,6 +85,7 @@ public class StatsAgent extends Agent{
                     }
                     
                     currentAgent.myGUI.updateInfo();
+                    currentAgent.updateFileInfo();
                     
                     System.out.println("OCCUPANCY: "+currentAgent.averageOcupancyRate);
                     System.out.println("AVERAGE ESTIMATED TIME: "+currentAgent.averageEstimatedTime);
@@ -177,6 +181,28 @@ public class StatsAgent extends Agent{
         
         return (double)0.0;
     }
+    
+    public void updateFileInfo(){
+        try{
+            FileWriter fileWriter = new FileWriter("statsFile.txt");
+            PrintWriter printWriter = new PrintWriter(fileWriter);
+            printWriter.printf("Simulation Statistics File\n\n");
+            printWriter.printf("Average Estimated Waiting Time: %.2f seconds \n", this.averageEstimatedTime);
+            printWriter.printf("Average Time Deviation: %.3f%% \n", this.averageTimeDeviation);
+            printWriter.printf("Current Average Bus Occupancy Rate: %.3f%% \n", this.averageOcupancyRate);
+            printWriter.printf("Maximum Average Bus Occupancy Rate: %.3f%% \n", this.maxAverageOccupancyRate);
+            printWriter.printf("Total financial gain: %s€ \n", this.totalGain);
+            printWriter.printf("Financial gain per bus:\n");
+
+            for(Entry<String,Double> curBus : this.allBusesGain.entrySet()){
+                printWriter.printf("%s: %.2f€\n", curBus.getKey(),curBus.getValue());
+            }
+
+            printWriter.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 
     public double getAverageEstimatedTime() {
         return averageEstimatedTime;
@@ -201,6 +227,7 @@ public class StatsAgent extends Agent{
     public HashMap<String, Double> getAllBusesGain() {
         return allBusesGain;
     }
+    
     
     
 
