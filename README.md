@@ -23,39 +23,51 @@ Caso o autocarro termine o seu itinerário, este irá fazer um percurso aleatór
 | Origem e destino de passageiros | Percurso do autocarro |
 
 ## TODO
-Inserir stop no meio do itinerário, em vez de ser sempre no fim (otimização do itinerário)
+- [ ] Inserir stop no meio do itinerário, em vez de ser sempre no fim (otimização do itinerário)
 
-Itinerário aleatório quando fica sem stops (Inês)
+- [ ] Itinerário aleatório quando fica sem stops (Inês)
 
-Não aceitar passageiro se o desvio for grande
+- [ ] Não aceitar passageiro se o desvio for grande
 
-Não verificar cegamente os lugares disponiveis. Ter em conta quando é que vão sair passageiros.
+- [ ] Não verificar cegamente os lugares disponiveis. Ter em conta quando é que vão sair passageiros.
 
-Implementar preço
+- [X] Implementar preço
 
-Melhorar mapa
+- [ ] Melhorar mapa
 
-Percurso inverso do passageiro (1->3 3->1): atualmente o programa não permite que a mesma paragem seja inserida mais que uma vez, sendo que o segundo passageiro não chega ao destino
+- [ ] Percurso inverso do passageiro (1->3 3->1): atualmente o programa não permite que a mesma paragem seja inserida mais que uma vez, sendo que o segundo passageiro não chega ao destino
 
-Mostrar estatisticas
+- [X] Mostrar estatisticas
 
-Testar (cenários diferentes - variar nº e tipo de autocarros e passageiros)
+- [ ] Testar (cenários diferentes - variar nº e tipo de autocarros e passageiros)
 
 ## Aumento da complexidade das decisões
 
 ### Passageiro
-* alpha * preço + (1 - alpha) * tempo : fórmula para a escolha do autocarro
+- [X] alpha * preço + (1 - alpha) * tempo : fórmula para a escolha do autocarro
 
 ### Autocarro
-* preço por minuto
-* desonestidade 
-* desvio
-* ter em conta a lotação no cálculo do preço
+- [X] preço por minuto
+- [X] desonestidade 
+- [ ] desvio
+- [ ] ter em conta a lotação no cálculo do preço
 
 ## Estatíticas
-* Tempo médio de espera
-* Ocupação média
-* Desvio entre tempo prometido e tempo real
-* Ganho
+- [X] Tempo médio de espera
+- [X] Ocupação média
+- [X] Desvio entre tempo prometido e tempo real
+- [X] Ganho
 
+## Apresentação
 
+[Link](https://docs.google.com/presentation/d/1qO-rXMEMbW7mUmR5a3nyVEzetkSMrdGXcXtN5SL2d-k/edit?usp=sharing)
+
+- [ ] Descrição do problema
+- [ ] Esquema global que mostre os tipos agentes envolvidos e de que forma encaixam no todo
+- [ ] Interação e protocolos (comunicação)
+- [ ] Arquiteturas (se relevante) dos agentes, e estratégias utilizadas
+- [ ] Outros mecanismos (ex. descoberta de agentes -- Páginas amarelas)
+- ~~Software utilizado, incluindo de que forma (será relevante se fizerem a ligação ao Repast) e algum detalhe relevante~~
+- [ ] Experiências realizadas (embora a maior parte será feita na segunda parte do trabalho)
+- [ ] Análise dos resultados
+- [ ] Conclusões (com análise crítica e trabalho futuro)
