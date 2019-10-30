@@ -18,13 +18,13 @@ import java.util.logging.Logger;
 public class BusAgent extends Agent{
 
     private Coordinates coords;
-    private float speed; //cells per second //TODO: Dynamic speed
+    private float speed;
     private Map<String, StopDetails> itinerary = new LinkedHashMap<>();
     private int availableSeats;
     private int totalSeats;
-    private int pricePerMinute = 10; //cents (its easier)
+    private int pricePerMinute = 10;
     private float dishonestyDegree = (float) 0.5;
-    private double gain=0; //monetary gain
+    private double gain=0;
 
     protected void setup() {
 
@@ -89,7 +89,7 @@ public class BusAgent extends Agent{
                             currentBus.availableSeats += currentBus.getItinerary().get(nextStop).getLeavingPassengers().size();
                             System.out.println("Available seats: " + currentBus.availableSeats);
 
-                            currentBus.informPassangersArrived(currentBus.getItinerary().get(nextStop).getLeavingPassengers());
+                            currentBus.informPassengersArrived(currentBus.getItinerary().get(nextStop).getLeavingPassengers());
                             currentBus.getItinerary().remove(nextStop);
                             deregisterFromStop(nextStop);
                         }
@@ -187,7 +187,7 @@ public class BusAgent extends Agent{
     /**
      Inner class OfferRequestsServer.
      This is the behaviour used by Bus agents to serve incoming requests
-     for offer from buyer agents.
+     for offer from passenger agents.
      If the bus can pick the client, then it replies
      with a PROPOSE message specifying the time/price. Otherwise a REFUSE message is
      sent back.
@@ -207,7 +207,6 @@ public class BusAgent extends Agent{
             if (msg != null) {
                 String[] stops;
                 String startStop, endStop;
-                // CFP Message received. Process it
                 stops = msg.getContent().split("");
 
                 startStop = stops[0];
@@ -216,23 +215,17 @@ public class BusAgent extends Agent{
                 DFAgentDescription startStopTemplate = currentBus.getStopAgentDescription("stop"+startStop);         
                 DFAgentDescription endStopTemplate = currentBus.getStopAgentDescription("stop"+endStop);
 
-                Coordinates stopCoords = getStopCoordinates(startStopTemplate).getCoords();
-
                 ACLMessage reply = msg.createReply();
 
                 int distance = currentBus.getPassengerTripDistance(startStopTemplate, endStopTemplate);
-                
-                System.out.println(" NEW DISTANCE = " + currentBus.getPassengerTripDistance(startStopTemplate, endStopTemplate));
 
                 if (availableSeats > 0) {
-                    // The bus can give a lift to the passenger
                     String time = String.valueOf((distance/ currentBus.speed) * (1 - this.currentBus.dishonestyDegree));
-                    String price = String.valueOf((currentBus.pricePerMinute * Double.valueOf(time)) / 100);
+                    String price = String.valueOf((currentBus.pricePerMinute * Double.parseDouble(time)) / 100);
 
                     reply.setPerformative(ACLMessage.PROPOSE);
                     reply.setContent(time + " " + price);
                 } else {
-                    // The bus is not available for that passenger
                     reply.setPerformative(ACLMessage.REFUSE);
                     reply.setContent("not-available");
                 }
@@ -243,11 +236,8 @@ public class BusAgent extends Agent{
                 block();
             }
         }
+    }
 
-    }  // End of inner class OfferRequestsServer
-
-    /**
-     */
     private class ReservationOrdersServer extends CyclicBehaviour {
 
         BusAgent currentBus;
@@ -306,7 +296,7 @@ public class BusAgent extends Agent{
                     if((resultStartStop.length != 0)&&(resultEndStop.length != 0)){
                         int distance = currentBus.getPassengerTripDistance(resultStartStop[0], resultEndStop[0]);
                         String time = String.valueOf((distance/ currentBus.speed) * (1 - this.currentBus.dishonestyDegree));
-                        String price = String.valueOf((currentBus.pricePerMinute * Double.valueOf(time)) / 100);
+                        String price = String.valueOf((currentBus.pricePerMinute * Double.parseDouble(time)) / 100);
                         currentBus.gain+=Double.parseDouble(price);
                     }
                 }
@@ -353,7 +343,7 @@ public class BusAgent extends Agent{
 
         }
 
-    }  // End of inner class OfferRequestsServer
+    }
 
     public  Map<String, StopDetails> getItinerary() {
         return itinerary;
@@ -389,31 +379,25 @@ public class BusAgent extends Agent{
     {
         Iterator serviceIterator = stop.getAllServices();
         serviceIterator.next();
-        //serviceIterator.remove(); //skips first service
 
         ServiceDescription serviceStop = (ServiceDescription) serviceIterator.next();
 
         Iterator propertyIterator = serviceStop.getAllProperties();
         Coordinates stopCoords = new Coordinates();
         stopCoords.setX(Integer.parseInt((String)(((Property)propertyIterator.next()).getValue())));
-        //propertyIterator.remove();
         stopCoords.setY(Integer.parseInt((String)(((Property)propertyIterator.next()).getValue())));
 
         return new StopDetails(stopCoords);
     }
     
     
-    //gets distance from current position 2 to end stop in the current bus itinerary
     public int getPassengerTripDistance(DFAgentDescription startStop,DFAgentDescription endStop){
-        //creates a possible itinerary if it would accept the passanger
         Map<String,StopDetails> futureItinerary = new HashMap<>(this.itinerary);
 
-        //if bus doesnt have start stop, adds it to itinerary
         if(futureItinerary.get(startStop.getName().getLocalName()) == null){
             futureItinerary.put(startStop.getName().getLocalName(), this.getStopCoordinates(startStop));
         }
         
-        //if bus doesnt have end stop, adds it to itinerary
         if(futureItinerary.get(endStop.getName().getLocalName()) == null){
             futureItinerary.put(endStop.getName().getLocalName(), this.getStopCoordinates(endStop));
         }
@@ -421,28 +405,24 @@ public class BusAgent extends Agent{
         Iterator<String> itineraryIt = futureItinerary.keySet().iterator();
         
         String prevStopName = itineraryIt.next();
-        DFAgentDescription prevStop = this.getStopAgentDescription(prevStopName); //previous stop
-        //itineraryIt.remove();
+        DFAgentDescription prevStop = this.getStopAgentDescription(prevStopName);
         String curStopName;
-        DFAgentDescription curStop; //current stop
+        DFAgentDescription curStop;
         
-        int distance = this.coords.calculateDistance(this.getStopCoordinates(prevStop).getCoords()); //initial distance between bus position and next stop
+        int distance = this.coords.calculateDistance(this.getStopCoordinates(prevStop).getCoords());
         
-        //goes around the itinerary to calculate total distance until the end stop
         while(itineraryIt.hasNext()){
              curStopName = itineraryIt.next();
              curStop = this.getStopAgentDescription(curStopName);
             
             distance += this.getStopCoordinates(prevStop).getCoords().calculateDistance(this.getStopCoordinates(curStop).getCoords());
              
-            //end of the trip for passenger
             if(curStopName.equals(endStop.getName().getLocalName())){
                  break;
              }
              
              prevStop=curStop;
         }
-        
         
         return distance;
     }
@@ -474,18 +454,10 @@ public class BusAgent extends Agent{
 
         return template;
     }
-    
-    static DFAgentDescription getTemplate(String type, String name,Agent myAgent){
-       DFAgentDescription template = getTemplate(type, name);
-       template.setName(myAgent.getAID());
-       
-       return template;
-    }
-    
+
     static DFAgentDescription getTemplate(String type,String name,Coordinates coords){
         DFAgentDescription template = getTemplate(type, name);
         
-        //Service description with coordinates as properties
         ServiceDescription sd = (ServiceDescription) template.getAllServices().next();
         Property coordCol = new Property();
         coordCol.setName("Col");
@@ -533,7 +505,7 @@ public class BusAgent extends Agent{
     }
     
     
-    void updateServiceInfo(){
+    private void updateServiceInfo(){
         DFAgentDescription template = getTemplate("bus-agency", "JADE-bus-agency",this.coords,this,this.getOccupancyRate(),this.gain);
         
         try {
@@ -543,13 +515,13 @@ public class BusAgent extends Agent{
         }
     }
     
-    double getOccupancyRate(){
+    private double getOccupancyRate(){
         int occupiedSeats = this.totalSeats-this.availableSeats;
         return (double)occupiedSeats/this.totalSeats;
     }
     
     
-    public void informPassangersArrived(ArrayList<AID> leavingPassengers){
+    private void informPassengersArrived(ArrayList<AID> leavingPassengers){
         ACLMessage message = new ACLMessage(ACLMessage.INFORM);
         for (AID passenger: leavingPassengers) {
             message.addReceiver(passenger);
