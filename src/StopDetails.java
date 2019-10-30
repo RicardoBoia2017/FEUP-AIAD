@@ -1,7 +1,5 @@
 
 import jade.core.AID;
-import jade.core.AgentDescriptor;
-import jade.lang.acl.ACLMessage;
 import java.util.ArrayList;
 
 public class StopDetails {
@@ -18,11 +16,7 @@ public class StopDetails {
     public void setLeavingPassenger(AID leavingPassenger) {
         this.leavingPassengers.add(leavingPassenger);
     }
-
-    public void setCoords(Coordinates coords) {
-        this.coords = coords;
-    }
-
+    
     public Coordinates getCoords() {
         return coords;
     }

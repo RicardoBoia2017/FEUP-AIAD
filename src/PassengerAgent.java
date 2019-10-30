@@ -23,7 +23,7 @@ public class PassengerAgent extends Agent {
     private int endStop;
     private double alpha;
     private double estimatedTime;
-    private Instant instantOfEstimation; //Time instance where the bus gave the estimation
+    private Instant instantOfEstimation;
 
     protected void setup() {
         Object[] args = getArguments();
@@ -107,7 +107,6 @@ public class PassengerAgent extends Agent {
             } );
 
         } else {
-            // Make the agent terminate
             System.err.println("Incorrect number of arguments");
             System.err.println("Passenger arguments: startStop endStop timePreference(0-5)");
             doDelete();
@@ -132,11 +131,11 @@ public class PassengerAgent extends Agent {
      This is the behaviour used by passenger agents to send requests to bus agents
      */
     private class RequestPerformer extends Behaviour {
-        private BusProposal bestProposal = null; // The agent who provides the best offer
+        private BusProposal bestProposal = null;
         private ArrayList<BusProposal> proposals = new ArrayList<>();
-        private int repliesCnt = 0; // The counter of replies from bus agents
-        private MessageTemplate mt; // The template to receive replies
-         private MessageTemplate mtDone; //The template for the arrived message
+        private int repliesCnt = 0;
+        private MessageTemplate mt;
+         private MessageTemplate mtDone;
         private int step = 0;
         private double minTime = 99999;
         private double maxTime = 0;
@@ -146,7 +145,6 @@ public class PassengerAgent extends Agent {
         public void action() {
             switch (step) {
                 case 0:
-                    // Send the cfp to all sellers
                     ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
                     for (AID bus: targetBuses) {
                         cfp.addReceiver(bus);
@@ -156,7 +154,6 @@ public class PassengerAgent extends Agent {
                     cfp.setReplyWith("cfp"+System.currentTimeMillis()); // Unique value
                     myAgent.send(cfp);
 
-                    // Prepare the template to get proposals
                     mt = MessageTemplate.and(MessageTemplate.MatchConversationId("bus-agency"),
                             MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
                     mtDone = MessageTemplate.MatchContent("ARRIVED TO DESTINATION");
@@ -164,7 +161,6 @@ public class PassengerAgent extends Agent {
 
                     break;
                 case 1:
-                    // Receive all proposals/refusals from seller agents
                     ACLMessage reply = myAgent.receive(mt);
                     if (reply != null) {
                         if (reply.getPerformative() == ACLMessage.PROPOSE) {
@@ -199,7 +195,6 @@ public class PassengerAgent extends Agent {
                     }
                     break;
                 case 2:
-                    // Send the purchase order to the seller that provided the best offer
                     ACLMessage order = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
                     order.addReceiver(bestProposal.getBus());
                     order.setContent(startStop + " " + endStop);
@@ -247,8 +242,6 @@ public class PassengerAgent extends Agent {
         private void determineBestOffer() {
 
             double bestValue = 999;
-            //System.out.println("Time: " + minTime + ", " + maxTime);
-            //System.out.println("Price: " + minPrice + ", " + maxPrice);
 
             for(BusProposal bp: this.proposals)
             {
@@ -262,9 +255,6 @@ public class PassengerAgent extends Agent {
                     priceNormalization = (bp.getPrice() - this.minPrice) / (this.maxPrice - this.minPrice);
 
                 double value = alpha * timeNormalization + (1 - alpha) * priceNormalization;
-
-                //System.out.println(bp.getBus() + ": " + bp.getTime() + ", " + bp.getPrice() + ", "  + value);
-                //System.out.println(timeNormalization + ", " + priceNormalization);
 
                 if(value < bestValue) {
                     bestProposal = bp;
@@ -297,7 +287,7 @@ public class PassengerAgent extends Agent {
         return template;
     }
     
-    public void informStats(String content,String conversation){
+    private void informStats(String content,String conversation){
         ACLMessage message = new ACLMessage(ACLMessage.INFORM);
         message.addReceiver(this.statsAgent);
         message.setContent(content);

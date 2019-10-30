@@ -6,7 +6,6 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.domain.FIPANames;
 import jade.domain.df;
-//import jdk.internal.util.xml.PropertiesDefaultHandler;
 
 public class StopAgent extends df{
 
@@ -15,14 +14,10 @@ public class StopAgent extends df{
     protected void setup(){
 
         Object[] coordArgs = getArguments();
-        
-        //int len = 0;
-        //byte[] buffer = new byte[1024];
-        
+
         if (coordArgs != null && coordArgs.length == 3) {
              coords = new Coordinates((int)coordArgs[1],(int)coordArgs[2]);
         
-            //registers stop DF in the main DF
             AID parentName = getDefaultDF();
             
             super.setup();
@@ -38,7 +33,6 @@ public class StopAgent extends df{
             sdFIPA.setOwnership("JADE");
             dfd.addServices(sdFIPA);
             
-            //Service description with coordinates as properties
             ServiceDescription sd = new ServiceDescription();
             sd.setName(getLocalName());
             sd.setType("stop");
@@ -54,7 +48,6 @@ public class StopAgent extends df{
            
             setDescriptionOfThisDF(dfd);
             
-            //shows DF list of subscribed agents
             super.showGui();
             
             try {
@@ -65,22 +58,12 @@ public class StopAgent extends df{
             
             addParent(parentName, dfd);
         } else {
-            // Make the agent terminate
             System.out.println("No stop coordinates specified");
             doDelete();
         }
 
     }
 
-    
-    /*protected void register (DFAgentDescription dfd){
-        try{
-            DFService.register(this,dfd);
-        }catch(FIPAException fe){
-            fe.printStackTrace();
-        }
-    }*/
-    
     public Coordinates getCoords() {
         return coords;
     }

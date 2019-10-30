@@ -1,5 +1,4 @@
 
-import jade.core.AID;
 import java.awt.HeadlessException;
 import java.util.Map.Entry;
 
@@ -176,7 +175,7 @@ public class StatsGUI extends javax.swing.JFrame {
     public void updateInfo(){
         this.averageEstimatedTime.setText(String.valueOf(this.currentStatsInfo.getAverageEstimatedTime()));
         this.averageTimeDeviation.setText(String.valueOf(this.currentStatsInfo.getAverageTimeDeviation()*100));
-        this.averageOccupancyRate.setText(String.valueOf(this.currentStatsInfo.getAverageOcupancyRate()*100));
+        this.averageOccupancyRate.setText(String.valueOf(this.currentStatsInfo.getAverageOccupancyRate()*100));
         this.maxAverageOccupancyRate.setText(String.valueOf(this.currentStatsInfo.getMaxAverageOccupancyRate()*100));
         this.totalGain.setText(String.valueOf(this.currentStatsInfo.getTotalGain()));
         

@@ -10,10 +10,8 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,7 +19,7 @@ import java.util.logging.Logger;
 
 public class StatsAgent extends Agent{
     public static long REFRESH_RATE = 20;
-    private double averageOcupancyRate;
+    private double averageOccupancyRate;
     private double maxAverageOccupancyRate = -1;
     private double averageEstimatedTime = -1;
     private double averageTimeDeviation = -1;
@@ -29,7 +27,7 @@ public class StatsAgent extends Agent{
     private HashMap<String,Double> allBusesGain;
     private StatsGUI myGUI;
 
-    public StatsAgent() {
+    StatsAgent() {
         this.allBusesGain = new HashMap();
     }
     
@@ -51,15 +49,14 @@ public class StatsAgent extends Agent{
             fe.printStackTrace();
         }
         
-        addBehaviour(new PassangerStatsServer(this));
+        addBehaviour(new PassengerStatsServer(this));
         
          addBehaviour(new TickerBehaviour(this, REFRESH_RATE) {
                 StatsAgent currentAgent = (StatsAgent) myAgent;
 
                 protected void onTick() {
-                    DFAgentDescription busTemplate = (DFAgentDescription) BusAgent.getTemplate("bus-agency","JADE-bus-agency");
-                    //DFAgentDescription stopTemplate = BusAgent.getTemplate("stop",null);
-                    
+                    DFAgentDescription busTemplate = BusAgent.getTemplate("bus-agency","JADE-bus-agency");
+
                     try {      
                         DFAgentDescription[] allBuses = DFService.search(myAgent, busTemplate);
                         
@@ -76,9 +73,9 @@ public class StatsAgent extends Agent{
                            currentAgent.allBusesGain.put(bus.getName().getLocalName(), StatsAgent.getBusGain(bus));
                         }
                                             
-                        currentAgent.averageOcupancyRate = sumOccupancy/total;
-                        if(currentAgent.averageOcupancyRate>currentAgent.maxAverageOccupancyRate)
-                            currentAgent.maxAverageOccupancyRate=currentAgent.averageOcupancyRate;                      
+                        currentAgent.averageOccupancyRate = sumOccupancy/total;
+                        if(currentAgent.averageOccupancyRate >currentAgent.maxAverageOccupancyRate)
+                            currentAgent.maxAverageOccupancyRate=currentAgent.averageOccupancyRate;
                         currentAgent.totalGain = sumGain;
                     } catch (FIPAException ex) {
                         Logger.getLogger(Map.class.getName()).log(Level.SEVERE, null, ex);
@@ -87,7 +84,7 @@ public class StatsAgent extends Agent{
                     currentAgent.myGUI.updateInfo();
                     currentAgent.updateFileInfo();
                     
-                    System.out.println("OCCUPANCY: "+currentAgent.averageOcupancyRate);
+                    System.out.println("OCCUPANCY: "+currentAgent.averageOccupancyRate);
                     System.out.println("AVERAGE ESTIMATED TIME: "+currentAgent.averageEstimatedTime);
                     System.out.println("AVERAGE TIME DEVIATION: "+currentAgent.averageTimeDeviation);
                     System.out.println("GAIN: "+currentAgent.totalGain);
@@ -97,11 +94,11 @@ public class StatsAgent extends Agent{
     }
     
     
-    private class PassangerStatsServer extends CyclicBehaviour {
+    private class PassengerStatsServer extends CyclicBehaviour {
 
         StatsAgent currentStats;
 
-        private PassangerStatsServer(StatsAgent currentStats) {
+        private PassengerStatsServer(StatsAgent currentStats) {
             this.currentStats = currentStats;
         }
 
@@ -110,13 +107,13 @@ public class StatsAgent extends Agent{
             
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) { 
-               if(msg.getConversationId() == "estimated-time"){
+               if(msg.getConversationId().equals("estimated-time")){
                  double estimatedTime = Double.parseDouble(msg.getContent());
                 if(currentStats.averageEstimatedTime==-1)
                     currentStats.averageEstimatedTime=estimatedTime;
                 else
                     currentStats.averageEstimatedTime=(currentStats.averageEstimatedTime+estimatedTime)/2;
-               }else if(msg.getConversationId() == "time-deviation"){
+               }else if(msg.getConversationId().equals("time-deviation")){
                     double deviation = Double.parseDouble(msg.getContent());
                     if(currentStats.averageTimeDeviation==-1)
                         currentStats.averageTimeDeviation=deviation;
@@ -128,8 +125,7 @@ public class StatsAgent extends Agent{
                 block();
             }
         }
-
-    }  // End of inner class OfferRequestsServer
+    }
 
     
     static double getBusOccupancyRate(DFAgentDescription busAgent)
@@ -138,17 +134,14 @@ public class StatsAgent extends Agent{
 
         ServiceDescription serviceAgent = (ServiceDescription) serviceIterator.next();
         
-        //information service is always the last one
         if(serviceIterator.hasNext())
             serviceAgent = (ServiceDescription)serviceIterator.next();
 
         Iterator propertyIterator = serviceAgent.getAllProperties();
         
-        //skip coordinates properties
         propertyIterator.next();
         propertyIterator.next();
         
-        //bus is not forced to have occupancy ***TO SEE AGAIN
         if(propertyIterator.hasNext())
           return Double.parseDouble((String)((Property)propertyIterator.next()).getValue());
         
@@ -161,25 +154,21 @@ public class StatsAgent extends Agent{
 
         ServiceDescription serviceAgent = (ServiceDescription) serviceIterator.next();
         
-        //information service is always the last one
         if(serviceIterator.hasNext())
             serviceAgent = (ServiceDescription)serviceIterator.next();
 
         Iterator propertyIterator = serviceAgent.getAllProperties();
         
-        //skip coordinates properties
         propertyIterator.next();
         propertyIterator.next();
         
-        //bus is not forced to have occupancy ***TO SEE AGAIN
         if(propertyIterator.hasNext())
             propertyIterator.next();
         
-        //bus is not forced to have gain ***TO SEE AGAIN
         if(propertyIterator.hasNext())
           return Double.parseDouble((String)((Property)propertyIterator.next()).getValue());
         
-        return (double)0.0;
+        return (double) 0.0;
     }
     
     public void updateFileInfo(){
@@ -189,7 +178,7 @@ public class StatsAgent extends Agent{
             printWriter.printf("Simulation Statistics File\n\n");
             printWriter.printf("Average Estimated Waiting Time: %.2f seconds \n", this.averageEstimatedTime);
             printWriter.printf("Average Time Deviation: %.3f%% \n", this.averageTimeDeviation);
-            printWriter.printf("Current Average Bus Occupancy Rate: %.3f%% \n", this.averageOcupancyRate);
+            printWriter.printf("Current Average Bus Occupancy Rate: %.3f%% \n", this.averageOccupancyRate);
             printWriter.printf("Maximum Average Bus Occupancy Rate: %.3f%% \n", this.maxAverageOccupancyRate);
             printWriter.printf("Total financial gain: %s€ \n", this.totalGain);
             printWriter.printf("Financial gain per bus:\n");
@@ -208,8 +197,8 @@ public class StatsAgent extends Agent{
         return averageEstimatedTime;
     }
 
-    public double getAverageOcupancyRate() {
-        return averageOcupancyRate;
+    public double getAverageOccupancyRate() {
+        return averageOccupancyRate;
     }
 
     public double getAverageTimeDeviation() {

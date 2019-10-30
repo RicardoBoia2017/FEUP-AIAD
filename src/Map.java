@@ -5,7 +5,6 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.Property;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.logging.Level;
@@ -24,9 +23,7 @@ public class Map extends Agent{
             myGUI = new MapGUI(this);
             myGUI.setVisible(true);
             
-            addBehaviour(new TickerBehaviour(this, (long) REFRESH_RATE) {
-                    Map currentMap = (Map) myAgent;
-
+            addBehaviour(new TickerBehaviour(this, REFRESH_RATE) {
                   protected void onTick() {
                     //Periadically collects all stops and buses location
                     DFAgentDescription busTemplate = BusAgent.getTemplate("bus-agency","JADE-bus-agency");
@@ -51,18 +48,13 @@ public class Map extends Agent{
               });
             
         }
-      //calculates distance between 2 stops
-        static int getDistance(Coordinates stop1, Coordinates stop2){
-            return Math.abs(stop1.getX()-stop2.getX()) + Math.abs(stop2.getY()-stop2.getY());
-        }
-        
-    static Coordinates getAgentCoordinates(DFAgentDescription agent)
+
+    static private Coordinates getAgentCoordinates(DFAgentDescription agent)
     {
         Iterator serviceIterator = agent.getAllServices();
 
         ServiceDescription serviceAgent = (ServiceDescription) serviceIterator.next();
         
-        //information service is always the last one
         if(serviceIterator.hasNext())
             serviceAgent = (ServiceDescription)serviceIterator.next();
 
