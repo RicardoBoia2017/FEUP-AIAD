@@ -95,6 +95,53 @@ public class BusAgent extends Agent{
                         }
                     }
                     
+                    else if(currentBus.getItinerary().size() == 0)  {
+                        AID[] targetStop;
+
+                        DFAgentDescription[] result;
+
+                    	 DFAgentDescription templateGlobal = new DFAgentDescription();
+                         ServiceDescription sdGlobal = new ServiceDescription();
+                         sdGlobal.setType("stop");
+                         templateGlobal.addServices(sdGlobal);
+
+                         try {
+							result = DFService.search(myAgent, templateGlobal);
+							 System.out.println("No stop in itinerary.");
+	                         System.out.println("Found the following stops:");
+
+	                         targetStop = new AID[result.length];
+
+	                         for (int i = 0; i < result.length; ++i) {
+	                        	 targetStop[i] = result[i].getName();
+	                             System.out.println(targetStop[i].getName());
+	                         }
+	                         
+	                         String nextStop = result[0].toString();
+	                         Coordinates nextStopCoords = getStopCoordinates(result[1]).getCoords();
+	                         StopDetails stopDetails = new StopDetails(nextStopCoords);
+	                         if (!currentBus.getCoords().equals(nextStopCoords))
+	                        	 currentBus.getItinerary().put(nextStop, stopDetails);
+	                         
+	                         if (currentBus.getCoords().equals(nextStopCoords)) {
+	                             System.out.println(currentBus.getLocalName() + " ARRIVED AT " + nextStop);
+
+	                             currentBus.availableSeats += currentBus.getItinerary().get(nextStop).getLeavingPassengers().size();
+	                             System.out.println("Available seats: " + currentBus.availableSeats);
+
+	                             currentBus.informPassangersArrived(currentBus.getItinerary().get(nextStop).getLeavingPassengers());
+	                             currentBus.getItinerary().remove(nextStop);
+	                             deregisterFromStop(nextStop);
+	                                        
+	                    }
+						} catch (FIPAException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+                         
+                
+                    }
+                    
                     //inform map of current position
                     currentBus.updateServiceInfo();
 
