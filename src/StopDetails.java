@@ -16,7 +16,7 @@ public class StopDetails {
     public void setLeavingPassenger(AID leavingPassenger) {
         this.leavingPassengers.add(leavingPassenger);
     }
-    
+
     public Coordinates getCoords() {
         return coords;
     }

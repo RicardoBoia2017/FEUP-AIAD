@@ -83,13 +83,7 @@ public class StatsAgent extends Agent{
                     
                     currentAgent.myGUI.updateInfo();
                     currentAgent.updateFileInfo();
-                    
-                    System.out.println("OCCUPANCY: "+currentAgent.averageOccupancyRate);
-                    System.out.println("AVERAGE ESTIMATED TIME: "+currentAgent.averageEstimatedTime);
-                    System.out.println("AVERAGE TIME DEVIATION: "+currentAgent.averageTimeDeviation);
-                    System.out.println("GAIN: "+currentAgent.totalGain);
                 }
-                
          });
     }
     

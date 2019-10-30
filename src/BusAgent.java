@@ -129,7 +129,7 @@ public class BusAgent extends Agent{
 	                             currentBus.availableSeats += currentBus.getItinerary().get(nextStop).getLeavingPassengers().size();
 	                             System.out.println("Available seats: " + currentBus.availableSeats);
 
-	                             currentBus.informPassangersArrived(currentBus.getItinerary().get(nextStop).getLeavingPassengers());
+	                             currentBus.informPassengersArrived(currentBus.getItinerary().get(nextStop).getLeavingPassengers());
 	                             currentBus.getItinerary().remove(nextStop);
 	                             deregisterFromStop(nextStop);
 	                                        
