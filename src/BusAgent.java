@@ -96,7 +96,7 @@ public class BusAgent extends Agent{
                     }
                     
                     else if(currentBus.getItinerary().size() == 0)  {
-                        AID[] targetStop;
+                        /*AID[] targetStop;
 
                         DFAgentDescription[] result;
 
@@ -137,7 +137,7 @@ public class BusAgent extends Agent{
 						} catch (FIPAException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
-						}
+						}*/
                          
                 
                     }
