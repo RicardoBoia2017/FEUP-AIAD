@@ -5,6 +5,10 @@ import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 public class JADELauncher {
 
     public static void main(String[] args) {
@@ -13,8 +17,8 @@ public class JADELauncher {
         Profile p1 = new ProfileImpl();
         ContainerController mainContainer = rt.createMainContainer(p1);
 
-        AgentController ac ;
-        try {
+        AgentController ac;
+        /*try {
             Object[] stops = {"1", "2", "50"};
             ac = mainContainer.createNewAgent("pass1", "PassengerAgent", stops);
             ac.start();
@@ -28,10 +32,10 @@ public class JADELauncher {
             ac.start();
         } catch (StaleProxyException e) {
             e.printStackTrace();
-        }
+        }*/
 
         try {
-            Object[] coords = {"20", "10", "1","40","10","5"};
+            Object[] coords = {"20", "10", "2","40","10","5"};
             ac = mainContainer.createNewAgent("bus1", "BusAgent", coords);
             ac.start();
         } catch (StaleProxyException e) {
@@ -39,7 +43,7 @@ public class JADELauncher {
         }
 
         try {
-            Object[] coords = {"10", "15", "1","30","10","5"};
+            Object[] coords = {"10", "15", "2","30","10","5"};
             ac = mainContainer.createNewAgent("bus2", "BusAgent", coords);
             ac.start();
         } catch (StaleProxyException e) {
@@ -140,6 +144,8 @@ public class JADELauncher {
             e.printStackTrace();
         }
 
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+        executor.scheduleAtFixedRate(new TestLauncher(mainContainer), 0, 10, TimeUnit.SECONDS);
 
     }
 
