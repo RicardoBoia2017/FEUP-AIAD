@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 
 public class BusAgent extends Agent{
 
+    private AID[] targetStop;
     private Coordinates coords;
     private float speed;
     private Map<String, StopDetails> itinerary = new LinkedHashMap<>();
@@ -96,10 +97,8 @@ public class BusAgent extends Agent{
                     }
                     
                     else if(currentBus.getItinerary().size() == 0)  {
-                        /*AID[] targetStop;
 
                         DFAgentDescription[] result;
-
                     	 DFAgentDescription templateGlobal = new DFAgentDescription();
                          ServiceDescription sdGlobal = new ServiceDescription();
                          sdGlobal.setType("stop");
@@ -111,33 +110,33 @@ public class BusAgent extends Agent{
 	                         System.out.println("Found the following stops:");
 
 	                         targetStop = new AID[result.length];
+                             String[] names = new String[result.length];
 
-	                         for (int i = 0; i < result.length; ++i) {
+	                         for (int i = 0; i < result.length; ++i) {a
 	                        	 targetStop[i] = result[i].getName();
-	                             System.out.println(targetStop[i].getName());
-	                         }
-	                         
-	                         String nextStop = result[0].toString();
-	                         Coordinates nextStopCoords = getStopCoordinates(result[1]).getCoords();
-	                         StopDetails stopDetails = new StopDetails(nextStopCoords);
-	                         if (!currentBus.getCoords().equals(nextStopCoords))
-	                        	 currentBus.getItinerary().put(nextStop, stopDetails);
-	                         
-	                         if (currentBus.getCoords().equals(nextStopCoords)) {
-	                             System.out.println(currentBus.getLocalName() + " ARRIVED AT " + nextStop);
+	                        	 names[i]=targetStop[i].getLocalName();
+                             }
 
-	                             currentBus.availableSeats += currentBus.getItinerary().get(nextStop).getLeavingPassengers().size();
-	                             System.out.println("Available seats: " + currentBus.availableSeats);
+	                         int j = (int) (Math.random() * ((result.length - 1) + 1 ));
+                             System.out.println(j);
 
-	                             currentBus.informPassengersArrived(currentBus.getItinerary().get(nextStop).getLeavingPassengers());
-	                             currentBus.getItinerary().remove(nextStop);
-	                             deregisterFromStop(nextStop);
-	                                        
-	                    }
+
+                             String nextStop = new String();
+                             nextStop = names[j];
+                          //   System.out.println(nextStop+"\n");
+/*
+                             System.out.println("STOP NUMBER");
+	                         System.out.println(targetStop[j].getName());
+
+                             Coordinates nextStopCoords = getStopCoordinates(result[1]).getCoords();
+                             StopDetails stopDetails = new StopDetails(nextStopCoords);
+                             //if (!currentBus.getCoords().equals(nextStopCoords))
+                             currentBus.getItinerary().put()
+*/
 						} catch (FIPAException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
-						}*/
+						}
                          
                 
                     }
