@@ -112,33 +112,27 @@ public class BusAgent extends Agent{
 	                         targetStop = new AID[result.length];
                              String[] names = new String[result.length];
 
-	                         for (int i = 0; i < result.length; ++i) {a
-	                        	 targetStop[i] = result[i].getName();
-	                        	 names[i]=targetStop[i].getLocalName();
+                             if(result.length > 0) {
+                                 for (int i = 0; i < result.length; ++i) {
+                                     targetStop[i] = result[i].getName();
+                                     names[i]=targetStop[i].getLocalName();
+                                 }
+
+                                 int j = (int) (Math.random() * ((result.length - 1) + 1));
+                                 System.out.println(j);
+
+                                 String nextStop  = names[j];
+                              //   System.out.println(nextStop+);
+
+                                 Coordinates nextStopCoords = getStopCoordinates(result[j]).getCoords();
+                                 StopDetails stopDetails = new StopDetails(nextStopCoords);
+                                 currentBus.getItinerary().put(nextStop, stopDetails);
                              }
 
-	                         int j = (int) (Math.random() * ((result.length - 1) + 1 ));
-                             System.out.println(j);
-
-
-                             String nextStop = new String();
-                             nextStop = names[j];
-                          //   System.out.println(nextStop+"\n");
-/*
-                             System.out.println("STOP NUMBER");
-	                         System.out.println(targetStop[j].getName());
-
-                             Coordinates nextStopCoords = getStopCoordinates(result[1]).getCoords();
-                             StopDetails stopDetails = new StopDetails(nextStopCoords);
-                             //if (!currentBus.getCoords().equals(nextStopCoords))
-                             currentBus.getItinerary().put()
-*/
 						} catch (FIPAException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-                         
-                
                     }
                     
                     //inform map of current position
