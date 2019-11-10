@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -29,12 +30,19 @@ public class MapGUIPanel extends JPanel implements ActionListener{
         timer.start();
         
         try {
-            URL url = getClass().getResource("img/bus.png");
-            //File url = new File("src/img/bus.png");
+            URL url;
+            try{
+                url = getClass().getResource("img/bus.png");
+            }catch(Error e){
+                url = getClass().getResource("src/img/bus.png");
+            }
             busIcon = ImageIO.read(new File(url.getPath()));
             
-            url = getClass().getResource("img/stop.png");
-            //url = new File("src/img/stop.png");
+            try{
+                url = getClass().getResource("img/stop.png");
+            }catch(Error e){
+                url = getClass().getResource("src/img/stop.png");
+            }
             stopIcon = ImageIO.read(new File(url.getPath()));
         } catch (IOException ex) {
             Logger.getLogger(MapGUIPanel.class.getName()).log(Level.SEVERE, null, ex);
