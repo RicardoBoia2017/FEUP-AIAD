@@ -1,6 +1,9 @@
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -9,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -52,26 +56,51 @@ public class MapGUIPanel extends JPanel implements ActionListener{
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        Dimension size = getSize();
 
-        int rX = (size.width - 5)/2;
-        int rY = (size.height - 5)/2;
+        Color busColor = Color.BLUE;
+        Color stopColor = Color.RED;
 
-        g.setColor(Color.RED);
+        Font font = new Font("SansSerif", Font.BOLD, 10);
+        g.setFont(font);
+        FontMetrics metrics = g.getFontMetrics(font);
         
-        for(Coordinates coord : currentMapInfo.getBusList().values()){
-            //g2.fillRect(coord.getX()*CELL_SIZE, coord.getY()*CELL_SIZE, CELL_SIZE, CELL_SIZE);
-             g.drawImage(busIcon, coord.getX()*CELL_SIZE, coord.getY()*CELL_SIZE,CELL_SIZE, CELL_SIZE, this);
+        colorize(busIcon,busColor);
+        colorize(stopIcon,stopColor);
+        
+        Coordinates coord;
+        
+        g.setColor(busColor);
+        for(String id: currentMapInfo.getBusList().keySet()){
+            coord = currentMapInfo.getBusList().get(id);
+            g.drawImage(busIcon, coord.getX()*CELL_SIZE, coord.getY()*CELL_SIZE,CELL_SIZE, CELL_SIZE, this);
+            g.drawString(id,coord.getX()*CELL_SIZE-metrics.stringWidth(id)/2+CELL_SIZE/2, coord.getY()*CELL_SIZE+CELL_SIZE+font.getSize());
         }
-        
-         g.setColor(Color.BLUE);
-        
-        for(Coordinates coord : currentMapInfo.getStopList().values()){
-            //g2.fillRect(coord.getX()*CELL_SIZE, coord.getY()*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+     
+        g.setColor(stopColor);
+        for(String id : currentMapInfo.getStopList().keySet()){
+            coord = currentMapInfo.getStopList().get(id);
             g.drawImage(stopIcon, coord.getX()*CELL_SIZE, coord.getY()*CELL_SIZE,CELL_SIZE, CELL_SIZE, this);
+            g.drawString(id,coord.getX()*CELL_SIZE-metrics.stringWidth(id)/2+CELL_SIZE/2, coord.getY()*CELL_SIZE+CELL_SIZE+font.getSize());
         }
         
+    }
+    
+    private static void colorize(BufferedImage bImage, Color newColor) {
+        for (int x = 0; x < bImage.getWidth(); x++) {
+             for (int y = 0; y < bImage.getHeight(); y++) {
+                 if(!isPixelTransparent(bImage,x,y)){
+                    bImage.setRGB(x, y, newColor.getRGB());
+                 }
+             }
+         }
+    }
+    
+    private static boolean isPixelTransparent(BufferedImage img,int x, int y ) {
+        int pixel = img.getRGB(x,y);
+        if( (pixel>>24) == 0x00 ) {
+            return true;
+        }
+        return false;
     }
 
     public static void main(String args[]) {
