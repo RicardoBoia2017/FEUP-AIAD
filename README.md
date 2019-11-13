@@ -25,7 +25,7 @@ Caso o autocarro termine o seu itinerário, este irá fazer um percurso aleatór
 ## TODO
 - [ ] Inserir stop no meio do itinerário, em vez de ser sempre no fim (otimização do itinerário)
 
-- [ ] Itinerário aleatório quando fica sem stops (Inês)
+- [X] Itinerário aleatório quando fica sem stops (Inês)
 
 - [ ] Não aceitar passageiro se o desvio for grande
 
