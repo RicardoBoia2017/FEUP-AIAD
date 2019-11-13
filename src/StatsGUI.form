@@ -226,7 +226,7 @@
     </Container>
     <Component class="javax.swing.JLabel" name="jLabel11">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Passangers served:"/>
+        <Property name="text" type="java.lang.String" value="passengers served:"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="totalPassengers">

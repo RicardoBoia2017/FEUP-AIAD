@@ -202,7 +202,7 @@ public class StatsGUI extends javax.swing.JFrame {
         this.averageOccupancyRate.setText((this.currentStatsInfo.getAverageEstimatedTime() == -1) ? "-" : String.format( "%.2f", this.currentStatsInfo.getAverageOccupancyRate()*100));
         this.maxAverageOccupancyRate.setText((this.currentStatsInfo.getAverageEstimatedTime() == -1) ? "-" : String.format( "%.2f", this.currentStatsInfo.getMaxAverageOccupancyRate()*100));
         this.totalGain.setText(String.format( "%.2f", this.currentStatsInfo.getTotalGain()));
-        this.totalPassengers.setText(String.valueOf(this.currentStatsInfo.getTotalNumberOfPassangers()));
+        this.totalPassengers.setText(String.valueOf(this.currentStatsInfo.getTotalNumberOfPassengers()));
         
         this.busList.setText("");
         for(Entry<String,Double> curBus : this.currentStatsInfo.getAllBusesGain().entrySet()){

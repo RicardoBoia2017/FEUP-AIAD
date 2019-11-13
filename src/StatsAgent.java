@@ -109,7 +109,7 @@ public class StatsAgent extends Agent{
                 else
                     currentStats.averageEstimatedTime=(currentStats.averageEstimatedTime+estimatedTime)/2;
                }else if(msg.getConversationId().equals("time-deviation")){
-                    currentStats.countPassanger();
+                    currentStats.countPassenger();
                     double deviation = Double.parseDouble(msg.getContent());
                     if(currentStats.averageTimeDeviation==-1)
                         currentStats.averageTimeDeviation=deviation;

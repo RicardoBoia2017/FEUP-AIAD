@@ -323,14 +323,14 @@ public class BusAgent extends Agent{
 
                 DFService.register(this, stop.getName(), busTemplate);
                 StopDetails stopDetails = getStopCoordinates(stop);
-                if(passangerDestiny!=null)
-                    stopDetails.setLeavingPassenger(passangerDestiny);
+                if(passengerDestiny!=null)
+                    stopDetails.setLeavingPassenger(passengerDestiny);
 
                 this.itinerary.put(stop.getName().getLocalName(), stopDetails);
             }
 
-            else if (passangerDestiny!=null)
-                this.itinerary.get(stop.getName().getLocalName()).setLeavingPassenger(passangerDestiny);
+            else if (passengerDestiny!=null)
+                this.itinerary.get(stop.getName().getLocalName()).setLeavingPassenger(passengerDestiny);
         }
         catch (FIPAException fe) {
             System.err.println(fe.toString());
