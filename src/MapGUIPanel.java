@@ -34,19 +34,20 @@ public class MapGUIPanel extends JPanel implements ActionListener{
         timer.start();
         
         try {
-            URL url;
-            try{
+            //URL url;
+            File url = new File("src/img/bus.png");
+            /*try{
                 url = getClass().getResource("img/bus.png");
             }catch(Error e){
                 url = getClass().getResource("src/img/bus.png");
-            }
+            }*/
             busIcon = ImageIO.read(new File(url.getPath()));
-            
-            try{
+            url = new File("src/img/stop.png");
+            /*try{
                 url = getClass().getResource("img/stop.png");
             }catch(Error e){
                 url = getClass().getResource("src/img/stop.png");
-            }
+            }*/
             stopIcon = ImageIO.read(new File(url.getPath()));
         } catch (IOException ex) {
             Logger.getLogger(MapGUIPanel.class.getName()).log(Level.SEVERE, null, ex);
@@ -97,13 +98,10 @@ public class MapGUIPanel extends JPanel implements ActionListener{
     
     private static boolean isPixelTransparent(BufferedImage img,int x, int y ) {
         int pixel = img.getRGB(x,y);
-        if( (pixel>>24) == 0x00 ) {
-            return true;
-        }
-        return false;
+        return (pixel >> 24) == 0x00;
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                

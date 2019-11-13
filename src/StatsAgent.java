@@ -141,7 +141,7 @@ public class StatsAgent extends Agent{
         if(propertyIterator.hasNext())
           return Double.parseDouble((String)((Property)propertyIterator.next()).getValue());
         
-        return (double)0.0;
+        return 0.0;
     }
     
     static double getBusGain(DFAgentDescription busAgent)
@@ -164,7 +164,7 @@ public class StatsAgent extends Agent{
         if(propertyIterator.hasNext())
           return Double.parseDouble((String)((Property)propertyIterator.next()).getValue());
         
-        return (double) 0.0;
+        return 0.0;
     }
     
     public void updateFileInfo(){

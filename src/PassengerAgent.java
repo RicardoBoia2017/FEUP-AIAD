@@ -164,7 +164,7 @@ public class PassengerAgent extends Agent {
                     ACLMessage reply = myAgent.receive(mt);
                     if (reply != null) {
                         if (reply.getPerformative() == ACLMessage.PROPOSE) {
-                            String[] tokens = ((String) reply.getContent()).split(" ");
+                            String[] tokens = reply.getContent().split(" ");
                             double time = Double.parseDouble(tokens[0]);
                             double price = Double.parseDouble(tokens[1]);
 
