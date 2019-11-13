@@ -17,12 +17,12 @@ public class TestLauncher implements Runnable {
 
         System.out.println("Run");
 
-        int stop1 = (int) (Math.random() * 9) + 1;
+        int stop1 = (int) (Math.random() * 3) + 1;
         int stop2;
         System.out.println("22 " + stop1);
 
         do {
-            stop2 = (int) (Math.random() * 9) + 1;
+            stop2 = (int) (Math.random() * 3) + 1;
             System.out.println(stop2);
         } while(stop1 == stop2);
         System.out.println("27");
