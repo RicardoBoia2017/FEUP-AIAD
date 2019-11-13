@@ -25,7 +25,7 @@ public class Map extends Agent{
             
             addBehaviour(new TickerBehaviour(this, REFRESH_RATE) {
                   protected void onTick() {
-                    //Periadically collects all stops and buses location
+                    //Periodically collects all stops and buses location
                     DFAgentDescription busTemplate = BusAgent.getTemplate("bus-agency","JADE-bus-agency");
                     DFAgentDescription stopTemplate = BusAgent.getTemplate("stop",null);
                     try {      

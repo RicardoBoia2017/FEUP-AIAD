@@ -302,7 +302,7 @@ public class BusAgent extends Agent{
         }
 
     }
-    private void registerInStop(DFAgentDescription stop, AID passangerDestiny){
+    private void registerInStop(DFAgentDescription stop, AID passengerDestiny){
         DFAgentDescription busTemplate = new DFAgentDescription();
         busTemplate.setName( this.getAID() );
         ServiceDescription sd  = new ServiceDescription();

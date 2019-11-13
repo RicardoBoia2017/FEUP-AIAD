@@ -95,7 +95,7 @@ public class StatsGUI extends javax.swing.JFrame {
         busList.setRows(5);
         jScrollPane1.setViewportView(busList);
 
-        jLabel11.setText("Passangers served:");
+        jLabel11.setText("Passengers served:");
 
         totalPassengers.setText("Tot. Pass.");
 

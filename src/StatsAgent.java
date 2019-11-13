@@ -26,7 +26,7 @@ public class StatsAgent extends Agent{
     private double totalGain = 0;
     private HashMap<String,Double> allBusesGain;
     private StatsGUI myGUI;
-    private int totalNumberOfPassangers = 0;
+    private int totalNumberOfPassengers = 0;
     
     StatsAgent() {
         this.allBusesGain = new HashMap();
@@ -214,12 +214,12 @@ public class StatsAgent extends Agent{
     }
     
     
-    public void countPassanger(){
-        this.totalNumberOfPassangers++;
+    public void countPassenger(){
+        this.totalNumberOfPassengers++;
     }
 
-    public int getTotalNumberOfPassangers() {
-        return totalNumberOfPassangers;
+    public int getTotalNumberOfPassengers() {
+        return totalNumberOfPassengers;
     }
     
 
