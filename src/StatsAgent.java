@@ -26,7 +26,8 @@ public class StatsAgent extends Agent{
     private double totalGain = 0;
     private HashMap<String,Double> allBusesGain;
     private StatsGUI myGUI;
-
+    private int totalNumberOfPassangers = 0;
+    
     StatsAgent() {
         this.allBusesGain = new HashMap();
     }
@@ -108,6 +109,7 @@ public class StatsAgent extends Agent{
                 else
                     currentStats.averageEstimatedTime=(currentStats.averageEstimatedTime+estimatedTime)/2;
                }else if(msg.getConversationId().equals("time-deviation")){
+                    currentStats.countPassanger();
                     double deviation = Double.parseDouble(msg.getContent());
                     if(currentStats.averageTimeDeviation==-1)
                         currentStats.averageTimeDeviation=deviation;
@@ -212,6 +214,13 @@ public class StatsAgent extends Agent{
     }
     
     
+    public void countPassanger(){
+        this.totalNumberOfPassangers++;
+    }
+
+    public int getTotalNumberOfPassangers() {
+        return totalNumberOfPassangers;
+    }
     
 
     
