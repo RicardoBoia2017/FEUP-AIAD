@@ -15,17 +15,13 @@ public class TestLauncher implements Runnable {
     @Override
     public void run() {
 
-        System.out.println("Run");
+        int stop1 = (int) (Math.random() * 9) + 1;
 
-        int stop1 = (int) (Math.random() * 3) + 1;
         int stop2;
-        System.out.println("22 " + stop1);
 
         do {
-            stop2 = (int) (Math.random() * 3) + 1;
-            System.out.println(stop2);
+            stop2 = (int) (Math.random() * 9) + 1;
         } while(stop1 == stop2);
-        System.out.println("27");
 
         try {
             AgentController ac;
@@ -35,7 +31,6 @@ public class TestLauncher implements Runnable {
         } catch (StaleProxyException e) {
             e.printStackTrace();
         }
-        System.out.println("37");
 
         i++;
     }

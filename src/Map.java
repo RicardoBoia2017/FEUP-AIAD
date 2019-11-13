@@ -15,12 +15,11 @@ public class Map extends Agent{
     
         private java.util.Map<String,Coordinates> busList = new LinkedHashMap<>();
         private java.util.Map<String,Coordinates> stopList = new LinkedHashMap<>();
-        private MapGUI myGUI;
-        
-         //TODO: periodically pools the DF for the data
+
+    //TODO: periodically pools the DF for the data
         protected void setup() {
-            
-            myGUI = new MapGUI(this);
+
+            MapGUI myGUI = new MapGUI(this);
             myGUI.setVisible(true);
             
             addBehaviour(new TickerBehaviour(this, REFRESH_RATE) {

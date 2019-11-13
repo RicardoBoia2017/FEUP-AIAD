@@ -53,7 +53,7 @@ public class BusAgent extends Agent{
 
             System.out.println("Bus \"" + getLocalName() + "\" started");
 
-            DFAgentDescription dfd = getTemplate("bus-agency","JADE-bus-agency",coords,this);
+            DFAgentDescription dfd = getTemplate("bus-agency","JADE-bus-agency",coords,this,null,null);
             dfd.setName(getAID());
 
             try {
@@ -464,44 +464,44 @@ public class BusAgent extends Agent{
         
         return template;
     }
-    
-    static DFAgentDescription getTemplate(String type, String name,Coordinates coords,Agent myAgent){
-       DFAgentDescription template = getTemplate(type, name, coords);
-       template.setName(myAgent.getAID());
-       
-       return template;
-    }
      
-    static DFAgentDescription getTemplate(String type, String name,Coordinates coords,Agent myAgent,double occupancyRate){
+    static DFAgentDescription getTemplate(String type, String name,Coordinates coords,Agent myAgent,Double occupancyRate, Double gain){
        DFAgentDescription template = getTemplate(type, name, coords);
        template.setName(myAgent.getAID());
        
         ServiceDescription sd = (ServiceDescription) template.getAllServices().next();
+        if(occupancyRate != null) {
+            Property occupancy = new Property();
+            occupancy.setName("Occupancy");
+            occupancy.setValue(occupancyRate);
+            sd.addProperties(occupancy);
+        }
+
+        if(gain != null) {
+            Property gainProp = new Property();
+            gainProp.setName("Gain");
+            gainProp.setValue(gain);
+            sd.addProperties(gainProp);
+        }
+       
+       return template;
+    }
+
+    static void setProperty(ServiceDescription sd, String name, double value)
+    {
         Property occupancy = new Property();
-        occupancy.setName("Occupancy");
-        occupancy.setValue(occupancyRate);
+        occupancy.setName(name);
+        occupancy.setValue(value);
         sd.addProperties(occupancy);
-       
-       return template;
     }
-    
-    static DFAgentDescription getTemplate(String type, String name,Coordinates coords,Agent myAgent,double occupancyRate, double gain){
-       DFAgentDescription template = getTemplate(type, name, coords, myAgent, occupancyRate);
-       template.setName(myAgent.getAID());
-       
-        ServiceDescription sd = (ServiceDescription) template.getAllServices().next();
-        Property gainProp = new Property();
-        gainProp.setName("Gain");
-        gainProp.setValue(gain);
-        sd.addProperties(gainProp);
-       
-       return template;
-    }
-    
     
     private void updateServiceInfo(){
-        DFAgentDescription template = getTemplate("bus-agency", "JADE-bus-agency",this.coords,this,this.getOccupancyRate(),this.gain);
-        
+        DFAgentDescription template = getTemplate("bus-agency", "JADE-bus-agency",this.coords);
+
+        ServiceDescription sd = (ServiceDescription) template.getAllServices().next();
+        setProperty(sd, "Occupancy",this.getOccupancyRate());
+        setProperty(sd, "Gain",this.gain);
+
         try {
             DFService.modify(this, template);
         } catch (FIPAException ex) {

@@ -11,8 +11,6 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -20,8 +18,7 @@ import javax.swing.Timer;
 import javax.swing.JPanel;
 
 public class MapGUIPanel extends JPanel implements ActionListener{
-    private final int CELL_SIZE = 20;
-    
+
     private Map currentMapInfo;
     Timer timer;
     private BufferedImage busIcon;
@@ -71,17 +68,18 @@ public class MapGUIPanel extends JPanel implements ActionListener{
         Coordinates coord;
         
         g.setColor(busColor);
+        int CELL_SIZE = 20;
         for(String id: currentMapInfo.getBusList().keySet()){
             coord = currentMapInfo.getBusList().get(id);
-            g.drawImage(busIcon, coord.getX()*CELL_SIZE, coord.getY()*CELL_SIZE,CELL_SIZE, CELL_SIZE, this);
-            g.drawString(id,coord.getX()*CELL_SIZE-metrics.stringWidth(id)/2+CELL_SIZE/2, coord.getY()*CELL_SIZE+CELL_SIZE+font.getSize());
+            g.drawImage(busIcon, coord.getX()* CELL_SIZE, coord.getY()* CELL_SIZE, CELL_SIZE, CELL_SIZE, this);
+            g.drawString(id,coord.getX()* CELL_SIZE -metrics.stringWidth(id)/2+ CELL_SIZE /2, coord.getY()* CELL_SIZE + CELL_SIZE +font.getSize());
         }
      
         g.setColor(stopColor);
         for(String id : currentMapInfo.getStopList().keySet()){
             coord = currentMapInfo.getStopList().get(id);
-            g.drawImage(stopIcon, coord.getX()*CELL_SIZE, coord.getY()*CELL_SIZE,CELL_SIZE, CELL_SIZE, this);
-            g.drawString(id,coord.getX()*CELL_SIZE-metrics.stringWidth(id)/2+CELL_SIZE/2, coord.getY()*CELL_SIZE+CELL_SIZE+font.getSize());
+            g.drawImage(stopIcon, coord.getX()* CELL_SIZE, coord.getY()* CELL_SIZE, CELL_SIZE, CELL_SIZE, this);
+            g.drawString(id,coord.getX()* CELL_SIZE -metrics.stringWidth(id)/2+ CELL_SIZE /2, coord.getY()* CELL_SIZE + CELL_SIZE +font.getSize());
         }
         
     }

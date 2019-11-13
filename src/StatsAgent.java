@@ -29,7 +29,7 @@ public class StatsAgent extends Agent{
     private int totalNumberOfPassengers = 0;
     
     StatsAgent() {
-        this.allBusesGain = new HashMap();
+        this.allBusesGain = new HashMap<>();
     }
     
     protected void setup() {
