@@ -9,8 +9,7 @@ public class StopDetails {
     private ArrayList<AID> leavingPassengers;
     private String name;
 
-    StopDetails(String name, Coordinates coords)
-    {
+    StopDetails(String name, Coordinates coords) {
         this.name = name;
         this.leavingPassengers = new ArrayList();
         this.coords = coords;
@@ -31,24 +30,24 @@ public class StopDetails {
     public String getName() {
         return name;
     }
-    
-    public static StopDetails getFirstStopByName(String stopName, ArrayList<StopDetails> stopList){
-        for(StopDetails currStop : stopList){
-            if(currStop.getName().equals(stopName)){
+
+    public static StopDetails getFirstStopByName(String stopName, ArrayList<StopDetails> stopList) {
+        for (StopDetails currStop : stopList) {
+            if (currStop.getName().equals(stopName)) {
                 return currStop;
             }
         }
-        return null; 
+        return null;
     }
-    
-     public static StopDetails getLastStopByName(String stopName, ArrayList<StopDetails> stopList){
+
+    public static StopDetails getLastStopByName(String stopName, ArrayList<StopDetails> stopList) {
         StopDetails ret = null;
-        for(StopDetails currStop : stopList){
-            if(currStop.getName().equals(stopName)){
+        for (StopDetails currStop : stopList) {
+            if (currStop.getName().equals(stopName)) {
                 ret = currStop;
             }
         }
-        return ret; 
+        return ret;
     }
-  
+
 }

@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class BusAgent extends Agent{
+public class BusAgent extends Agent {
 
     private AID[] targetStop;
     private Coordinates coords;
@@ -27,35 +27,33 @@ public class BusAgent extends Agent{
     private int totalSeats;
     private int pricePerMinute = 10;
     private float dishonestyDegree = (float) 0.5;
-    private double gain=0;
+    private double gain = 0;
     private boolean random = false;
+
     protected void setup() {
 
         Object[] args = getArguments();
 
-        if(args == null || args.length != 6) {
+        if (args == null || args.length != 6) {
             System.err.println("Incorrect number of arguments");
             System.err.println("Bus arguments: startStop endStop speed capacity pricePerMinute dishonestyDegree(0-5)");
             doDelete();
-        }
-
-        else {
+        } else {
             coords = new Coordinates(Integer.parseInt((String) args[0]), Integer.parseInt((String) args[1]));
             speed = Float.parseFloat((String) args[2]);
             totalSeats = Integer.parseInt((String) args[3]);
-            availableSeats=totalSeats;
+            availableSeats = totalSeats;
             pricePerMinute = Integer.parseInt((String) args[4]);
             dishonestyDegree = Float.parseFloat((String) args[5]) / 10;
 
-            if(dishonestyDegree < 0 || dishonestyDegree > 5)
-            {
+            if (dishonestyDegree < 0 || dishonestyDegree > 5) {
                 System.out.println("Dishonesty degree value must be between 0 and 5");
                 doDelete();
             }
 
             System.out.println("Bus \"" + getLocalName() + "\" started");
 
-            DFAgentDescription dfd = getTemplate("bus-agency","JADE-bus-agency",coords,this,null,null);
+            DFAgentDescription dfd = getTemplate("bus-agency", "JADE-bus-agency", coords, this, null, null);
             dfd.setName(getAID());
 
             try {
@@ -63,7 +61,6 @@ public class BusAgent extends Agent{
             } catch (FIPAException fe) {
                 fe.printStackTrace();
             }
-
 
             addBehaviour(new OfferRequestsServer(this));
 
@@ -96,66 +93,66 @@ public class BusAgent extends Agent{
                         }
                     } else {
                         DFAgentDescription[] result;
-                    	 DFAgentDescription templateGlobal = new DFAgentDescription();
-                         ServiceDescription sdGlobal = new ServiceDescription();
-                         sdGlobal.setType("stop");
-                         templateGlobal.addServices(sdGlobal);
+                        DFAgentDescription templateGlobal = new DFAgentDescription();
+                        ServiceDescription sdGlobal = new ServiceDescription();
+                        sdGlobal.setType("stop");
+                        templateGlobal.addServices(sdGlobal);
 
-                         try {
-							result = DFService.search(myAgent, templateGlobal);
+                        try {
+                            result = DFService.search(myAgent, templateGlobal);
 
-	                         targetStop = new AID[result.length];
-                             String[] names = new String[result.length];
+                            targetStop = new AID[result.length];
+                            String[] names = new String[result.length];
 
-                             if(result.length > 0) {
-                                 for (int i = 0; i < result.length; ++i) {
-                                     targetStop[i] = result[i].getName();
-                                     names[i]=targetStop[i].getLocalName();
-                                 }
+                            if (result.length > 0) {
+                                for (int i = 0; i < result.length; ++i) {
+                                    targetStop[i] = result[i].getName();
+                                    names[i] = targetStop[i].getLocalName();
+                                }
 
-                                 int j;
-                                 do {
-                                     j = (int) (Math.random() * ((result.length - 1) + 1));
-                                 }while(currentBus.getStopDetails(result[j]).getCoords()==this.currentBus.coords);
+                                int j;
+                                do {
+                                    j = (int) (Math.random() * ((result.length - 1) + 1));
+                                } while (currentBus.getStopDetails(result[j]).getCoords() == this.currentBus.coords);
 
-                                 registerInStop(result[j],null);
-                                 random = true;
-                             }
+                                registerInStop(result[j], null);
+                                random = true;
+                            }
 
-						} catch (FIPAException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+                        } catch (FIPAException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
                     }
-                    
+
                     //inform map of current position
                     currentBus.updateServiceInfo();
 
                 }
             });
         }
-        
+
     }
 
     //bus next position based on next stop
-    private Coordinates getNextPosition(){
+    private Coordinates getNextPosition() {
         Coordinates ret = this.coords;
         Coordinates nextStop = this.itinerary.get(0).getCoords();
-        
+
         //verify the line
-        if(this.coords.getY()<nextStop.getY()){
-            ret.setY(ret.getY()+1);
-        }else if(this.coords.getY()>nextStop.getY()){
-            ret.setY(ret.getY()-1);
+        if (this.coords.getY() < nextStop.getY()) {
+            ret.setY(ret.getY() + 1);
+        } else if (this.coords.getY() > nextStop.getY()) {
+            ret.setY(ret.getY() - 1);
         }
-        
+
         //verify the column
-        if(this.coords.getX()<nextStop.getX()){
-            ret.setX(ret.getX()+1);
-        }else if(this.coords.getX()>nextStop.getX()){
-            ret.setX(ret.getX()-1);
+        if (this.coords.getX() < nextStop.getX()) {
+            ret.setX(ret.getX() + 1);
+        } else if (this.coords.getX() > nextStop.getX()) {
+            ret.setX(ret.getX() - 1);
         }
-        
+
         return ret;
     }
 
@@ -164,12 +161,7 @@ public class BusAgent extends Agent{
     }
 
     /**
-     Inner class OfferRequestsServer.
-     This is the behaviour used by Bus agents to serve incoming requests
-     for offer from passenger agents.
-     If the bus can pick the client, then it replies
-     with a PROPOSE message specifying the time/price. Otherwise a REFUSE message is
-     sent back.
+     * Inner class OfferRequestsServer. This is the behaviour used by Bus agents to serve incoming requests for offer from passenger agents. If the bus can pick the client, then it replies with a PROPOSE message specifying the time/price. Otherwise a REFUSE message is sent back.
      */
     private class OfferRequestsServer extends CyclicBehaviour {
 
@@ -181,7 +173,7 @@ public class BusAgent extends Agent{
 
         public void action() {
             MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);
-            
+
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
                 String[] stops;
@@ -190,16 +182,16 @@ public class BusAgent extends Agent{
 
                 startStop = stops[0];
                 endStop = stops[2];
-                
-                DFAgentDescription startStopTemplate = currentBus.getStopAgentDescription("stop"+startStop);         
-                DFAgentDescription endStopTemplate = currentBus.getStopAgentDescription("stop"+endStop);
+
+                DFAgentDescription startStopTemplate = currentBus.getStopAgentDescription("stop" + startStop);
+                DFAgentDescription endStopTemplate = currentBus.getStopAgentDescription("stop" + endStop);
 
                 ACLMessage reply = msg.createReply();
 
                 int distance = currentBus.getPassengerTripDistance(startStopTemplate, endStopTemplate);
 
                 if (availableSeats > 0) {
-                    String time = String.valueOf((distance/ currentBus.speed) * (1 - this.currentBus.dishonestyDegree));
+                    String time = String.valueOf((distance / currentBus.speed) * (1 - this.currentBus.dishonestyDegree));
                     String price = String.valueOf((currentBus.pricePerMinute * Double.parseDouble(time)) / 100);
 
                     reply.setPerformative(ACLMessage.PROPOSE);
@@ -210,8 +202,7 @@ public class BusAgent extends Agent{
                 }
 
                 myAgent.send(reply);
-            }
-            else {
+            } else {
                 block();
             }
         }
@@ -224,10 +215,10 @@ public class BusAgent extends Agent{
         private ReservationOrdersServer(BusAgent currentBus) {
             this.currentBus = currentBus;
         }
-  
+
         public void action() {
             MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.ACCEPT_PROPOSAL);
-            
+
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
                 String[] stops;
@@ -239,14 +230,14 @@ public class BusAgent extends Agent{
                 endStop = stops[2];
 
                 ACLMessage reply = msg.createReply();
-                
+
                 //Bus tries to register on DF of respective stops
                 DFAgentDescription templateStart = new DFAgentDescription();
                 ServiceDescription sdStart = new ServiceDescription();
                 sdStart.setType("stop");
                 sdStart.setName("stop" + startStop);
                 templateStart.addServices(sdStart);
-                
+
                 DFAgentDescription templateEnd = new DFAgentDescription();
                 ServiceDescription sdEnd = new ServiceDescription();
                 sdEnd.setType("stop");
@@ -257,73 +248,69 @@ public class BusAgent extends Agent{
                 try {
                     DFAgentDescription[] resultStartStop = DFService.search(myAgent, templateStart);
                     DFAgentDescription[] resultEndStop = DFService.search(myAgent, templateEnd);
-                    
-                    if(resultStartStop.length == 0){
+
+                    if (resultStartStop.length == 0) {
                         System.err.println("Start stop doesn't exist");
-                    }else{
+                    } else {
                         registerInStop(resultStartStop[0], null);
                     }
-                    
-                    if(resultEndStop.length == 0){
+
+                    if (resultEndStop.length == 0) {
                         System.err.println("End stop doesn't exist");
-                    }else{
+                    } else {
                         registerInStop(resultEndStop[0], msg.getSender());
                     }
 
                     currentBus.availableSeats--;
-                    
-                    if((resultStartStop.length != 0)&&(resultEndStop.length != 0)){
+
+                    if ((resultStartStop.length != 0) && (resultEndStop.length != 0)) {
                         int distance = currentBus.getPassengerTripDistance(resultStartStop[0], resultEndStop[0]);
-                        String time = String.valueOf((distance/ currentBus.speed) * (1 - this.currentBus.dishonestyDegree));
+                        String time = String.valueOf((distance / currentBus.speed) * (1 - this.currentBus.dishonestyDegree));
                         String price = String.valueOf((currentBus.pricePerMinute * Double.parseDouble(time)) / 100);
-                        currentBus.gain+=Double.parseDouble(price);
+                        currentBus.gain += Double.parseDouble(price);
                     }
-                }
-                catch (FIPAException fe) {
+                } catch (FIPAException fe) {
                     fe.printStackTrace();
                 }
-                
-                
+
                 reply.setPerformative(ACLMessage.INFORM);
                 myAgent.send(reply);
-            }
-            else {
+            } else {
                 block();
             }
         }
 
     }
-    private void registerInStop(DFAgentDescription stop, AID passengerDestiny){
+
+    private void registerInStop(DFAgentDescription stop, AID passengerDestiny) {
         DFAgentDescription busTemplate = new DFAgentDescription();
-        busTemplate.setName( this.getAID() );
-        ServiceDescription sd  = new ServiceDescription();
+        busTemplate.setName(this.getAID());
+        ServiceDescription sd = new ServiceDescription();
         sd.setType("bus");
-        sd.setName( this.getLocalName() );
+        sd.setName(this.getLocalName());
         busTemplate.addServices(sd);
 
-        if(random && !this.itinerary.isEmpty()){
+        if (random && !this.itinerary.isEmpty()) {
             deregisterFromStop(this.itinerary.get(0).getName());
             this.itinerary.clear();
-            random=false;
+            random = false;
         }
         try {
             DFAgentDescription[] results = DFService.search(this, stop.getName(), busTemplate);
 
-            if(results.length == 0) {
-
+            if (results.length == 0) {
 
                 DFService.register(this, stop.getName(), busTemplate);
                 StopDetails stopDetails = getStopDetails(stop);
-                if(passengerDestiny!=null)
+                if (passengerDestiny != null) {
                     stopDetails.setLeavingPassenger(passengerDestiny);
+                }
 
                 this.itinerary.add(stopDetails);
+            } else if (passengerDestiny != null) {
+                StopDetails.getFirstStopByName(stop.getName().getLocalName(), this.itinerary).setLeavingPassenger(passengerDestiny);
             }
-
-            else if (passengerDestiny!=null)
-                StopDetails.getFirstStopByName(stop.getName().getLocalName(),this.itinerary).setLeavingPassenger(passengerDestiny);
-        }
-        catch (FIPAException fe) {
+        } catch (FIPAException fe) {
             System.err.println(fe.toString());
             fe.printStackTrace();
         }
@@ -333,8 +320,6 @@ public class BusAgent extends Agent{
     public ArrayList<StopDetails> getItinerary() {
         return itinerary;
     }
-
-    
 
     public Coordinates getCoords() {
         return coords;
@@ -346,12 +331,12 @@ public class BusAgent extends Agent{
 
     private void deregisterFromStop(String nextStop) {
 
-        DFAgentDescription stopTemplate = getTemplate("stop",nextStop);
+        DFAgentDescription stopTemplate = getTemplate("stop", nextStop);
 
-        try { 
+        try {
             DFAgentDescription stopDF = DFService.search(this, stopTemplate)[0];
 
-            DFAgentDescription busTemplate = getTemplate("bus",getLocalName());
+            DFAgentDescription busTemplate = getTemplate("bus", getLocalName());
             busTemplate.setName(getAID());
 
             DFService.deregister(this, stopDF.getName(), busTemplate);
@@ -362,8 +347,7 @@ public class BusAgent extends Agent{
 
     }
 
-    private StopDetails getStopDetails(DFAgentDescription stop)
-    {
+    private StopDetails getStopDetails(DFAgentDescription stop) {
         Iterator serviceIterator = stop.getAllServices();
         serviceIterator.next();
 
@@ -371,40 +355,38 @@ public class BusAgent extends Agent{
 
         Iterator propertyIterator = serviceStop.getAllProperties();
         Coordinates stopCoords = new Coordinates();
-        stopCoords.setX(Integer.parseInt((String)(((Property)propertyIterator.next()).getValue())));
-        stopCoords.setY(Integer.parseInt((String)(((Property)propertyIterator.next()).getValue())));
+        stopCoords.setX(Integer.parseInt((String) (((Property) propertyIterator.next()).getValue())));
+        stopCoords.setY(Integer.parseInt((String) (((Property) propertyIterator.next()).getValue())));
 
-        return new StopDetails(stop.getName().getLocalName(),stopCoords);
+        return new StopDetails(stop.getName().getLocalName(), stopCoords);
     }
-    
-    
-    public int getPassengerTripDistance(DFAgentDescription startStop,DFAgentDescription endStop){
+
+    public int getPassengerTripDistance(DFAgentDescription startStop, DFAgentDescription endStop) {
         ArrayList<StopDetails> futureItinerary = new ArrayList<>(this.itinerary);
 
-        if(StopDetails.getFirstStopByName(startStop.getName().getLocalName(), futureItinerary) == null){
+        if (StopDetails.getFirstStopByName(startStop.getName().getLocalName(), futureItinerary) == null) {
             futureItinerary.add(this.getStopDetails(startStop));
         }
-        
-        if(StopDetails.getFirstStopByName(endStop.getName().getLocalName(), futureItinerary) == null){
+
+        if (StopDetails.getFirstStopByName(endStop.getName().getLocalName(), futureItinerary) == null) {
             futureItinerary.add(this.getStopDetails(endStop));
         }
-        
+
         int distance = this.coords.calculateDistance(futureItinerary.get(0).getCoords());
-        
-        for(int i = 1; i < futureItinerary.size(); i++){
-            
-            distance += futureItinerary.get(i-1).getCoords().calculateDistance(futureItinerary.get(i).getCoords());
-             
-            if(futureItinerary.get(i).getName().equals(endStop.getName().getLocalName())){
-                 break;
-             }
+
+        for (int i = 1; i < futureItinerary.size(); i++) {
+
+            distance += futureItinerary.get(i - 1).getCoords().calculateDistance(futureItinerary.get(i).getCoords());
+
+            if (futureItinerary.get(i).getName().equals(endStop.getName().getLocalName())) {
+                break;
+            }
         }
-        
+
         return distance;
     }
-    
-    
-    private DFAgentDescription getStopAgentDescription(String stopName){
+
+    private DFAgentDescription getStopAgentDescription(String stopName) {
         DFAgentDescription stopTemplate = getTemplate("stop", stopName);
 
         try {
@@ -415,25 +397,25 @@ public class BusAgent extends Agent{
         return null;
     }
 
-
-    public static DFAgentDescription getTemplate(String type, String name)
-    {
+    public static DFAgentDescription getTemplate(String type, String name) {
         DFAgentDescription template = new DFAgentDescription();
         ServiceDescription sdStart = new ServiceDescription();
 
-        if (type != null)
+        if (type != null) {
             sdStart.setType(type);
-        if(name != null)
+        }
+        if (name != null) {
             sdStart.setName(name);
-        
+        }
+
         template.addServices(sdStart);
 
         return template;
     }
 
-    static DFAgentDescription getTemplate(String type,String name,Coordinates coords){
+    static DFAgentDescription getTemplate(String type, String name, Coordinates coords) {
         DFAgentDescription template = getTemplate(type, name);
-        
+
         ServiceDescription sd = (ServiceDescription) template.getAllServices().next();
         Property coordCol = new Property();
         coordCol.setName("Col");
@@ -443,46 +425,45 @@ public class BusAgent extends Agent{
         coordLine.setValue(coords.getY());
         sd.addProperties(coordCol);
         sd.addProperties(coordLine);
-        
+
         return template;
     }
-     
-    static DFAgentDescription getTemplate(String type, String name,Coordinates coords,Agent myAgent,Double occupancyRate, Double gain){
-       DFAgentDescription template = getTemplate(type, name, coords);
-       template.setName(myAgent.getAID());
-       
+
+    static DFAgentDescription getTemplate(String type, String name, Coordinates coords, Agent myAgent, Double occupancyRate, Double gain) {
+        DFAgentDescription template = getTemplate(type, name, coords);
+        template.setName(myAgent.getAID());
+
         ServiceDescription sd = (ServiceDescription) template.getAllServices().next();
-        if(occupancyRate != null) {
+        if (occupancyRate != null) {
             Property occupancy = new Property();
             occupancy.setName("Occupancy");
             occupancy.setValue(occupancyRate);
             sd.addProperties(occupancy);
         }
 
-        if(gain != null) {
+        if (gain != null) {
             Property gainProp = new Property();
             gainProp.setName("Gain");
             gainProp.setValue(gain);
             sd.addProperties(gainProp);
         }
-       
-       return template;
+
+        return template;
     }
 
-    static void setProperty(ServiceDescription sd, String name, double value)
-    {
+    static void setProperty(ServiceDescription sd, String name, double value) {
         Property occupancy = new Property();
         occupancy.setName(name);
         occupancy.setValue(value);
         sd.addProperties(occupancy);
     }
-    
-    private void updateServiceInfo(){
-        DFAgentDescription template = getTemplate("bus-agency", "JADE-bus-agency",this.coords);
+
+    private void updateServiceInfo() {
+        DFAgentDescription template = getTemplate("bus-agency", "JADE-bus-agency", this.coords);
 
         ServiceDescription sd = (ServiceDescription) template.getAllServices().next();
-        setProperty(sd, "Occupancy",this.getOccupancyRate());
-        setProperty(sd, "Gain",this.gain);
+        setProperty(sd, "Occupancy", this.getOccupancyRate());
+        setProperty(sd, "Gain", this.gain);
 
         try {
             DFService.modify(this, template);
@@ -490,16 +471,15 @@ public class BusAgent extends Agent{
             Logger.getLogger(BusAgent.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    private double getOccupancyRate(){
-        int occupiedSeats = this.totalSeats-this.availableSeats;
-        return (double)occupiedSeats/this.totalSeats;
+
+    private double getOccupancyRate() {
+        int occupiedSeats = this.totalSeats - this.availableSeats;
+        return (double) occupiedSeats / this.totalSeats;
     }
-    
-    
-    private void informPassengersArrived(ArrayList<AID> leavingPassengers){
+
+    private void informPassengersArrived(ArrayList<AID> leavingPassengers) {
         ACLMessage message = new ACLMessage(ACLMessage.INFORM);
-        for (AID passenger: leavingPassengers) {
+        for (AID passenger : leavingPassengers) {
             message.addReceiver(passenger);
         }
         message.setContent("ARRIVED TO DESTINATION");
