@@ -29,13 +29,13 @@ Caso o autocarro termine o seu itinerário, este irá fazer um percurso aleatór
 
 - [ ] Não aceitar passageiro se o desvio for grande
 
-- [ ] Não verificar cegamente os lugares disponiveis. Ter em conta quando é que vão sair passageiros.
+- [X] Não verificar cegamente os lugares disponiveis. Ter em conta quando é que vão sair passageiros.
 
 - [X] Implementar preço
 
 - [X] Melhorar mapa
 
-- [ ] Percurso inverso do passageiro (1->3 3->1): atualmente o programa não permite que a mesma paragem seja inserida mais que uma vez, sendo que o segundo passageiro não chega ao destino
+- [X] Percurso inverso do passageiro (1->3 3->1): atualmente o programa não permite que a mesma paragem seja inserida mais que uma vez, sendo que o segundo passageiro não chega ao destino
 
 - [X] Mostrar estatisticas
 
