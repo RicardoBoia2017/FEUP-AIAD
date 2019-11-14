@@ -1,3 +1,5 @@
+package MainAgents;
+
 import jade.core.AID;
 
 public class BusProposal {

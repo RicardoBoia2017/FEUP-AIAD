@@ -26,7 +26,7 @@ public class TestLauncher implements Runnable {
         try {
             AgentController ac;
             Object[] stops = {String.valueOf(stop1), String.valueOf(stop2), "50"};
-            ac = mainContainer.createNewAgent("p" + i, "PassengerAgent", stops);
+            ac = mainContainer.createNewAgent("p" + i, "MainAgents.PassengerAgent", stops);
             ac.start();
         } catch (StaleProxyException e) {
             e.printStackTrace();

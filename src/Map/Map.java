@@ -1,3 +1,5 @@
+package Map;
+
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
@@ -10,11 +12,14 @@ import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import MainAgents.BusAgent;
+import MainAgents.Coordinates;
+
 public class Map extends Agent{
         public static final int REFRESH_RATE = 10;
     
-        private java.util.Map<String,Coordinates> busList = new LinkedHashMap<>();
-        private java.util.Map<String,Coordinates> stopList = new LinkedHashMap<>();
+        private java.util.Map<String, Coordinates> busList = new LinkedHashMap<>();
+        private java.util.Map<String, Coordinates> stopList = new LinkedHashMap<>();
 
     //TODO: periodically pools the DF for the data
         protected void setup() {

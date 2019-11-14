@@ -1,3 +1,5 @@
+package Map;
+
 import java.awt.HeadlessException;
 
 public class MapGUI extends javax.swing.JFrame {

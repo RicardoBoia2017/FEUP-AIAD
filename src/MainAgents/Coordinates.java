@@ -1,9 +1,11 @@
+package MainAgents;
+
 public class Coordinates {
 
     private int x;
     private int y;
 
-    Coordinates() {
+    public Coordinates() {
     }
 
     Coordinates(int x, int y)

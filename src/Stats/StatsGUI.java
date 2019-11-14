@@ -1,3 +1,4 @@
+package Stats;
 
 import java.awt.HeadlessException;
 import java.util.Map.Entry;

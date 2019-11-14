@@ -1,3 +1,7 @@
+package Stats;
+
+import MainAgents.BusAgent;
+import Map.Map;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
@@ -28,7 +32,7 @@ public class StatsAgent extends Agent{
     private StatsGUI myGUI;
     private int totalNumberOfPassengers = 0;
     
-    StatsAgent() {
+    public StatsAgent() {
         this.allBusesGain = new HashMap<>();
     }
     

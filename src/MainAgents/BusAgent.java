@@ -1,3 +1,5 @@
+package MainAgents;
+
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -386,7 +388,7 @@ public class BusAgent extends Agent{
     
     
     public int getPassengerTripDistance(DFAgentDescription startStop,DFAgentDescription endStop){
-        Map<String,StopDetails> futureItinerary = new HashMap<>(this.itinerary);
+        Map<String, StopDetails> futureItinerary = new HashMap<>(this.itinerary);
 
         if(futureItinerary.get(startStop.getName().getLocalName()) == null){
             futureItinerary.put(startStop.getName().getLocalName(), this.getStopCoordinates(startStop));
@@ -434,7 +436,7 @@ public class BusAgent extends Agent{
     }
 
 
-    static DFAgentDescription getTemplate(String type, String name)
+    public static DFAgentDescription getTemplate(String type, String name)
     {
         DFAgentDescription template = new DFAgentDescription();
         ServiceDescription sdStart = new ServiceDescription();

@@ -1,3 +1,4 @@
+package MainAgents;
 
 import jade.core.AID;
 import java.util.ArrayList;
