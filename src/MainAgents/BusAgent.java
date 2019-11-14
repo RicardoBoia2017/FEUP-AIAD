@@ -22,7 +22,7 @@ public class BusAgent extends Agent{
     private AID[] targetStop;
     private Coordinates coords;
     private float speed;
-    private Map<String, StopDetails> itinerary = new LinkedHashMap<>();
+    private ArrayList<StopDetails> itinerary = new ArrayList<>();
     private int availableSeats;
     private int totalSeats;
     private int pricePerMinute = 10;
@@ -77,28 +77,24 @@ public class BusAgent extends Agent{
 
                 protected void onTick() {
                     //if there is a next stop
-                    if (currentBus.getItinerary().size() > 0) {
+                    if (!currentBus.getItinerary().isEmpty()) {
                         currentBus.setCoords(currentBus.getNextPosition());
                         System.out.println(currentBus.getLocalName() + " CURRENT POSITION : " + currentBus.getCoords().getX() + " " + currentBus.getCoords().getY());
 
-                        String nextStop = currentBus.itinerary.entrySet().iterator().next().getKey();
-                        Coordinates nextStopCoords = currentBus.itinerary.entrySet().iterator().next().getValue().getCoords();
+                        StopDetails nextStop = currentBus.itinerary.get(0);
 
                         //arrived to stop, remove it from itinerary
-                        if (currentBus.getCoords().equals(nextStopCoords)) {
+                        if (currentBus.getCoords().equals(nextStop.getCoords())) {
                             System.out.println(currentBus.getLocalName() + " ARRIVED AT " + nextStop);
 
-                            currentBus.availableSeats += currentBus.getItinerary().get(nextStop).getLeavingPassengers().size();
+                            currentBus.availableSeats += currentBus.getItinerary().get(0).getLeavingPassengers().size();
                             System.out.println("Available seats: " + currentBus.availableSeats);
 
-                            currentBus.informPassengersArrived(currentBus.getItinerary().get(nextStop).getLeavingPassengers());
-                            currentBus.getItinerary().remove(nextStop);
-                            deregisterFromStop(nextStop);
+                            currentBus.informPassengersArrived(currentBus.getItinerary().get(0).getLeavingPassengers());
+                            currentBus.getItinerary().remove(0);
+                            deregisterFromStop(nextStop.getName());
                         }
-                    }
-                    
-                    else if(currentBus.getItinerary().size() == 0)  {
-
+                    } else {
                         DFAgentDescription[] result;
                     	 DFAgentDescription templateGlobal = new DFAgentDescription();
                          ServiceDescription sdGlobal = new ServiceDescription();
@@ -120,7 +116,7 @@ public class BusAgent extends Agent{
                                  int j;
                                  do {
                                      j = (int) (Math.random() * ((result.length - 1) + 1));
-                                 }while(currentBus.getStopCoordinates(result[j]).getCoords()==this.currentBus.coords);
+                                 }while(currentBus.getStopDetails(result[j]).getCoords()==this.currentBus.coords);
 
                                  registerInStop(result[j],null);
                                  random = true;
@@ -144,7 +140,7 @@ public class BusAgent extends Agent{
     //bus next position based on next stop
     private Coordinates getNextPosition(){
         Coordinates ret = this.coords;
-        Coordinates nextStop = this.itinerary.entrySet().iterator().next().getValue().getCoords();
+        Coordinates nextStop = this.itinerary.get(0).getCoords();
         
         //verify the line
         if(this.coords.getY()<nextStop.getY()){
@@ -164,13 +160,6 @@ public class BusAgent extends Agent{
     }
 
     protected void takeDown() {
-       /* try {
-            DFService.deregister(this);
-        }
-        catch (FIPAException fe) {
-            fe.printStackTrace();
-        }*/
-
         System.out.println("Bus stopped operating");
     }
 
@@ -313,7 +302,7 @@ public class BusAgent extends Agent{
         busTemplate.addServices(sd);
 
         if(random && !this.itinerary.isEmpty()){
-            deregisterFromStop(this.itinerary.entrySet().iterator().next().getKey());
+            deregisterFromStop(this.itinerary.get(0).getName());
             this.itinerary.clear();
             random=false;
         }
@@ -324,15 +313,15 @@ public class BusAgent extends Agent{
 
 
                 DFService.register(this, stop.getName(), busTemplate);
-                StopDetails stopDetails = getStopCoordinates(stop);
+                StopDetails stopDetails = getStopDetails(stop);
                 if(passengerDestiny!=null)
                     stopDetails.setLeavingPassenger(passengerDestiny);
 
-                this.itinerary.put(stop.getName().getLocalName(), stopDetails);
+                this.itinerary.add(stopDetails);
             }
 
             else if (passengerDestiny!=null)
-                this.itinerary.get(stop.getName().getLocalName()).setLeavingPassenger(passengerDestiny);
+                StopDetails.getFirstStopByName(stop.getName().getLocalName(),this.itinerary).setLeavingPassenger(passengerDestiny);
         }
         catch (FIPAException fe) {
             System.err.println(fe.toString());
@@ -341,9 +330,11 @@ public class BusAgent extends Agent{
 
     }
 
-    public  Map<String, StopDetails> getItinerary() {
+    public ArrayList<StopDetails> getItinerary() {
         return itinerary;
     }
+
+    
 
     public Coordinates getCoords() {
         return coords;
@@ -371,7 +362,7 @@ public class BusAgent extends Agent{
 
     }
 
-    private StopDetails getStopCoordinates(DFAgentDescription stop)
+    private StopDetails getStopDetails(DFAgentDescription stop)
     {
         Iterator serviceIterator = stop.getAllServices();
         serviceIterator.next();
@@ -383,41 +374,30 @@ public class BusAgent extends Agent{
         stopCoords.setX(Integer.parseInt((String)(((Property)propertyIterator.next()).getValue())));
         stopCoords.setY(Integer.parseInt((String)(((Property)propertyIterator.next()).getValue())));
 
-        return new StopDetails(stopCoords);
+        return new StopDetails(stop.getName().getLocalName(),stopCoords);
     }
     
     
     public int getPassengerTripDistance(DFAgentDescription startStop,DFAgentDescription endStop){
-        Map<String, StopDetails> futureItinerary = new HashMap<>(this.itinerary);
+        ArrayList<StopDetails> futureItinerary = new ArrayList<>(this.itinerary);
 
-        if(futureItinerary.get(startStop.getName().getLocalName()) == null){
-            futureItinerary.put(startStop.getName().getLocalName(), this.getStopCoordinates(startStop));
+        if(StopDetails.getFirstStopByName(startStop.getName().getLocalName(), futureItinerary) == null){
+            futureItinerary.add(this.getStopDetails(startStop));
         }
         
-        if(futureItinerary.get(endStop.getName().getLocalName()) == null){
-            futureItinerary.put(endStop.getName().getLocalName(), this.getStopCoordinates(endStop));
+        if(StopDetails.getFirstStopByName(endStop.getName().getLocalName(), futureItinerary) == null){
+            futureItinerary.add(this.getStopDetails(endStop));
         }
         
-        Iterator<String> itineraryIt = futureItinerary.keySet().iterator();
+        int distance = this.coords.calculateDistance(futureItinerary.get(0).getCoords());
         
-        String prevStopName = itineraryIt.next();
-        DFAgentDescription prevStop = this.getStopAgentDescription(prevStopName);
-        String curStopName;
-        DFAgentDescription curStop;
-        
-        int distance = this.coords.calculateDistance(this.getStopCoordinates(prevStop).getCoords());
-        
-        while(itineraryIt.hasNext()){
-             curStopName = itineraryIt.next();
-             curStop = this.getStopAgentDescription(curStopName);
+        for(int i = 1; i < futureItinerary.size(); i++){
             
-            distance += this.getStopCoordinates(prevStop).getCoords().calculateDistance(this.getStopCoordinates(curStop).getCoords());
+            distance += futureItinerary.get(i-1).getCoords().calculateDistance(futureItinerary.get(i).getCoords());
              
-            if(curStopName.equals(endStop.getName().getLocalName())){
+            if(futureItinerary.get(i).getName().equals(endStop.getName().getLocalName())){
                  break;
              }
-             
-             prevStop=curStop;
         }
         
         return distance;
