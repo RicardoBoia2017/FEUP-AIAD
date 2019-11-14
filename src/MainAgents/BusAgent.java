@@ -115,7 +115,7 @@ public class BusAgent extends Agent {
                                     j = (int) (Math.random() * ((result.length - 1) + 1));
                                 } while (currentBus.getStopDetails(result[j]).getCoords() == this.currentBus.coords);
 
-                                registerInStop(result[j], null);
+                                registerInStop(result[j], null,false);
                                 random = true;
                             }
 
@@ -251,14 +251,22 @@ public class BusAgent extends Agent {
 
                     if (resultStartStop.length == 0) {
                         System.err.println("Start stop doesn't exist");
-                    } else {
-                        registerInStop(resultStartStop[0], null);
+                        return;
                     }
-
                     if (resultEndStop.length == 0) {
                         System.err.println("End stop doesn't exist");
-                    } else {
-                        registerInStop(resultEndStop[0], msg.getSender());
+                        return;
+                    }
+
+                    if (!StopDetails.checkIfStartEndInOrder(resultStartStop[0].getName().getLocalName(), resultEndStop[0].getName().getLocalName(), currentBus.itinerary)) {
+                        if (StopDetails.getFirstStopByName(resultStartStop[0].getName().getLocalName(), currentBus.itinerary) != null) {
+                            registerInStop(resultEndStop[0], msg.getSender(),true);
+                        } else {
+                            registerInStop(resultStartStop[0], null,true);
+                            registerInStop(resultEndStop[0], msg.getSender(),true);
+                        }
+                    } else{
+                        registerInStop(resultEndStop[0], msg.getSender(),false);
                     }
 
                     currentBus.availableSeats--;
@@ -282,7 +290,7 @@ public class BusAgent extends Agent {
 
     }
 
-    private void registerInStop(DFAgentDescription stop, AID passengerDestiny) {
+    private void registerInStop(DFAgentDescription stop, AID passengerDestiny, boolean addRepeated) {
         DFAgentDescription busTemplate = new DFAgentDescription();
         busTemplate.setName(this.getAID());
         ServiceDescription sd = new ServiceDescription();
@@ -298,9 +306,12 @@ public class BusAgent extends Agent {
         try {
             DFAgentDescription[] results = DFService.search(this, stop.getName(), busTemplate);
 
-            if (results.length == 0) {
+            if (results.length == 0 || addRepeated) {
 
-                DFService.register(this, stop.getName(), busTemplate);
+                if(results.length == 0){
+                    DFService.register(this, stop.getName(), busTemplate);
+                }
+                
                 StopDetails stopDetails = getStopDetails(stop);
                 if (passengerDestiny != null) {
                     stopDetails.setLeavingPassenger(passengerDestiny);
@@ -339,7 +350,8 @@ public class BusAgent extends Agent {
             DFAgentDescription busTemplate = getTemplate("bus", getLocalName());
             busTemplate.setName(getAID());
 
-            DFService.deregister(this, stopDF.getName(), busTemplate);
+            if(StopDetails.getFirstStopByName(stopDF.getName().getLocalName(), this.itinerary) == null)
+                DFService.deregister(this, stopDF.getName(), busTemplate);
 
         } catch (FIPAException e) {
             e.printStackTrace();
