@@ -29,15 +29,33 @@ public class MapGUIPanel extends JPanel implements ActionListener{
         this.currentMapInfo = currentMapInfo;
         this.timer =new Timer(Map.REFRESH_RATE, this);
         timer.start();
-        
+
+        File url;
+
         try {
-            File url = new File("img/bus.png");
+            url = new File("src/img/bus.png");
             busIcon = ImageIO.read(new File(url.getPath()));
-            url = new File("img/stop.png");
-            stopIcon = ImageIO.read(new File(url.getPath()));
         } catch (IOException ex) {
-            Logger.getLogger(MapGUIPanel.class.getName()).log(Level.SEVERE, null, ex);
+            url = new File("img/bus.png");
+            try {
+                busIcon = ImageIO.read(new File(url.getPath()));
+            } catch (IOException e) {
+                Logger.getLogger(MapGUIPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
+
+        try {
+            url = new File("src/img/stop.png");
+            stopIcon = ImageIO.read(new File(url.getPath()));
+        } catch (IOException e) {
+            url = new File("img/stop.png");
+            try {
+                stopIcon = ImageIO.read(new File(url.getPath()));
+            } catch (IOException ex) {
+                Logger.getLogger(MapGUIPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
     }
        
     @Override
@@ -98,7 +116,7 @@ public class MapGUIPanel extends JPanel implements ActionListener{
     
     public void actionPerformed(ActionEvent ev){
         if(ev.getSource()==timer){
-          repaint();// this will call at the map refresh rate
+          repaint();
         }
     }
 
