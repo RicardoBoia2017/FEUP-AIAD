@@ -20,21 +20,6 @@ public class JADELauncher {
         ContainerController mainContainer = rt.createMainContainer(p1);
 
         AgentController ac;
-        /*try {
-            Object[] stops = {"1", "2", "50"};
-            ac = mainContainer.createNewAgent("pass1", "MainMainAgents.PassengerAgent", stops);
-            ac.start();
-        } catch (StaleProxyException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            Object[] stops = {"4", "5", "100"};
-            ac = mainContainer.createNewAgent("pass2", "MainMainAgents.PassengerAgent", stops);
-            ac.start();
-        } catch (StaleProxyException e) {
-            e.printStackTrace();
-        }*/
 
         try {
             Object[] coords = {"20", "10", "4","40","50","0"};

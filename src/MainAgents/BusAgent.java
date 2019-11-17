@@ -24,7 +24,7 @@ public class BusAgent extends Agent {
     private ArrayList<StopDetails> itinerary = new ArrayList<>();
     private int availableSeats;
     private int totalSeats;
-    private int pricePerMinute;
+    private int price;
     private float dishonestyDegree;
     private double gain=0;
     private boolean random = false;
@@ -42,7 +42,7 @@ public class BusAgent extends Agent {
             speed = Float.parseFloat((String) args[2]);
             totalSeats = Integer.parseInt((String) args[3]);
             availableSeats = totalSeats;
-            pricePerMinute = Integer.parseInt((String) args[4]);
+            price = Integer.parseInt((String) args[4]);
             dishonestyDegree = Float.parseFloat((String) args[5]) / 10;
 
             if (dishonestyDegree < 0 || dishonestyDegree > 5) {
@@ -63,7 +63,7 @@ public class BusAgent extends Agent {
 
             addBehaviour(new OfferRequestsServer(this));
 
-            addBehaviour(new ReservationOrdersServer(this));
+            addBehaviour(new ReservationsServer(this));
 
             double timeOnCell = (1 / this.speed) * 1000;
 
@@ -178,7 +178,7 @@ public class BusAgent extends Agent {
 
                 if (availableSeats > 0) {
                     String time = String.valueOf((distance / currentBus.speed) * (1 - this.currentBus.dishonestyDegree));
-                    String price = String.valueOf((currentBus.pricePerMinute * Double.parseDouble(time)) / 100);
+                    String price = String.valueOf((currentBus.price * Double.parseDouble(time)) / 100);
 
                     reply.setPerformative(ACLMessage.PROPOSE);
                     reply.setContent(time + " " + price);
@@ -194,11 +194,11 @@ public class BusAgent extends Agent {
         }
     }
 
-    private class ReservationOrdersServer extends CyclicBehaviour {
+    private class ReservationsServer extends CyclicBehaviour {
 
         BusAgent currentBus;
 
-        private ReservationOrdersServer(BusAgent currentBus) {
+        private ReservationsServer(BusAgent currentBus) {
             this.currentBus = currentBus;
         }
 
@@ -257,7 +257,7 @@ public class BusAgent extends Agent {
                     if ((resultStartStop.length != 0) && (resultEndStop.length != 0)) {
                         int distance = currentBus.getPassengerTripDistance(resultStartStop[0], resultEndStop[0]);
                         String time = String.valueOf((distance / currentBus.speed) * (1 - this.currentBus.dishonestyDegree));
-                        String price = String.valueOf((currentBus.pricePerMinute * Double.parseDouble(time)) / 100);
+                        String price = String.valueOf((currentBus.price * Double.parseDouble(time)) / 100);
                         currentBus.gain += Double.parseDouble(price);
                     }
                 } catch (FIPAException fe) {
