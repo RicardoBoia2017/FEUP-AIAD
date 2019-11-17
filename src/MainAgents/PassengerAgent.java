@@ -85,6 +85,7 @@ public class PassengerAgent extends Agent {
                                 templateGlobal.addServices(sdGlobal);
 
                                 result = DFService.search(myAgent, templateGlobal);
+                                System.out.println("\nClient Name: " + getLocalName());
                                 System.out.println("No bus has stop in itinerary. Sending message to all buses");
                                 System.out.println("Found the following buses:");
 
@@ -102,7 +103,6 @@ public class PassengerAgent extends Agent {
                             fe.printStackTrace();
                         }
 
-                        // Perform the request
                         myAgent.addBehaviour(new RequestPerformer());
                     }
                 }
@@ -123,8 +123,6 @@ public class PassengerAgent extends Agent {
             double timeDeviation = (actualTravelTime-this.estimatedTime)/this.estimatedTime;
 
             this.informStats(String.valueOf(timeDeviation), "time-deviation");
-            System.out.println("ACTUAL TIME: "+actualTravelTime+" SECONDS");
-            System.out.println("DEVIATION: "+timeDeviation);
         }
     }
 
@@ -153,7 +151,7 @@ public class PassengerAgent extends Agent {
                     }
                     cfp.setContent(startStop + " " + endStop);
                     cfp.setConversationId("bus-agency");
-                    cfp.setReplyWith("cfp"+System.currentTimeMillis()); // Unique value
+                    cfp.setReplyWith("cfp"+System.currentTimeMillis());
                     myAgent.send(cfp);
 
                     mt = MessageTemplate.and(MessageTemplate.MatchConversationId("bus-agency"),
@@ -294,7 +292,7 @@ public class PassengerAgent extends Agent {
         message.addReceiver(this.statsAgent);
         message.setContent(content);
         message.setConversationId(conversation);
-        message.setReplyWith("cfp"+System.currentTimeMillis()); // Unique value
+        message.setReplyWith("cfp"+System.currentTimeMillis());
         this.send(message);   
     }
 

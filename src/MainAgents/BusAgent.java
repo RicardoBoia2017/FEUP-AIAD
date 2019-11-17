@@ -13,7 +13,6 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 import java.util.*;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,9 +24,9 @@ public class BusAgent extends Agent {
     private ArrayList<StopDetails> itinerary = new ArrayList<>();
     private int availableSeats;
     private int totalSeats;
-    private int pricePerMinute = 10;
-    private float dishonestyDegree = (float) 0.5;
-    private double gain = 0;
+    private int pricePerMinute;
+    private float dishonestyDegree;
+    private double gain=0;
     private boolean random = false;
 
     protected void setup() {
@@ -66,26 +65,19 @@ public class BusAgent extends Agent {
 
             addBehaviour(new ReservationOrdersServer(this));
 
-            double timeOnCell = (1 / this.speed) * 1000; //time (in milliseconds) spent in a cell
+            double timeOnCell = (1 / this.speed) * 1000;
 
-            //moves a cell at a time
             addBehaviour(new TickerBehaviour(this, (long) timeOnCell) {
                 BusAgent currentBus = (BusAgent) myAgent;
 
                 protected void onTick() {
-                    //if there is a next stop
                     if (!currentBus.getItinerary().isEmpty()) {
                         currentBus.setCoords(currentBus.getNextPosition());
-                        System.out.println(currentBus.getLocalName() + " CURRENT POSITION : " + currentBus.getCoords().getX() + " " + currentBus.getCoords().getY());
 
                         StopDetails nextStop = currentBus.itinerary.get(0);
 
-                        //arrived to stop, remove it from itinerary
                         if (currentBus.getCoords().equals(nextStop.getCoords())) {
-                            System.out.println(currentBus.getLocalName() + " ARRIVED AT " + nextStop);
-
                             currentBus.availableSeats += currentBus.getItinerary().get(0).getLeavingPassengers().size();
-                            System.out.println("Available seats: " + currentBus.availableSeats);
 
                             currentBus.informPassengersArrived(currentBus.getItinerary().get(0).getLeavingPassengers());
                             currentBus.getItinerary().remove(0);
@@ -120,33 +112,27 @@ public class BusAgent extends Agent {
                             }
 
                         } catch (FIPAException e) {
-                            // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
                     }
 
-                    //inform map of current position
                     currentBus.updateServiceInfo();
-
                 }
             });
         }
 
     }
 
-    //bus next position based on next stop
     private Coordinates getNextPosition() {
         Coordinates ret = this.coords;
         Coordinates nextStop = this.itinerary.get(0).getCoords();
 
-        //verify the line
         if (this.coords.getY() < nextStop.getY()) {
             ret.setY(ret.getY() + 1);
         } else if (this.coords.getY() > nextStop.getY()) {
             ret.setY(ret.getY() - 1);
         }
 
-        //verify the column
         if (this.coords.getX() < nextStop.getX()) {
             ret.setX(ret.getX() + 1);
         } else if (this.coords.getX() > nextStop.getX()) {
@@ -223,7 +209,6 @@ public class BusAgent extends Agent {
             if (msg != null) {
                 String[] stops;
                 String startStop, endStop;
-                // CFP Message received. Process it
                 stops = msg.getContent().split("");
 
                 startStop = stops[0];
@@ -231,7 +216,6 @@ public class BusAgent extends Agent {
 
                 ACLMessage reply = msg.createReply();
 
-                //Bus tries to register on DF of respective stops
                 DFAgentDescription templateStart = new DFAgentDescription();
                 ServiceDescription sdStart = new ServiceDescription();
                 sdStart.setType("stop");
@@ -244,7 +228,6 @@ public class BusAgent extends Agent {
                 sdEnd.setName("stop" + endStop);
                 templateEnd.addServices(sdEnd);
 
-                //bus registers in both start and end stops of the passenger
                 try {
                     DFAgentDescription[] resultStartStop = DFService.search(myAgent, templateStart);
                     DFAgentDescription[] resultEndStop = DFService.search(myAgent, templateEnd);

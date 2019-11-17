@@ -15,6 +15,9 @@ public class TestLauncher implements Runnable {
     @Override
     public void run() {
 
+        if(i >= 30)
+            return;
+
         int stop1 = (int) (Math.random() * 9) + 1;
 
         int stop2;
@@ -25,7 +28,7 @@ public class TestLauncher implements Runnable {
 
         try {
             AgentController ac;
-            Object[] stops = {String.valueOf(stop1), String.valueOf(stop2), "50"};
+            Object[] stops = {String.valueOf(stop1), String.valueOf(stop2), "100"};
             ac = mainContainer.createNewAgent("p" + i, "MainAgents.PassengerAgent", stops);
             ac.start();
         } catch (StaleProxyException e) {

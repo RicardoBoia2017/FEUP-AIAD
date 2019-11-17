@@ -37,7 +37,7 @@ public class JADELauncher {
         }*/
 
         try {
-            Object[] coords = {"20", "10", "4","40","10","5"};
+            Object[] coords = {"20", "10", "4","40","50","0"};
             ac = mainContainer.createNewAgent("bus1", "MainAgents.BusAgent", coords);
             ac.start();
         } catch (StaleProxyException e) {
@@ -45,7 +45,7 @@ public class JADELauncher {
         }
 
         try {
-            Object[] coords = {"10", "15", "4","30","10","5"};
+            Object[] coords = {"10", "15", "2","40","50","0"};
             ac = mainContainer.createNewAgent("bus2", "MainAgents.BusAgent", coords);
             ac.start();
         } catch (StaleProxyException e) {
@@ -147,7 +147,7 @@ public class JADELauncher {
         }
 
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(new TestLauncher(mainContainer), 0, 10, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(new TestLauncher(mainContainer), 0, 5, TimeUnit.SECONDS);
 
     }
 

@@ -21,7 +21,6 @@ public class Map extends Agent{
         private java.util.Map<String, Coordinates> busList = new LinkedHashMap<>();
         private java.util.Map<String, Coordinates> stopList = new LinkedHashMap<>();
 
-    //TODO: periodically pools the DF for the data
         protected void setup() {
 
             MapGUI myGUI = new MapGUI(this);
@@ -29,7 +28,7 @@ public class Map extends Agent{
             
             addBehaviour(new TickerBehaviour(this, REFRESH_RATE) {
                   protected void onTick() {
-                    //Periodically collects all stops and buses location
+
                     DFAgentDescription busTemplate = BusAgent.getTemplate("bus-agency","JADE-bus-agency");
                     DFAgentDescription stopTemplate = BusAgent.getTemplate("stop",null);
                     try {      
