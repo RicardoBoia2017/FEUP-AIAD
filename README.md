@@ -25,38 +25,19 @@ Caso o autocarro termine o seu itinerário, este irá fazer um percurso aleatór
 ## TODO
 - [ ] Inserir stop no meio do itinerário, em vez de ser sempre no fim (otimização do itinerário)
 
-- [X] Itinerário aleatório quando fica sem stops (Inês)
-
 - [ ] Não aceitar passageiro se o desvio for grande
-
-- [X] Não verificar cegamente os lugares disponiveis. Ter em conta quando é que vão sair passageiros.
-
-- [X] Implementar preço
-
-- [X] Melhorar mapa
-
-- [X] Percurso inverso do passageiro (1->3 3->1): atualmente o programa não permite que a mesma paragem seja inserida mais que uma vez, sendo que o segundo passageiro não chega ao destino
-
-- [X] Mostrar estatisticas
 
 - [ ] Testar (cenários diferentes - variar nº e tipo de autocarros e passageiros)
 
 ## Aumento da complexidade das decisões
 
-### Passageiro
-- [X] alpha * preço + (1 - alpha) * tempo : fórmula para a escolha do autocarro
-
 ### Autocarro
-- [X] preço por minuto
-- [X] desonestidade 
 - [ ] desvio
 - [ ] ter em conta a lotação no cálculo do preço
 
 ## Estatíticas
-- [X] Tempo médio de espera
-- [X] Ocupação média
-- [X] Desvio entre tempo prometido e tempo real
-- [X] Ganho
+
+- [] exportação para CSV de cada passageiro
 
 ## Apresentação
 
