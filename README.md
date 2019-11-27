@@ -64,3 +64,17 @@ Será que o autocarro vai cumprir com o tempo prometido? (Classificação)
 ### Problema 2
 
 Qual vai ser o atraso do autocarro? (Regressão)
+
+## Variável dependente
+
+Atraso dos autocarros
+
+## Variáveis independentes
+
+### Autocarro
+
+Velocidade, preço, grau de desonestidade
+
+### Passageiro
+
+*alpha* (preferência pela redução do tempo em relação com a redução do preço)
