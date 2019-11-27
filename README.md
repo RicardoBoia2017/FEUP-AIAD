@@ -39,7 +39,7 @@ Caso o autocarro termine o seu itinerário, este irá fazer um percurso aleatór
 
 - [X] Mostrar estatisticas
 
-- [X] Testar (cenários diferentes - variar nº e tipo de autocarros e passageiros)
+- [ ] Testar (cenários diferentes - variar nº e tipo de autocarros e passageiros)
 
 ## Aumento da complexidade das decisões
 
@@ -77,6 +77,9 @@ Na primeira parte deste projeto, foi criado um sistema multi-agentes onde é pos
 Nesta segunda parte, irá ser "dada" mais inteligência aos passageiros. Estes irão guardar um registo de atraso dos autocarros, de maneira a descobrir quais são os desonestos.
 
 ### Problema 1
-Até que ponto compensa aos autocarros serem desonestos, se os passageiros acabarem por se aperceber disto e preferirem os honestos?
 
+Será que o autocarro vai cumprir com o tempo prometido? (Classificação)
 
+### Problema 2
+
+Qual vai ser o atraso do autocarro? (Regressão)
