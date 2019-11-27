@@ -39,7 +39,7 @@ Caso o autocarro termine o seu itinerário, este irá fazer um percurso aleatór
 
 - [X] Mostrar estatisticas
 
-- [ ] Testar (cenários diferentes - variar nº e tipo de autocarros e passageiros)
+- [X] Testar (cenários diferentes - variar nº e tipo de autocarros e passageiros)
 
 ## Aumento da complexidade das decisões
 
