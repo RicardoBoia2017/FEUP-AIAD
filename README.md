@@ -64,11 +64,11 @@ Caso o autocarro termine o seu itinerário, este irá fazer um percurso aleatór
 
 ## Sugestões do professor
 
-[] Negociação entre autocarro e passageiro
+- [ ] Negociação entre autocarro e passageiro
 
-[] Colaboração
+- [ ] Colaboração
 
-[] Testes automatizados
+- [ ] Testes automatizados
 
 ## Descrição da parte 2
 
