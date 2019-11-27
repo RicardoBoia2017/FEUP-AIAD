@@ -64,4 +64,6 @@ Caso o autocarro termine o seu itinerário, este irá fazer um percurso aleatór
 
 ## Descrição da parte 2
 
-Na primeira parte deste projeto, foi criado um sistema multi-agentes onde é possível estudar a viabilidade de um sistema inovador de autocarros que se adaptam às necessidades dos passageiros. Quando os passageiros chegam a uma paragem, é enviado um pedido aos autocarros para que estes o recolham. Estes irão enviar as suas propostas ao passageiro que irá escolher aquela que considera melhor. Os autocarros podem ter diferentes velocidades, preços e grau de desonestidade, enquanto os pasageiros podem ter diferentes *alpha*s (preferência pela redução do tempo em relação com a redução do preço)
+Na primeira parte deste projeto, foi criado um sistema multi-agentes onde é possível estudar a viabilidade de um sistema inovador de autocarros que se adaptam às necessidades dos passageiros. Quando os passageiros chegam a uma paragem, é enviado um pedido aos autocarros para que estes o recolham. Estes irão enviar as suas propostas ao passageiro que irá escolher aquela que considera melhor. Os autocarros podem ter diferentes velocidades, preços e grau de desonestidade, enquanto os pasageiros podem ter diferentes *alpha*s (preferência pela redução do tempo em relação com a redução do preço).
+
+Nesta segunda parte, irá ser "dada" mais inteligência aos passageiros. Estes irão guardar um registo de atraso dos autocarros, de maneira a que estes acabam por descobrir quais são os desonestos, começando a preferir os honestos.
