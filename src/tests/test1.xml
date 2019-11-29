@@ -55,5 +55,5 @@
             <coordinates x="20" y="25"></coordinates>
         </stop>
     </stops>
-    <passangers alpha="100" limit="1" interval="5000"></passangers>
+    <passangers alpha="100" limit="30" interval="5000"></passangers>
 </test>
