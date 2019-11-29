@@ -165,11 +165,11 @@ public class JADELauncher {
     private static void spawnPassengers(ContainerController mainContainer, int alpha, int limit, int interval,int stopNumber){
         Random rand = new Random();
         for (int i=0;i<limit;i++){
-            int stop1 = rand.nextInt(stopNumber);
+            int stop1 = rand.nextInt(stopNumber)+1;
 
             int stop2;
             do {
-                stop2 = rand.nextInt(stopNumber);
+                stop2 = rand.nextInt(stopNumber)+1;
             } while (stop1 == stop2);
 
             try {
