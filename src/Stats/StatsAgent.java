@@ -31,9 +31,11 @@ public class StatsAgent extends Agent{
     private HashMap<String,Double> allBusesGain;
     private StatsGUI myGUI;
     private int totalNumberOfPassengers = 0;
+    private String testName;
     
-    public StatsAgent() {
+    public StatsAgent(String testName) {
         this.allBusesGain = new HashMap<>();
+        this.testName = testName;
     }
     
     protected void setup() {
@@ -173,7 +175,7 @@ public class StatsAgent extends Agent{
     
     public void updateFileInfo(){
         try{
-            FileWriter fileWriter = new FileWriter("statsFile.txt");
+            FileWriter fileWriter = new FileWriter("testsResults/"+this.testName+".txt");
             PrintWriter printWriter = new PrintWriter(fileWriter);
             printWriter.printf("Simulation Statistics File\n\n");
             printWriter.printf("Average Estimated Waiting Time: %.2f seconds \n", this.averageEstimatedTime);
@@ -181,6 +183,7 @@ public class StatsAgent extends Agent{
             printWriter.printf("Current Average Bus Occupancy Rate: %.3f%% \n", this.averageOccupancyRate);
             printWriter.printf("Maximum Average Bus Occupancy Rate: %.3f%% \n", this.maxAverageOccupancyRate);
             printWriter.printf("Total financial gain: %s€ \n", this.totalGain);
+            printWriter.printf("Total number of passangers: %s \n", this.totalNumberOfPassengers);
             printWriter.printf("Financial gain per bus:\n");
 
             for(Entry<String,Double> curBus : this.allBusesGain.entrySet()){
@@ -225,7 +228,8 @@ public class StatsAgent extends Agent{
     public int getTotalNumberOfPassengers() {
         return totalNumberOfPassengers;
     }
-    
 
-    
+    public StatsGUI getMyGUI() {
+        return myGUI;
+    }
 }

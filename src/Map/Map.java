@@ -21,10 +21,12 @@ public class Map extends Agent{
         private java.util.Map<String, Coordinates> busList = new LinkedHashMap<>();
         private java.util.Map<String, Coordinates> stopList = new LinkedHashMap<>();
 
+        private MapGUI myGUI;
+
         protected void setup() {
 
-            MapGUI myGUI = new MapGUI(this);
-            myGUI.setVisible(true);
+            this.myGUI = new MapGUI(this);
+            this.myGUI.setVisible(true);
             
             addBehaviour(new TickerBehaviour(this, REFRESH_RATE) {
                   protected void onTick() {
@@ -76,6 +78,8 @@ public class Map extends Agent{
     public java.util.Map<String, Coordinates> getStopList() {
         return stopList;
     }
-    
-    
+
+    public MapGUI getMyGUI() {
+        return myGUI;
+    }
 }

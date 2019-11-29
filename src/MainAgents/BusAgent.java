@@ -143,7 +143,7 @@ public class BusAgent extends Agent {
     }
 
     protected void takeDown() {
-        System.out.println("Bus stopped operating");
+        System.out.println("Bus "+this.getLocalName()+" stopped operating");
     }
 
     /**

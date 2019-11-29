@@ -34,26 +34,6 @@
             <name>stop4</name>
             <coordinates x="10" y="20"></coordinates>
         </stop>
-        <stop>
-            <name>stop5</name>
-            <coordinates x="40" y="10"></coordinates>
-        </stop>
-        <stop>
-            <name>stop6</name>
-            <coordinates x="30" y="5"></coordinates>
-        </stop>
-        <stop>
-            <name>stop7</name>
-            <coordinates x="0" y="0"></coordinates>
-        </stop>
-        <stop>
-            <name>stop8</name>
-            <coordinates x="40" y="20"></coordinates>
-        </stop>
-        <stop>
-            <name>stop9</name>
-            <coordinates x="20" y="25"></coordinates>
-        </stop>
     </stops>
-    <passangers alpha="100" limit="1" interval="5000"></passangers>
+    <passangers alpha="100" limit="30" interval="5000"></passangers>
 </test>
