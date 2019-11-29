@@ -12,6 +12,7 @@ import jade.wrapper.StaleProxyException;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.Random;
 
 import org.w3c.dom.Document;
 import javax.xml.parsers.DocumentBuilder;
@@ -103,6 +104,7 @@ public class JADELauncher {
             }
 
             nList = doc.getElementsByTagName("stop");
+            int stopNumber = nList.getLength();
 
             for (int temp = 0; temp < nList.getLength(); temp++) {
 
@@ -140,7 +142,7 @@ public class JADELauncher {
             //ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
             //executor.scheduleAtFixedRate(passLauncher, 0, 5, TimeUnit.SECONDS);
 
-            spawnPassengers(mainContainer,alpha,limit,interval);
+            spawnPassengers(mainContainer,alpha,limit,interval,stopNumber);
 
             while (statsAgent.getTotalNumberOfPassengers() < limit) {
                 Thread.sleep(2000);
@@ -160,14 +162,14 @@ public class JADELauncher {
     }
 
 
-    private static void spawnPassengers(ContainerController mainContainer, int alpha, int limit, int interval){
-       for (int i=0;i<limit;i++){
-            int stop1 = (int) (Math.random() * 9) + 1;
+    private static void spawnPassengers(ContainerController mainContainer, int alpha, int limit, int interval,int stopNumber){
+        Random rand = new Random();
+        for (int i=0;i<limit;i++){
+            int stop1 = rand.nextInt(stopNumber);
 
             int stop2;
-
             do {
-                stop2 = (int) (Math.random() * 9) + 1;
+                stop2 = rand.nextInt(stopNumber);
             } while (stop1 == stop2);
 
             try {
