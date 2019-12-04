@@ -93,9 +93,10 @@ public class JADELauncher {
                 String totalSeats = elem.getElementsByTagName("totalSeats").item(0).getTextContent();
                 String price = elem.getElementsByTagName("price").item(0).getTextContent();
                 String dishonestyDegree = elem.getElementsByTagName("dishonestyDegree").item(0).getTextContent();
+                String priceFlexibility = elem.getElementsByTagName("priceFlexibility").item(0).getTextContent();
 
                 try {
-                    Object[] coords = {x, y, speed, totalSeats, price, dishonestyDegree};
+                    Object[] coords = {x, y, speed, totalSeats, price, dishonestyDegree, priceFlexibility};
                     ac = mainContainer.createNewAgent(name, "MainAgents.BusAgent", coords);
                     ac.start();
                 } catch (StaleProxyException e) {

@@ -26,6 +26,7 @@ public class BusAgent extends Agent {
     private int totalSeats;
     private int price;
     private float dishonestyDegree;
+    private double priceFlexibility;
     private double gain=0;
     private boolean random = false;
 
@@ -33,7 +34,7 @@ public class BusAgent extends Agent {
 
         Object[] args = getArguments();
 
-        if (args == null || args.length != 6) {
+        if (args == null || args.length != 7) {
             System.err.println("Incorrect number of arguments");
             System.err.println("Bus arguments: startStop endStop speed capacity pricePerMinute dishonestyDegree(0-5)");
             doDelete();
@@ -44,6 +45,7 @@ public class BusAgent extends Agent {
             availableSeats = totalSeats;
             price = Integer.parseInt((String) args[4]);
             dishonestyDegree = Float.parseFloat((String) args[5]) / 10;
+            priceFlexibility = Float.parseFloat((String) args[6]) / (5 / 0.55);
 
             if (dishonestyDegree < 0 || dishonestyDegree > 5) {
                 System.out.println("Dishonesty degree value must be between 0 and 5");
@@ -162,12 +164,12 @@ public class BusAgent extends Agent {
 
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
-                String[] stops;
+                String[] info;
                 String startStop, endStop;
-                stops = msg.getContent().split("");
+                info = msg.getContent().split(" ");
 
-                startStop = stops[0];
-                endStop = stops[2];
+                startStop = info[0];
+                endStop = info[1];
 
                 DFAgentDescription startStopTemplate = currentBus.getStopAgentDescription("stop" + startStop);
                 DFAgentDescription endStopTemplate = currentBus.getStopAgentDescription("stop" + endStop);
@@ -177,11 +179,32 @@ public class BusAgent extends Agent {
                 int distance = currentBus.getPassengerTripDistance(startStopTemplate, endStopTemplate);
 
                 if (availableSeats > 0) {
-                    String time = String.valueOf((distance / currentBus.speed) * (1 - this.currentBus.dishonestyDegree));
-                    String price = String.valueOf((currentBus.price * Double.parseDouble(time)) / 100);
+                    double time = (distance / currentBus.speed) * (1 - this.currentBus.dishonestyDegree);
+                    double price = (currentBus.price * time) / 100;
 
-                    reply.setPerformative(ACLMessage.PROPOSE);
-                    reply.setContent(time + " " + price);
+                    if(info.length > 2)
+                    {
+                        double bestPrice = Double.parseDouble(info[2]);
+                        double discountNeeded = 1 - (bestPrice / price);
+                        System.out.println(getLocalName() + ": " + price + "  " + bestPrice + "   " + (discountNeeded + 0.02) + "  " + currentBus.priceFlexibility);
+
+                        if ( (discountNeeded + 0.02) > currentBus.priceFlexibility) {
+                            reply.setPerformative(ACLMessage.REFUSE);
+                            reply.setContent("not-available");
+                        }
+
+                        else {
+                            price = (1 - (discountNeeded + 0.02) ) * price;
+                            System.out.println("New price: " + price);
+                            reply.setPerformative(ACLMessage.PROPOSE);
+                            reply.setContent(time + " " + price);
+                        }
+                    }
+
+                    else {
+                        reply.setPerformative(ACLMessage.PROPOSE);
+                        reply.setContent(time + " " + price);
+                    }
                 } else {
                     reply.setPerformative(ACLMessage.REFUSE);
                     reply.setContent("not-available");

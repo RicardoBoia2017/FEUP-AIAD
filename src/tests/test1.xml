@@ -5,16 +5,36 @@
             <coordinates x="20" y="10"></coordinates>
             <speed>4</speed>
             <totalSeats>40</totalSeats>
-            <price>50</price>
+            <price>25</price>
             <dishonestyDegree>0</dishonestyDegree>
+            <priceFlexibility>4</priceFlexibility>
         </bus>
         <bus>
             <name>bus2</name>
             <coordinates x="10" y="15"></coordinates>
             <speed>2</speed>
             <totalSeats>40</totalSeats>
-            <price>50</price>
+            <price>25</price>
             <dishonestyDegree>0</dishonestyDegree>
+            <priceFlexibility>3</priceFlexibility>
+        </bus>
+        <bus>
+            <name>bus3</name>
+            <coordinates x="10" y="25"></coordinates>
+            <speed>2</speed>
+            <totalSeats>40</totalSeats>
+            <price>25</price>
+            <dishonestyDegree>0</dishonestyDegree>
+            <priceFlexibility>0</priceFlexibility>
+        </bus>
+        <bus>
+            <name>bus4</name>
+            <coordinates x="20" y="25"></coordinates>
+            <speed>2</speed>
+            <totalSeats>40</totalSeats>
+            <price>25</price>
+            <dishonestyDegree>0</dishonestyDegree>
+            <priceFlexibility>1.5</priceFlexibility>
         </bus>
     </buses>
     <stops>
@@ -55,5 +75,5 @@
             <coordinates x="20" y="25"></coordinates>
         </stop>
     </stops>
-    <passangers alpha="100" limit="30" interval="5000"></passangers>
+    <passangers alpha="0" limit="1" interval="7000"></passangers>
 </test>

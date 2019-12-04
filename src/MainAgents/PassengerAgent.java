@@ -135,7 +135,7 @@ public class PassengerAgent extends Agent {
         private ArrayList<BusProposal> proposals = new ArrayList<>();
         private int repliesCnt = 0;
         private MessageTemplate mt;
-         private MessageTemplate mtDone;
+        private MessageTemplate mtDone;
         private int step = 0;
         private double minTime = 99999;
         private double maxTime = 0;
@@ -187,6 +187,12 @@ public class PassengerAgent extends Agent {
                         repliesCnt++;
                         if (repliesCnt >= targetBuses.length) {
                             determineBestOffer();
+                            minPrice = bestProposal.getPrice();
+                            maxPrice = bestProposal.getPrice();
+                            minTime = bestProposal.getTime();
+                            maxTime = bestProposal.getTime();
+                            repliesCnt = 0;
+                            proposals.clear();
                             step = 2;
                         }
                     }
@@ -195,6 +201,76 @@ public class PassengerAgent extends Agent {
                     }
                     break;
                 case 2:
+                    cfp = new ACLMessage(ACLMessage.CFP);
+
+                    for (AID bus: targetBuses)
+                        if(!bestProposal.getBus().equals(bus))
+                            cfp.addReceiver(bus);
+
+                    cfp.setContent(startStop + " " + endStop + " " + bestProposal.getPrice());
+                    cfp.setConversationId("bus-agency");
+                    cfp.setReplyWith("cfp"+System.currentTimeMillis());
+                    myAgent.send(cfp);
+
+                    mt = MessageTemplate.and(MessageTemplate.MatchConversationId("bus-agency"),
+                            MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
+
+                    step = 3;
+                    break;
+
+                case 3:
+                    reply = myAgent.receive(mt);
+
+                    if (reply != null) {
+                        if (reply.getPerformative() == ACLMessage.PROPOSE) {
+                            String[] tokens = reply.getContent().split(" ");
+                            double time = Double.parseDouble(tokens[0]);
+                            double price = Double.parseDouble(tokens[1]);
+
+                            proposals.add(new BusProposal(reply.getSender(), time, price));
+
+                            //System.out.println(reply.getSender() + " " + time + " " + price);
+
+                            if(time < this.minTime)
+                                this.minTime = time;
+
+                            if(time > this.maxTime)
+                                this.maxTime = time;
+
+                            if(price < this.minPrice)
+                                this.minPrice = price;
+
+                            if (price > this.maxPrice)
+                                this.maxPrice = price;
+
+                        }
+
+                        repliesCnt++;
+
+                        if (repliesCnt >= (targetBuses.length - 1) ) {
+                            BusProposal oldProposal = bestProposal;
+                            proposals.add(bestProposal);
+                            determineBestOffer();
+
+                            if(oldProposal.equals(bestProposal))
+                                step = 4;
+                            else {
+                                minPrice = bestProposal.getPrice();
+                                maxPrice = bestProposal.getPrice();
+                                minTime = bestProposal.getTime();
+                                maxTime = bestProposal.getTime();
+                                proposals.clear();
+                                repliesCnt = 0;
+                                step = 2;
+                                System.out.println();
+                            }
+                        }
+                    }
+                    else {
+                        block();
+                    }
+                    break;
+                case 4:
                     ACLMessage order = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
                     order.addReceiver(bestProposal.getBus());
                     order.setContent(startStop + " " + endStop);
@@ -204,14 +280,14 @@ public class PassengerAgent extends Agent {
 
                     mt = MessageTemplate.and(MessageTemplate.MatchConversationId("bus-agency"),
                             MessageTemplate.MatchInReplyTo(order.getReplyWith()));
-                    step = 3;
+                    step = 5;
                     break;
 
-                case 3:
+                case 5:
                     reply = myAgent.receive(mt);
                     if (reply != null) {
                         if (reply.getPerformative() == ACLMessage.INFORM) {
-                            System.out.println("Bus \" " + reply.getSender().getName() + " \" will arrive at the destination in " + bestProposal.getTime() + " seconds");
+                            System.out.println("Bus \" " + reply.getSender().getName() + " \" will arrive at the destination in " + bestProposal.getTime() + " seconds. Price = " + bestProposal.getPrice() + "€");
                             ((PassengerAgent)myAgent).informStats(String.valueOf(bestProposal.getTime()),"estimated-time");
                             ((PassengerAgent)myAgent).estimatedTime = bestProposal.getTime();
                             ((PassengerAgent)myAgent).instantOfEstimation = Instant.now();
@@ -220,16 +296,16 @@ public class PassengerAgent extends Agent {
                             System.out.println("Attempt failed");
                         }
 
-                        step = 4;
+                        step = 6;
                     }
                     else {
                         block();
                     }
                     break;
-                case 4:
+                case 6:
                     reply = myAgent.receive(mtDone);
                     if (reply != null) {
-                        step=5;
+                        step = 7;
                         myAgent.doDelete();
                     }
                     else {
@@ -242,6 +318,8 @@ public class PassengerAgent extends Agent {
         private void determineBestOffer() {
 
             double bestValue = 999;
+
+            //System.out.println(this.minPrice + "€-" + this.maxPrice + "€  " + this.minTime + "s-" + this.maxTime + "s");
 
             for(BusProposal bp: this.proposals)
             {
@@ -256,6 +334,8 @@ public class PassengerAgent extends Agent {
 
                 double value = alpha * timeNormalization + (1 - alpha) * priceNormalization;
 
+                //System.out.println(bp.getTime() + "s  " + bp.getPrice() + "€    " + value);
+
                 if(value < bestValue) {
                     bestProposal = bp;
                     bestValue = value;
@@ -265,10 +345,7 @@ public class PassengerAgent extends Agent {
         }
 
         public boolean done() {
-            if (step == 2 && proposals.isEmpty()) {
-                System.out.println("There are no buses");
-            }
-            return ((step == 2 && proposals.isEmpty()) || step == 5);
+            return step == 7;
         }
     }
 
