@@ -8,15 +8,18 @@ public class Coordinates {
     public Coordinates() {
     }
 
-    Coordinates(int x, int y)
-    {
+    Coordinates(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    public int getX() {return this.x;}
+    public int getX() {
+        return this.x;
+    }
 
-    public int getY() {return this.y;}
+    public int getY() {
+        return this.y;
+    }
 
     public void setX(int x) {
         this.x = x;
@@ -26,8 +29,7 @@ public class Coordinates {
         this.y = y;
     }
 
-    public int calculateDistance(Coordinates destination)
-    {
+    public int calculateDistance(Coordinates destination) {
         double value = Math.sqrt((destination.getY() - this.y) * (destination.getY() - this.y) + (destination.getX() - this.x) * (destination.getX() - this.x));
         return (int) Math.ceil(value);
     }
@@ -43,7 +45,7 @@ public class Coordinates {
             return true;
         if (!(o instanceof Coordinates))
             return false;
-        Coordinates other = (Coordinates)o;
+        Coordinates other = (Coordinates) o;
         return this.x == other.x && this.y == other.y;
     }
 }

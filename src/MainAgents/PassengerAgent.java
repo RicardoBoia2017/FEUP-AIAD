@@ -10,6 +10,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+
 import java.time.Duration;
 import java.time.Instant;
 
@@ -29,12 +30,13 @@ public class PassengerAgent extends Agent {
 
     protected void setup() {
         Object[] args = getArguments();
-        
+
         try {
-            DFAgentDescription statsTemplate = getTemplate("stats",null);
-            while(DFService.search(this, statsTemplate).length==0){}
-            
-            DFAgentDescription stats = DFService.search(this, statsTemplate)[0]; 
+            DFAgentDescription statsTemplate = getTemplate("stats", null);
+            while (DFService.search(this, statsTemplate).length == 0) {
+            }
+
+            DFAgentDescription stats = DFService.search(this, statsTemplate)[0];
             this.statsAgent = stats.getName();
         } catch (FIPAException ex) {
             Logger.getLogger(PassengerAgent.class.getName()).log(Level.SEVERE, null, ex);
@@ -45,8 +47,7 @@ public class PassengerAgent extends Agent {
             endStop = Integer.parseInt((String) args[1]);
             alpha = Double.parseDouble((String) args[2]) / 100;
 
-            if(alpha < 0 || alpha > 100)
-            {
+            if (alpha < 0 || alpha > 100) {
                 System.out.println("Time preference value has to be between 0 and 100");
                 doDelete();
             }
@@ -55,15 +56,15 @@ public class PassengerAgent extends Agent {
 
             addBehaviour(new TickerBehaviour(this, 5000) {
                 protected void onTick() {
-                    if(((PassengerAgent)myAgent).instantOfEstimation==null){
-                        DFAgentDescription busTemplate = getTemplate("bus",null);
+                    if (((PassengerAgent) myAgent).instantOfEstimation == null) {
+                        DFAgentDescription busTemplate = getTemplate("bus", null);
                         DFAgentDescription startStopTemplate = getTemplate("stop", "stop" + startStop);
 
                         try {
                             DFAgentDescription stopDF = DFService.search(myAgent, startStopTemplate)[0];
                             DFAgentDescription[] result = DFService.search(myAgent, stopDF.getName(), busTemplate);
 
-                            if(result.length > 0) {
+                            if (result.length > 0) {
                                 System.out.println("Found the following buses:");
 
                                 targetBuses = new AID[result.length];
@@ -74,10 +75,7 @@ public class PassengerAgent extends Agent {
                                 }
 
                                 System.out.println();
-                            }
-
-                            else
-                            {
+                            } else {
                                 DFAgentDescription templateGlobal = new DFAgentDescription();
                                 ServiceDescription sdGlobal = new ServiceDescription();
                                 sdGlobal.setType("bus-agency");
@@ -98,15 +96,14 @@ public class PassengerAgent extends Agent {
 
                                 System.out.println();
                             }
-                        }
-                        catch (FIPAException fe) {
+                        } catch (FIPAException fe) {
                             fe.printStackTrace();
                         }
 
                         myAgent.addBehaviour(new RequestPerformer());
                     }
                 }
-            } );
+            });
 
         } else {
             System.err.println("Incorrect number of arguments");
@@ -116,19 +113,19 @@ public class PassengerAgent extends Agent {
     }
 
     protected void takeDown() {
-        if(this.instantOfEstimation!=null){
+        if (this.instantOfEstimation != null) {
             Instant instanceArrivedAtDestination = Instant.now();
-            double actualTravelTime = (double)Duration.between(this.instantOfEstimation, instanceArrivedAtDestination).toMillis()/1000;
+            double actualTravelTime = (double) Duration.between(this.instantOfEstimation, instanceArrivedAtDestination).toMillis() / 1000;
 
-            double timeDeviation = (actualTravelTime-this.estimatedTime)/this.estimatedTime;
+            double timeDeviation = (actualTravelTime - this.estimatedTime) / this.estimatedTime;
 
             this.informStats(String.valueOf(timeDeviation), "time-deviation");
         }
     }
 
     /**
-     Inner class RequestPerformer.
-     This is the behaviour used by passenger agents to send requests to bus agents
+     * Inner class RequestPerformer.
+     * This is the behaviour used by passenger agents to send requests to bus agents
      */
     private class RequestPerformer extends Behaviour {
         private BusProposal bestProposal = null;
@@ -146,12 +143,12 @@ public class PassengerAgent extends Agent {
             switch (step) {
                 case 0:
                     ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
-                    for (AID bus: targetBuses) {
+                    for (AID bus : targetBuses) {
                         cfp.addReceiver(bus);
                     }
                     cfp.setContent(startStop + " " + endStop);
                     cfp.setConversationId("bus-agency");
-                    cfp.setReplyWith("cfp"+System.currentTimeMillis());
+                    cfp.setReplyWith("cfp" + System.currentTimeMillis());
                     myAgent.send(cfp);
 
                     mt = MessageTemplate.and(MessageTemplate.MatchConversationId("bus-agency"),
@@ -170,13 +167,13 @@ public class PassengerAgent extends Agent {
 
                             proposals.add(new BusProposal(reply.getSender(), time, price));
 
-                            if(time < this.minTime)
+                            if (time < this.minTime)
                                 this.minTime = time;
 
                             if (time > this.maxTime)
                                 this.maxTime = time;
 
-                            if(price < this.minPrice)
+                            if (price < this.minPrice)
                                 this.minPrice = price;
 
                             if (price > this.maxPrice)
@@ -195,21 +192,20 @@ public class PassengerAgent extends Agent {
                             proposals.clear();
                             step = 2;
                         }
-                    }
-                    else {
+                    } else {
                         block();
                     }
                     break;
                 case 2:
                     cfp = new ACLMessage(ACLMessage.CFP);
 
-                    for (AID bus: targetBuses)
-                        if(!bestProposal.getBus().equals(bus))
+                    for (AID bus : targetBuses)
+                        if (!bestProposal.getBus().equals(bus))
                             cfp.addReceiver(bus);
 
                     cfp.setContent(startStop + " " + endStop + " " + bestProposal.getPrice());
                     cfp.setConversationId("bus-agency");
-                    cfp.setReplyWith("cfp"+System.currentTimeMillis());
+                    cfp.setReplyWith("cfp" + System.currentTimeMillis());
                     myAgent.send(cfp);
 
                     mt = MessageTemplate.and(MessageTemplate.MatchConversationId("bus-agency"),
@@ -231,13 +227,13 @@ public class PassengerAgent extends Agent {
 
                             //System.out.println(reply.getSender() + " " + time + " " + price);
 
-                            if(time < this.minTime)
+                            if (time < this.minTime)
                                 this.minTime = time;
 
-                            if(time > this.maxTime)
+                            if (time > this.maxTime)
                                 this.maxTime = time;
 
-                            if(price < this.minPrice)
+                            if (price < this.minPrice)
                                 this.minPrice = price;
 
                             if (price > this.maxPrice)
@@ -247,12 +243,12 @@ public class PassengerAgent extends Agent {
 
                         repliesCnt++;
 
-                        if (repliesCnt >= (targetBuses.length - 1) ) {
+                        if (repliesCnt >= (targetBuses.length - 1)) {
                             BusProposal oldProposal = bestProposal;
                             proposals.add(bestProposal);
                             determineBestOffer();
 
-                            if(oldProposal.equals(bestProposal))
+                            if (oldProposal.equals(bestProposal))
                                 step = 4;
                             else {
                                 minPrice = bestProposal.getPrice();
@@ -265,8 +261,7 @@ public class PassengerAgent extends Agent {
                                 System.out.println();
                             }
                         }
-                    }
-                    else {
+                    } else {
                         block();
                     }
                     break;
@@ -275,7 +270,7 @@ public class PassengerAgent extends Agent {
                     order.addReceiver(bestProposal.getBus());
                     order.setContent(startStop + " " + endStop);
                     order.setConversationId("bus-agency");
-                    order.setReplyWith("order"+System.currentTimeMillis());
+                    order.setReplyWith("order" + System.currentTimeMillis());
                     myAgent.send(order);
 
                     mt = MessageTemplate.and(MessageTemplate.MatchConversationId("bus-agency"),
@@ -288,17 +283,15 @@ public class PassengerAgent extends Agent {
                     if (reply != null) {
                         if (reply.getPerformative() == ACLMessage.INFORM) {
                             System.out.println("Bus \" " + reply.getSender().getName() + " \" will arrive at the destination in " + bestProposal.getTime() + " seconds. Price = " + bestProposal.getPrice() + "€");
-                            ((PassengerAgent)myAgent).informStats(String.valueOf(bestProposal.getTime()),"estimated-time");
-                            ((PassengerAgent)myAgent).estimatedTime = bestProposal.getTime();
-                            ((PassengerAgent)myAgent).instantOfEstimation = Instant.now();
-                        }
-                        else {
+                            ((PassengerAgent) myAgent).informStats(String.valueOf(bestProposal.getTime()), "estimated-time");
+                            ((PassengerAgent) myAgent).estimatedTime = bestProposal.getTime();
+                            ((PassengerAgent) myAgent).instantOfEstimation = Instant.now();
+                        } else {
                             System.out.println("Attempt failed");
                         }
 
                         step = 6;
-                    }
-                    else {
+                    } else {
                         block();
                     }
                     break;
@@ -307,8 +300,7 @@ public class PassengerAgent extends Agent {
                     if (reply != null) {
                         step = 7;
                         myAgent.doDelete();
-                    }
-                    else {
+                    } else {
                         block();
                     }
                     break;
@@ -321,22 +313,21 @@ public class PassengerAgent extends Agent {
 
             //System.out.println(this.minPrice + "€-" + this.maxPrice + "€  " + this.minTime + "s-" + this.maxTime + "s");
 
-            for(BusProposal bp: this.proposals)
-            {
+            for (BusProposal bp : this.proposals) {
                 double timeNormalization = 0;
                 double priceNormalization = 0;
 
-                if(this.minTime < this.maxTime)
+                if (this.minTime < this.maxTime)
                     timeNormalization = (bp.getTime() - this.minTime) / (this.maxTime - this.minTime);
 
-                if(this.minPrice < this.maxPrice)
+                if (this.minPrice < this.maxPrice)
                     priceNormalization = (bp.getPrice() - this.minPrice) / (this.maxPrice - this.minPrice);
 
                 double value = alpha * timeNormalization + (1 - alpha) * priceNormalization;
 
                 //System.out.println(bp.getTime() + "s  " + bp.getPrice() + "€    " + value);
 
-                if(value < bestValue) {
+                if (value < bestValue) {
                     bestProposal = bp;
                     bestValue = value;
                 }
@@ -349,28 +340,27 @@ public class PassengerAgent extends Agent {
         }
     }
 
-    private DFAgentDescription getTemplate(String type, String name)
-    {
+    private DFAgentDescription getTemplate(String type, String name) {
         DFAgentDescription template = new DFAgentDescription();
         ServiceDescription sdStart = new ServiceDescription();
 
         if (type != null)
             sdStart.setType(type);
-        if(name != null)
+        if (name != null)
             sdStart.setName(name);
 
         template.addServices(sdStart);
-        
+
         return template;
     }
-    
-    private void informStats(String content,String conversation){
+
+    private void informStats(String content, String conversation) {
         ACLMessage message = new ACLMessage(ACLMessage.INFORM);
         message.addReceiver(this.statsAgent);
         message.setContent(content);
         message.setConversationId(conversation);
-        message.setReplyWith("cfp"+System.currentTimeMillis());
-        this.send(message);   
+        message.setReplyWith("cfp" + System.currentTimeMillis());
+        this.send(message);
     }
 
 }

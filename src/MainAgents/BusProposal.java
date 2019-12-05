@@ -8,8 +8,7 @@ public class BusProposal {
     private double time;
     private double price;
 
-    BusProposal(AID bus, double time, double price)
-    {
+    BusProposal(AID bus, double time, double price) {
         this.bus = bus;
         this.time = time;
         this.price = price;

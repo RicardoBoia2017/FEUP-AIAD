@@ -15,8 +15,10 @@ import java.io.FilenameFilter;
 import java.util.Random;
 
 import org.w3c.dom.Document;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -34,7 +36,7 @@ public class JADELauncher {
                 }
             }); //For now just gets the first xml file of the test directory TODO: multiple files/tests
 
-            for (File testFile: testFiles) {
+            for (File testFile : testFiles) {
                 runTest(testFile);
             }
 
@@ -43,8 +45,8 @@ public class JADELauncher {
         }
     }
 
-    private static void runTest(File testFile){
-        System.out.println("Started "+ getTestName(testFile));
+    private static void runTest(File testFile) {
+        System.out.println("Started " + getTestName(testFile));
 
         try {
             Runtime rt = Runtime.instance();
@@ -143,7 +145,7 @@ public class JADELauncher {
             //ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
             //executor.scheduleAtFixedRate(passLauncher, 0, 5, TimeUnit.SECONDS);
 
-            spawnPassengers(mainContainer,alpha,limit,interval,stopNumber);
+            spawnPassengers(mainContainer, alpha, limit, interval, stopNumber);
 
             while (statsAgent.getTotalNumberOfPassengers() < limit) {
                 Thread.sleep(2000);
@@ -151,26 +153,26 @@ public class JADELauncher {
 
             //killAllAgents(mainContainer, limit);
 
-             mainContainer.kill();
+            mainContainer.kill();
             statsAgent.getMyGUI().dispose();
             map.getMyGUI().dispose();
 
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        System.out.println("Ended "+ getTestName(testFile));
+        System.out.println("Ended " + getTestName(testFile));
     }
 
 
-    private static void spawnPassengers(ContainerController mainContainer, int alpha, int limit, int interval,int stopNumber){
+    private static void spawnPassengers(ContainerController mainContainer, int alpha, int limit, int interval, int stopNumber) {
         Random rand = new Random();
-        for (int i=0;i<limit;i++){
-            int stop1 = rand.nextInt(stopNumber)+1;
+        for (int i = 0; i < limit; i++) {
+            int stop1 = rand.nextInt(stopNumber) + 1;
 
             int stop2;
             do {
-                stop2 = rand.nextInt(stopNumber)+1;
+                stop2 = rand.nextInt(stopNumber) + 1;
             } while (stop1 == stop2);
 
             try {
@@ -182,7 +184,7 @@ public class JADELauncher {
             } catch (StaleProxyException | InterruptedException e) {
                 e.printStackTrace();
             }
-       }
+        }
     }
 
     private static void killAllAgents(ContainerController mainContainer, int limit) {
@@ -190,18 +192,19 @@ public class JADELauncher {
 
         try {
             SearchConstraints c = new SearchConstraints();
-            c.setMaxResults ( new Long(1) );
-            agents = AMSService.search( new Agent(), new AMSAgentDescription ());
+            c.setMaxResults(new Long(1));
+            agents = AMSService.search(new Agent(), new AMSAgentDescription());
 
-            for (int i=0; i<agents.length;i++){
+            for (int i = 0; i < agents.length; i++) {
                 AID agentID = agents[i].getName();
                 mainContainer.getAgent(String.valueOf(agentID)).kill();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        catch (Exception e) { e.printStackTrace(); }
     }
 
-    private static String getTestName(File file){
+    private static String getTestName(File file) {
         return file.getName().replaceFirst("[.][^.]+$", "");
     }
 }

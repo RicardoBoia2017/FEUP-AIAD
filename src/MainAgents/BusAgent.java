@@ -27,7 +27,7 @@ public class BusAgent extends Agent {
     private int price;
     private float dishonestyDegree;
     private double priceFlexibility;
-    private double gain=0;
+    private double gain = 0;
     private boolean random = false;
 
     protected void setup() {
@@ -109,7 +109,7 @@ public class BusAgent extends Agent {
                                     j = (int) (Math.random() * ((result.length - 1) + 1));
                                 } while (currentBus.getStopDetails(result[j]).getCoords() == this.currentBus.coords);
 
-                                registerInStop(result[j], null,false);
+                                registerInStop(result[j], null, false);
                                 random = true;
                             }
 
@@ -145,7 +145,7 @@ public class BusAgent extends Agent {
     }
 
     protected void takeDown() {
-        System.out.println("Bus "+this.getLocalName()+" stopped operating");
+        System.out.println("Bus " + this.getLocalName() + " stopped operating");
     }
 
     /**
@@ -182,26 +182,21 @@ public class BusAgent extends Agent {
                     double time = (distance / currentBus.speed) * (1 - this.currentBus.dishonestyDegree);
                     double price = (currentBus.price * time) / 100;
 
-                    if(info.length > 2)
-                    {
+                    if (info.length > 2) {
                         double bestPrice = Double.parseDouble(info[2]);
                         double discountNeeded = 1 - (bestPrice / price);
                         System.out.println(getLocalName() + ": " + price + "  " + bestPrice + "   " + (discountNeeded + 0.02) + "  " + currentBus.priceFlexibility);
 
-                        if ( (discountNeeded + 0.02) > currentBus.priceFlexibility) {
+                        if ((discountNeeded + 0.02) > currentBus.priceFlexibility) {
                             reply.setPerformative(ACLMessage.REFUSE);
                             reply.setContent("not-available");
-                        }
-
-                        else {
-                            price = (1 - (discountNeeded + 0.02) ) * price;
+                        } else {
+                            price = (1 - (discountNeeded + 0.02)) * price;
                             System.out.println("New price: " + price);
                             reply.setPerformative(ACLMessage.PROPOSE);
                             reply.setContent(time + " " + price);
                         }
-                    }
-
-                    else {
+                    } else {
                         reply.setPerformative(ACLMessage.PROPOSE);
                         reply.setContent(time + " " + price);
                     }
@@ -266,13 +261,13 @@ public class BusAgent extends Agent {
 
                     if (!StopDetails.checkIfStartEndInOrder(resultStartStop[0].getName().getLocalName(), resultEndStop[0].getName().getLocalName(), currentBus.itinerary)) {
                         if (StopDetails.getFirstStopByName(resultStartStop[0].getName().getLocalName(), currentBus.itinerary) != null) {
-                            registerInStop(resultEndStop[0], msg.getSender(),true);
+                            registerInStop(resultEndStop[0], msg.getSender(), true);
                         } else {
-                            registerInStop(resultStartStop[0], null,true);
-                            registerInStop(resultEndStop[0], msg.getSender(),true);
+                            registerInStop(resultStartStop[0], null, true);
+                            registerInStop(resultEndStop[0], msg.getSender(), true);
                         }
-                    } else{
-                        registerInStop(resultEndStop[0], msg.getSender(),false);
+                    } else {
+                        registerInStop(resultEndStop[0], msg.getSender(), false);
                     }
 
                     currentBus.availableSeats--;
@@ -314,10 +309,10 @@ public class BusAgent extends Agent {
 
             if (results.length == 0 || addRepeated) {
 
-                if(results.length == 0){
+                if (results.length == 0) {
                     DFService.register(this, stop.getName(), busTemplate);
                 }
-                
+
                 StopDetails stopDetails = getStopDetails(stop);
                 if (passengerDestiny != null) {
                     stopDetails.setLeavingPassenger(passengerDestiny);
@@ -356,7 +351,7 @@ public class BusAgent extends Agent {
             DFAgentDescription busTemplate = getTemplate("bus", getLocalName());
             busTemplate.setName(getAID());
 
-            if(StopDetails.getFirstStopByName(stopDF.getName().getLocalName(), this.itinerary) == null)
+            if (StopDetails.getFirstStopByName(stopDF.getName().getLocalName(), this.itinerary) == null)
                 DFService.deregister(this, stopDF.getName(), busTemplate);
 
         } catch (FIPAException e) {

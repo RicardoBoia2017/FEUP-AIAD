@@ -9,21 +9,21 @@ import jade.domain.FIPAException;
 import jade.domain.FIPANames;
 import jade.domain.df;
 
-public class StopAgent extends df{
+public class StopAgent extends df {
 
     private Coordinates coords;
 
-    protected void setup(){
+    protected void setup() {
 
         Object[] coordArgs = getArguments();
 
         if (coordArgs != null && coordArgs.length == 3) {
-             coords = new Coordinates((int)coordArgs[1],(int)coordArgs[2]);
-        
+            coords = new Coordinates((int) coordArgs[1], (int) coordArgs[2]);
+
             AID parentName = getDefaultDF();
-            
+
             super.setup();
-             
+
             DFAgentDescription dfd = new DFAgentDescription();
             dfd.setName(getAID());
 
@@ -34,7 +34,7 @@ public class StopAgent extends df{
             sdFIPA.addOntologies("fipa-agent-management");
             sdFIPA.setOwnership("JADE");
             dfd.addServices(sdFIPA);
-            
+
             ServiceDescription sd = new ServiceDescription();
             sd.setName(getLocalName());
             sd.setType("stop");
@@ -47,17 +47,17 @@ public class StopAgent extends df{
             sd.addProperties(coordCol);
             sd.addProperties(coordLine);
             dfd.addServices(sd);
-           
+
             setDescriptionOfThisDF(dfd);
-            
+
             super.showGui();
-            
+
             try {
-                DFService.register(this, parentName,dfd);
+                DFService.register(this, parentName, dfd);
             } catch (FIPAException fe) {
                 fe.printStackTrace();
             }
-            
+
             addParent(parentName, dfd);
         } else {
             System.out.println("No stop coordinates specified");
@@ -69,7 +69,6 @@ public class StopAgent extends df{
     public Coordinates getCoords() {
         return coords;
     }
-    
-    
+
 
 }

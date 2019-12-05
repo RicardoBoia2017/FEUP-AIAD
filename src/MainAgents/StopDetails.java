@@ -1,6 +1,7 @@
 package MainAgents;
 
 import jade.core.AID;
+
 import java.util.ArrayList;
 
 public class StopDetails {
@@ -49,14 +50,14 @@ public class StopDetails {
         }
         return ret;
     }
-    
-    public static Boolean checkIfStartEndInOrder(String startName, String endName, ArrayList<StopDetails> stopList){
+
+    public static Boolean checkIfStartEndInOrder(String startName, String endName, ArrayList<StopDetails> stopList) {
         Boolean isStartPresent = false;
         for (StopDetails currStop : stopList) {
             if (currStop.getName().equals(startName)) {
-                isStartPresent=true;
-            } else if(currStop.getName().equals(endName)){
-                if(isStartPresent){
+                isStartPresent = true;
+            } else if (currStop.getName().equals(endName)) {
+                if (isStartPresent) {
                     return true;
                 }
             }

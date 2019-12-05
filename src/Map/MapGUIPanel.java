@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 
 import MainAgents.Coordinates;
 
-public class MapGUIPanel extends JPanel implements ActionListener{
+public class MapGUIPanel extends JPanel implements ActionListener {
 
     private Map currentMapInfo;
     Timer timer;
@@ -27,7 +27,7 @@ public class MapGUIPanel extends JPanel implements ActionListener{
 
     public MapGUIPanel(Map currentMapInfo) {
         this.currentMapInfo = currentMapInfo;
-        this.timer =new Timer(Map.REFRESH_RATE, this);
+        this.timer = new Timer(Map.REFRESH_RATE, this);
         timer.start();
 
         File url;
@@ -57,7 +57,7 @@ public class MapGUIPanel extends JPanel implements ActionListener{
         }
 
     }
-       
+
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -68,55 +68,55 @@ public class MapGUIPanel extends JPanel implements ActionListener{
         Font font = new Font("SansSerif", Font.BOLD, 10);
         g.setFont(font);
         FontMetrics metrics = g.getFontMetrics(font);
-        
-        colorize(busIcon,busColor);
-        colorize(stopIcon,stopColor);
-        
+
+        colorize(busIcon, busColor);
+        colorize(stopIcon, stopColor);
+
         Coordinates coord;
-        
+
         g.setColor(busColor);
         int CELL_SIZE = 20;
-        for(String id: currentMapInfo.getBusList().keySet()){
+        for (String id : currentMapInfo.getBusList().keySet()) {
             coord = currentMapInfo.getBusList().get(id);
-            g.drawImage(busIcon, coord.getX()* CELL_SIZE, coord.getY()* CELL_SIZE, CELL_SIZE, CELL_SIZE, this);
-            g.drawString(id,coord.getX()* CELL_SIZE -metrics.stringWidth(id)/2+ CELL_SIZE /2, coord.getY()* CELL_SIZE + CELL_SIZE +font.getSize());
+            g.drawImage(busIcon, coord.getX() * CELL_SIZE, coord.getY() * CELL_SIZE, CELL_SIZE, CELL_SIZE, this);
+            g.drawString(id, coord.getX() * CELL_SIZE - metrics.stringWidth(id) / 2 + CELL_SIZE / 2, coord.getY() * CELL_SIZE + CELL_SIZE + font.getSize());
         }
-     
+
         g.setColor(stopColor);
-        for(String id : currentMapInfo.getStopList().keySet()){
+        for (String id : currentMapInfo.getStopList().keySet()) {
             coord = currentMapInfo.getStopList().get(id);
-            g.drawImage(stopIcon, coord.getX()* CELL_SIZE, coord.getY()* CELL_SIZE, CELL_SIZE, CELL_SIZE, this);
-            g.drawString(id,coord.getX()* CELL_SIZE -metrics.stringWidth(id)/2+ CELL_SIZE /2, coord.getY()* CELL_SIZE + CELL_SIZE +font.getSize());
+            g.drawImage(stopIcon, coord.getX() * CELL_SIZE, coord.getY() * CELL_SIZE, CELL_SIZE, CELL_SIZE, this);
+            g.drawString(id, coord.getX() * CELL_SIZE - metrics.stringWidth(id) / 2 + CELL_SIZE / 2, coord.getY() * CELL_SIZE + CELL_SIZE + font.getSize());
         }
-        
+
     }
-    
+
     private static void colorize(BufferedImage bImage, Color newColor) {
         for (int x = 0; x < bImage.getWidth(); x++) {
-             for (int y = 0; y < bImage.getHeight(); y++) {
-                 if(!isPixelTransparent(bImage,x,y)){
+            for (int y = 0; y < bImage.getHeight(); y++) {
+                if (!isPixelTransparent(bImage, x, y)) {
                     bImage.setRGB(x, y, newColor.getRGB());
-                 }
-             }
-         }
+                }
+            }
+        }
     }
-    
-    private static boolean isPixelTransparent(BufferedImage img,int x, int y ) {
-        int pixel = img.getRGB(x,y);
+
+    private static boolean isPixelTransparent(BufferedImage img, int x, int y) {
+        int pixel = img.getRGB(x, y);
         return (pixel >> 24) == 0x00;
     }
 
     public static void main(String[] args) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-               
+
             }
         });
     }
-    
-    public void actionPerformed(ActionEvent ev){
-        if(ev.getSource()==timer){
-          repaint();
+
+    public void actionPerformed(ActionEvent ev) {
+        if (ev.getSource() == timer) {
+            repaint();
         }
     }
 
