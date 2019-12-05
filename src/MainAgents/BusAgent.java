@@ -3,6 +3,7 @@ package MainAgents;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -67,6 +68,7 @@ public class BusAgent extends Agent {
 
             addBehaviour(new ReservationsServer(this));
 
+            addBehaviour(new RegisterInCollaboration());
             double timeOnCell = (1 / this.speed) * 1000;
 
             addBehaviour(new TickerBehaviour(this, (long) timeOnCell) {
@@ -227,6 +229,7 @@ public class BusAgent extends Agent {
             if (msg != null) {
                 String[] stops;
                 String startStop, endStop;
+
                 stops = msg.getContent().split("");
 
                 startStop = stops[0];
@@ -291,7 +294,63 @@ public class BusAgent extends Agent {
 
     }
 
+    private class RegisterInCollaboration extends SimpleBehaviour {
+
+        private boolean registed = false;
+
+        @Override
+        public void action() {
+
+            DFAgentDescription[] results = null;
+
+            DFAgentDescription colTemplate = new DFAgentDescription();
+            ServiceDescription sd = new ServiceDescription();
+            sd.setType("collaboration");
+            colTemplate.addServices(sd);
+
+            DFAgentDescription busTemplate = new DFAgentDescription();
+            busTemplate.setName(myAgent.getAID());
+            sd = new ServiceDescription();
+            sd.setType("bus");
+            sd.setName(myAgent.getLocalName());
+            busTemplate.addServices(sd);
+
+            try {
+                do {
+                    results = DFService.search(myAgent, colTemplate);
+                } while (results.length == 0);
+
+                DFService.register(myAgent, results[0].getName(), busTemplate);
+                registed = true;
+            }
+            catch(FIPAException fe)
+            {
+                System.err.println(fe.toString());
+                fe.printStackTrace();
+            }
+
+            busTemplate = getTemplate("bus", null);
+            colTemplate = getTemplate("collaboration", "col");
+
+            DFAgentDescription colDF = null;
+
+            try {
+                colDF = DFService.search(myAgent, colTemplate)[0];
+                DFAgentDescription[] result = DFService.search(myAgent, colDF.getName(), busTemplate);
+                
+            } catch (FIPAException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public boolean done() {
+            return registed;
+        }
+    }
+
     private void registerInStop(DFAgentDescription stop, AID passengerDestiny, boolean addRepeated) {
+
         DFAgentDescription busTemplate = new DFAgentDescription();
         busTemplate.setName(this.getAID());
         ServiceDescription sd = new ServiceDescription();
@@ -498,4 +557,5 @@ public class BusAgent extends Agent {
         message.setContent("ARRIVED TO DESTINATION");
         this.send(message);
     }
+
 }

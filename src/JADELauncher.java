@@ -73,6 +73,13 @@ public class JADELauncher {
                 e.printStackTrace();
             }
 
+            try {
+                ac = mainContainer.createNewAgent("collaboration", "MainAgents.CollaborationAgent", null);
+                ac.start();
+            } catch (StaleProxyException e) {
+                e.printStackTrace();
+            }
+
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(testFile);
