@@ -318,7 +318,12 @@ public class BusAgent extends Agent {
                     stopDetails.setLeavingPassenger(passengerDestiny);
                 }
 
-                this.itinerary.add(stopDetails);
+                if(passengerDestiny == null && !this.itinerary.isEmpty()){
+                    this.addToBestItineraryPosition(stopDetails);
+                } else {
+                    this.itinerary.add(stopDetails);
+                }
+
             } else if (passengerDestiny != null) {
                 StopDetails.getFirstStopByName(stop.getName().getLocalName(), this.itinerary).setLeavingPassenger(passengerDestiny);
             }
@@ -497,5 +502,34 @@ public class BusAgent extends Agent {
         }
         message.setContent("ARRIVED TO DESTINATION");
         this.send(message);
+    }
+
+    private void addToBestItineraryPosition(StopDetails newStop) {
+        ArrayList<StopDetails> tmpItenerary = new ArrayList<>(this.itinerary);
+        ArrayList<StopDetails> bestItenerary = new ArrayList<>();
+        int minDistance = Integer.MIN_VALUE;
+        int totalDistance = 0;
+
+        for(int i = 0;i<=this.itinerary.size();i++){
+            tmpItenerary = new ArrayList<>(this.itinerary);
+            if(tmpItenerary.isEmpty()) {
+                totalDistance = this.coords.calculateDistance(newStop.getCoords());
+            }else{
+                totalDistance = this.coords.calculateDistance(tmpItenerary.get(0).getCoords());
+            }
+
+            tmpItenerary.add(i, newStop);
+
+            for(int x = 0;x<tmpItenerary.size()-1;x++) {
+                totalDistance += tmpItenerary.get(x).getCoords().calculateDistance(tmpItenerary.get(x+1).getCoords());
+            }
+
+            if(totalDistance < minDistance){
+                minDistance=totalDistance;
+                bestItenerary=tmpItenerary;
+            }
+        }
+
+        this.itinerary = new ArrayList<>(bestItenerary);
     }
 }

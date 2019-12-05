@@ -1,11 +1,10 @@
 Simulation Statistics File
 
-Average Estimated Waiting Time: 14,00 seconds 
-Average Time Deviation: -0,539% 
+Average Estimated Waiting Time: -1,00 seconds 
+Average Time Deviation: -1,000% 
 Current Average Bus Occupancy Rate: 0,000% 
-Maximum Average Bus Occupancy Rate: 0,013% 
-Total financial gain: 8.25€ 
-Total number of passangers: 1 
+Maximum Average Bus Occupancy Rate: 0,000% 
+Total financial gain: 0.0€ 
+Total number of passangers: 0 
 Financial gain per bus:
-bus2: 8,25€
 bus1: 0,00€
