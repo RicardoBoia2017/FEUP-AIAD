@@ -35,11 +35,13 @@ public class BusAgent extends Agent {
 
         Object[] args = getArguments();
 
-        if (args == null || args.length != 7) {
+        if (args == null || args.length != 8) {
             System.err.println("Incorrect number of arguments");
-            System.err.println("Bus arguments: startStop endStop speed capacity pricePerMinute dishonestyDegree(0-5)");
+            System.err.println("Bus arguments: startStop endStop speed capacity pricePerMinute dishonestyDegree(0-5) priceFlexibility(0-5) collaboration" );
             doDelete();
         } else {
+            int collaboration;
+
             coords = new Coordinates(Integer.parseInt((String) args[0]), Integer.parseInt((String) args[1]));
             speed = Float.parseFloat((String) args[2]);
             totalSeats = Integer.parseInt((String) args[3]);
@@ -47,9 +49,15 @@ public class BusAgent extends Agent {
             price = Integer.parseInt((String) args[4]);
             dishonestyDegree = Float.parseFloat((String) args[5]) / 10;
             priceFlexibility = Float.parseFloat((String) args[6]) / (5 / 0.55);
+            collaboration =  Integer.parseInt((String) args[7]);
 
             if (dishonestyDegree < 0 || dishonestyDegree > 5) {
                 System.out.println("Dishonesty degree value must be between 0 and 5");
+                doDelete();
+            }
+
+            if (priceFlexibility < 0 || priceFlexibility > 5) {
+                System.out.println("Price flexibility value must be between 0 and 5");
                 doDelete();
             }
 
@@ -68,7 +76,11 @@ public class BusAgent extends Agent {
 
             addBehaviour(new ReservationsServer(this));
 
-            addBehaviour(new RegisterInCollaboration());
+            if(collaboration == 1) {
+                addBehaviour(new RegisterInCollaboration());
+                System.out.println("Collaboration: " + getLocalName());
+            }
+
             double timeOnCell = (1 / this.speed) * 1000;
 
             addBehaviour(new TickerBehaviour(this, (long) timeOnCell) {
@@ -165,7 +177,9 @@ public class BusAgent extends Agent {
             MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);
 
             ACLMessage msg = myAgent.receive(mt);
-            if (msg != null) {
+            if (msg != null && msg.getConversationId().equals("Negotiation")) {
+                System.out.println(msg.getSender());
+
                 String[] info;
                 String startStop, endStop;
                 info = msg.getContent().split(" ");
@@ -187,14 +201,14 @@ public class BusAgent extends Agent {
                     if (info.length > 2) {
                         double bestPrice = Double.parseDouble(info[2]);
                         double discountNeeded = 1 - (bestPrice / price);
-                        System.out.println(getLocalName() + ": " + price + "  " + bestPrice + "   " + (discountNeeded + 0.02) + "  " + currentBus.priceFlexibility);
+                        //System.out.println(getLocalName() + ": " + price + "  " + bestPrice + "   " + (discountNeeded + 0.02) + "  " + currentBus.priceFlexibility);
 
                         if ((discountNeeded + 0.02) > currentBus.priceFlexibility) {
                             reply.setPerformative(ACLMessage.REFUSE);
                             reply.setContent("not-available");
                         } else {
                             price = (1 - (discountNeeded + 0.02)) * price;
-                            System.out.println("New price: " + price);
+                            //System.out.println("New price: " + price);
                             reply.setPerformative(ACLMessage.PROPOSE);
                             reply.setContent(time + " " + price);
                         }
@@ -296,7 +310,7 @@ public class BusAgent extends Agent {
 
     private class RegisterInCollaboration extends SimpleBehaviour {
 
-        private boolean registed = false;
+        private boolean registered = false;
 
         @Override
         public void action() {
@@ -321,31 +335,18 @@ public class BusAgent extends Agent {
                 } while (results.length == 0);
 
                 DFService.register(myAgent, results[0].getName(), busTemplate);
-                registed = true;
+                registered = true;
             }
             catch(FIPAException fe)
             {
                 System.err.println(fe.toString());
                 fe.printStackTrace();
             }
-
-            busTemplate = getTemplate("bus", null);
-            colTemplate = getTemplate("collaboration", "col");
-
-            DFAgentDescription colDF = null;
-
-            try {
-                colDF = DFService.search(myAgent, colTemplate)[0];
-                DFAgentDescription[] result = DFService.search(myAgent, colDF.getName(), busTemplate);
-                
-            } catch (FIPAException e) {
-                e.printStackTrace();
-            }
         }
 
         @Override
         public boolean done() {
-            return registed;
+            return registered;
         }
     }
 

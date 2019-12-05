@@ -147,11 +147,11 @@ public class PassengerAgent extends Agent {
                         cfp.addReceiver(bus);
                     }
                     cfp.setContent(startStop + " " + endStop);
-                    cfp.setConversationId("bus-agency");
+                    cfp.setConversationId("Negotiation");
                     cfp.setReplyWith("cfp" + System.currentTimeMillis());
                     myAgent.send(cfp);
 
-                    mt = MessageTemplate.and(MessageTemplate.MatchConversationId("bus-agency"),
+                    mt = MessageTemplate.and(MessageTemplate.MatchConversationId("Negotiation"),
                             MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
                     mtDone = MessageTemplate.MatchContent("ARRIVED TO DESTINATION");
                     step = 1;
@@ -204,11 +204,11 @@ public class PassengerAgent extends Agent {
                             cfp.addReceiver(bus);
 
                     cfp.setContent(startStop + " " + endStop + " " + bestProposal.getPrice());
-                    cfp.setConversationId("bus-agency");
+                    cfp.setConversationId("Negotiation");
                     cfp.setReplyWith("cfp" + System.currentTimeMillis());
                     myAgent.send(cfp);
 
-                    mt = MessageTemplate.and(MessageTemplate.MatchConversationId("bus-agency"),
+                    mt = MessageTemplate.and(MessageTemplate.MatchConversationId("Negotiation"),
                             MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
 
                     step = 3;
@@ -269,11 +269,11 @@ public class PassengerAgent extends Agent {
                     ACLMessage order = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
                     order.addReceiver(bestProposal.getBus());
                     order.setContent(startStop + " " + endStop);
-                    order.setConversationId("bus-agency");
+                    order.setConversationId("Negotiation");
                     order.setReplyWith("order" + System.currentTimeMillis());
                     myAgent.send(order);
 
-                    mt = MessageTemplate.and(MessageTemplate.MatchConversationId("bus-agency"),
+                    mt = MessageTemplate.and(MessageTemplate.MatchConversationId("Negotiation"),
                             MessageTemplate.MatchInReplyTo(order.getReplyWith()));
                     step = 5;
                     break;
