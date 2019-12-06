@@ -159,6 +159,7 @@ public class PassengerAgent extends Agent {
                     break;
                 case 1:
                     ACLMessage reply = myAgent.receive(mt);
+
                     if (reply != null) {
                         if (reply.getPerformative() == ACLMessage.PROPOSE) {
                             String[] tokens = reply.getContent().split(" ");
