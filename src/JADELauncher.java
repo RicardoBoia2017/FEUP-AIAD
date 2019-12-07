@@ -73,6 +73,13 @@ public class JADELauncher {
                 e.printStackTrace();
             }
 
+            try {
+                ac = mainContainer.createNewAgent("collaboration", "MainAgents.CollaborationAgent", null);
+                ac.start();
+            } catch (StaleProxyException e) {
+                e.printStackTrace();
+            }
+
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(testFile);
@@ -96,9 +103,10 @@ public class JADELauncher {
                 String price = elem.getElementsByTagName("price").item(0).getTextContent();
                 String dishonestyDegree = elem.getElementsByTagName("dishonestyDegree").item(0).getTextContent();
                 String priceFlexibility = elem.getElementsByTagName("priceFlexibility").item(0).getTextContent();
+                String collaboration = elem.getElementsByTagName("collaboration").item(0).getTextContent();
 
                 try {
-                    Object[] coords = {x, y, speed, totalSeats, price, dishonestyDegree, priceFlexibility};
+                    Object[] coords = {x, y, speed, totalSeats, price, dishonestyDegree, priceFlexibility, collaboration};
                     ac = mainContainer.createNewAgent(name, "MainAgents.BusAgent", coords);
                     ac.start();
                 } catch (StaleProxyException e) {

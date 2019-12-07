@@ -3,6 +3,7 @@ package MainAgents;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -27,6 +28,7 @@ public class BusAgent extends Agent {
     private int price;
     private float dishonestyDegree;
     private double priceFlexibility;
+    private int collaboration;
     private double gain = 0;
     private boolean random = false;
 
@@ -34,11 +36,12 @@ public class BusAgent extends Agent {
 
         Object[] args = getArguments();
 
-        if (args == null || args.length != 7) {
+        if (args == null || args.length != 8) {
             System.err.println("Incorrect number of arguments");
-            System.err.println("Bus arguments: startStop endStop speed capacity pricePerMinute dishonestyDegree(0-5)");
+            System.err.println("Bus arguments: startStop endStop speed capacity pricePerMinute dishonestyDegree(0-5) priceFlexibility(0-5) collaboration" );
             doDelete();
         } else {
+
             coords = new Coordinates(Integer.parseInt((String) args[0]), Integer.parseInt((String) args[1]));
             speed = Float.parseFloat((String) args[2]);
             totalSeats = Integer.parseInt((String) args[3]);
@@ -46,9 +49,15 @@ public class BusAgent extends Agent {
             price = Integer.parseInt((String) args[4]);
             dishonestyDegree = Float.parseFloat((String) args[5]) / 10;
             priceFlexibility = Float.parseFloat((String) args[6]) / (5 / 0.55);
+            collaboration =  Integer.parseInt((String) args[7]);
 
             if (dishonestyDegree < 0 || dishonestyDegree > 5) {
                 System.out.println("Dishonesty degree value must be between 0 and 5");
+                doDelete();
+            }
+
+            if (priceFlexibility < 0 || priceFlexibility > 5) {
+                System.out.println("Price flexibility value must be between 0 and 5");
                 doDelete();
             }
 
@@ -63,9 +72,12 @@ public class BusAgent extends Agent {
                 fe.printStackTrace();
             }
 
-            addBehaviour(new OfferRequestsServer(this));
+            addBehaviour(new NegotiationServer(this));
 
             addBehaviour(new ReservationsServer(this));
+
+            if(collaboration == 1)
+                addBehaviour(new RegisterInCollaboration());
 
             double timeOnCell = (1 / this.speed) * 1000;
 
@@ -148,14 +160,12 @@ public class BusAgent extends Agent {
         System.out.println("Bus " + this.getLocalName() + " stopped operating");
     }
 
-    /**
-     * Inner class OfferRequestsServer. This is the behaviour used by Bus agents to serve incoming requests for offer from passenger agents. If the bus can pick the client, then it replies with a PROPOSE message specifying the time/price. Otherwise a REFUSE message is sent back.
-     */
-    private class OfferRequestsServer extends CyclicBehaviour {
+    private class NegotiationServer extends CyclicBehaviour {
 
         BusAgent currentBus;
+        HashMap<String,PassengerInfo> colResponsesLeft = new HashMap<>();
 
-        private OfferRequestsServer(BusAgent currentBus) {
+        private NegotiationServer(BusAgent currentBus) {
             this.currentBus = currentBus;
         }
 
@@ -164,52 +174,127 @@ public class BusAgent extends Agent {
 
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
-                String[] info;
-                String startStop, endStop;
-                info = msg.getContent().split(" ");
+                if(msg.getConversationId().equals("Collaboration"))
+                {
+                    String passengerName;
+                    int collaboratorDistance;
 
-                startStop = info[0];
-                endStop = info[1];
+                    collaboratorDistance = Integer.parseInt(msg.getContent().substring(0, msg.getContent().indexOf(" ")));
+                    passengerName = msg.getContent().substring(msg.getContent().indexOf(" ") + 1);
 
-                DFAgentDescription startStopTemplate = currentBus.getStopAgentDescription("stop" + startStop);
-                DFAgentDescription endStopTemplate = currentBus.getStopAgentDescription("stop" + endStop);
+                    PassengerInfo pi = colResponsesLeft.get(passengerName);
 
-                ACLMessage reply = msg.createReply();
+                    if(pi == null)
+                    {
+                        ACLMessage reply = msg.createReply();
+                        reply.setContent("99999 " + passengerName);
+                        myAgent.send(reply);
+                    }
+                    else {
+                        if (pi.getBusDistance() > collaboratorDistance)
+                        {
+                            ACLMessage reply = pi.getReply();
+                            reply.setPerformative(ACLMessage.REFUSE);
+                            reply.setContent("not-available");
+                            myAgent.send(reply);
+                        }
+                        else {
+                            if (pi.getResponsesLeft() == 1)
+                            {
+                                ACLMessage reply = pi.getReply();
+                                reply.setPerformative(ACLMessage.PROPOSE);
+                                reply.setContent(pi.getBusTime() + " " + pi.getBusPrice());
+                                colResponsesLeft.remove(passengerName);
+                                myAgent.send(reply);
+                            }
+                            else
+                                pi.decrementResponsesLeft();
+                        }
+                    }
+                }
 
-                int distance = currentBus.getPassengerTripDistance(startStopTemplate, endStopTemplate);
+                else {
+                    String[] args;
+                    String startStop, endStop;
+                    args = msg.getContent().split(" ");
 
-                if (availableSeats > 0) {
+                    startStop = args[0];
+                    endStop = args[1];
+
+                    DFAgentDescription startStopTemplate = currentBus.getStopAgentDescription("stop" + startStop);
+                    DFAgentDescription endStopTemplate = currentBus.getStopAgentDescription("stop" + endStop);
+
+                    int distance = currentBus.getPassengerTripDistance(startStopTemplate, endStopTemplate);
                     double time = (distance / currentBus.speed) * (1 - this.currentBus.dishonestyDegree);
                     double price = (currentBus.price * time) / 100;
 
-                    if (info.length > 2) {
-                        double bestPrice = Double.parseDouble(info[2]);
-                        double discountNeeded = 1 - (bestPrice / price);
-                        System.out.println(getLocalName() + ": " + price + "  " + bestPrice + "   " + (discountNeeded + 0.02) + "  " + currentBus.priceFlexibility);
+                    ACLMessage reply = msg.createReply();
 
-                        if ((discountNeeded + 0.02) > currentBus.priceFlexibility) {
-                            reply.setPerformative(ACLMessage.REFUSE);
-                            reply.setContent("not-available");
-                        } else {
-                            price = (1 - (discountNeeded + 0.02)) * price;
-                            System.out.println("New price: " + price);
-                            reply.setPerformative(ACLMessage.PROPOSE);
-                            reply.setContent(time + " " + price);
+                    if(currentBus.collaboration == 1 && msg.getConversationId().equals("Proposal")) {
+                        DFAgentDescription colTemplate = getTemplate("collaboration", "col");
+                        DFAgentDescription busTemplate = getTemplate("bus", null);
+
+                        DFAgentDescription colDF = null;
+                        try {
+                            colDF = DFService.search(myAgent, colTemplate)[0];
+                            DFAgentDescription[] results = DFService.search(myAgent, colDF.getName(), busTemplate);
+
+                            ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
+
+                            for(DFAgentDescription bus: results)
+                            {
+                                AID name = bus.getName();
+
+                                if(!name.getLocalName().equals(getLocalName()))
+                                    cfp.addReceiver(name);
+                            }
+
+                            cfp.setContent(distance + " " + msg.getSender().getLocalName());
+                            cfp.setConversationId("Collaboration");
+                            cfp.setReplyWith("cfp" + System.currentTimeMillis());
+                            myAgent.send(cfp);
+
+                            colResponsesLeft.put(msg.getSender().getLocalName(), new PassengerInfo(reply, distance, time, price, results.length - 1));
+                        } catch (FIPAException e) {
+                            e.printStackTrace();
                         }
-                    } else {
-                        reply.setPerformative(ACLMessage.PROPOSE);
-                        reply.setContent(time + " " + price);
+                        return;
                     }
-                } else {
-                    reply.setPerformative(ACLMessage.REFUSE);
-                    reply.setContent("not-available");
-                }
 
-                myAgent.send(reply);
+                    if (availableSeats > 0) {
+                        createReply(reply, args, time, price);
+                    } else {
+                        reply.setPerformative(ACLMessage.REFUSE);
+                        reply.setContent("not-available");
+                    }
+
+                    myAgent.send(reply);
+                }
             } else {
                 block();
             }
         }
+
+        private void createReply(ACLMessage reply, String[] args, double time, double price) {
+
+            if (args.length > 2) {
+                double bestPrice = Double.parseDouble(args[2]);
+                double discountNeeded = 1 - (bestPrice / price);
+
+                if ((discountNeeded + 0.02) > currentBus.priceFlexibility) {
+                    reply.setPerformative(ACLMessage.REFUSE);
+                    reply.setContent("not-available");
+                } else {
+                    price = (1 - (discountNeeded + 0.02)) * price;
+                    reply.setPerformative(ACLMessage.PROPOSE);
+                    reply.setContent(time + " " + price);
+                }
+            } else {
+                reply.setPerformative(ACLMessage.PROPOSE);
+                reply.setContent(time + " " + price);
+            }
+        }
+
     }
 
     private class ReservationsServer extends CyclicBehaviour {
@@ -227,6 +312,7 @@ public class BusAgent extends Agent {
             if (msg != null) {
                 String[] stops;
                 String startStop, endStop;
+
                 stops = msg.getContent().split("");
 
                 startStop = stops[0];
@@ -291,7 +377,50 @@ public class BusAgent extends Agent {
 
     }
 
+    private class RegisterInCollaboration extends SimpleBehaviour {
+
+        private boolean registered = false;
+
+        @Override
+        public void action() {
+
+            DFAgentDescription[] results = null;
+
+            DFAgentDescription colTemplate = new DFAgentDescription();
+            ServiceDescription sd = new ServiceDescription();
+            sd.setType("collaboration");
+            colTemplate.addServices(sd);
+
+            DFAgentDescription busTemplate = new DFAgentDescription();
+            busTemplate.setName(myAgent.getAID());
+            sd = new ServiceDescription();
+            sd.setType("bus");
+            sd.setName(myAgent.getLocalName());
+            busTemplate.addServices(sd);
+
+            try {
+                do {
+                    results = DFService.search(myAgent, colTemplate);
+                } while (results.length == 0);
+
+                DFService.register(myAgent, results[0].getName(), busTemplate);
+                registered = true;
+            }
+            catch(FIPAException fe)
+            {
+                System.err.println(fe.toString());
+                fe.printStackTrace();
+            }
+        }
+
+        @Override
+        public boolean done() {
+            return registered;
+        }
+    }
+
     private void registerInStop(DFAgentDescription stop, AID passengerDestiny, boolean addRepeated) {
+
         DFAgentDescription busTemplate = new DFAgentDescription();
         busTemplate.setName(this.getAID());
         ServiceDescription sd = new ServiceDescription();

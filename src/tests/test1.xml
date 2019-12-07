@@ -8,6 +8,7 @@
             <price>25</price>
             <dishonestyDegree>0</dishonestyDegree>
             <priceFlexibility>4</priceFlexibility>
+            <collaboration>1</collaboration>
         </bus>
         <bus>
             <name>bus2</name>
@@ -17,6 +18,7 @@
             <price>25</price>
             <dishonestyDegree>0</dishonestyDegree>
             <priceFlexibility>3</priceFlexibility>
+            <collaboration>1</collaboration>
         </bus>
         <bus>
             <name>bus3</name>
@@ -26,6 +28,7 @@
             <price>25</price>
             <dishonestyDegree>0</dishonestyDegree>
             <priceFlexibility>0</priceFlexibility>
+            <collaboration>0</collaboration>
         </bus>
         <bus>
             <name>bus4</name>
@@ -35,6 +38,7 @@
             <price>25</price>
             <dishonestyDegree>0</dishonestyDegree>
             <priceFlexibility>1.5</priceFlexibility>
+            <collaboration>0</collaboration>
         </bus>
     </buses>
     <stops>
@@ -75,5 +79,5 @@
             <coordinates x="20" y="25"></coordinates>
         </stop>
     </stops>
-    <passangers alpha="0" limit="1" interval="7000"></passangers>
+    <passangers alpha="0" limit="30" interval="5000"></passangers>
 </test>

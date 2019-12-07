@@ -8,6 +8,7 @@
             <price>50</price>
             <dishonestyDegree>0</dishonestyDegree>
             <priceFlexibility>5</priceFlexibility>
+            <collaboration>0</collaboration>
         </bus>
         <bus>
             <name>bus2</name>
@@ -17,6 +18,7 @@
             <price>50</price>
             <dishonestyDegree>0</dishonestyDegree>
             <priceFlexibility>5</priceFlexibility>
+            <collaboration>0</collaboration>
         </bus>
     </buses>
     <stops>
