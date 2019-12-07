@@ -2,7 +2,6 @@ package MainAgents;
 
 import jade.core.AID;
 import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.TickerBehaviour;
@@ -164,6 +163,7 @@ public class BusAgent extends Agent {
     private class NegotiationServer extends CyclicBehaviour {
 
         BusAgent currentBus;
+        HashMap<String,PassengerInfo> colResponsesLeft = new HashMap<>();
 
         private NegotiationServer(BusAgent currentBus) {
             this.currentBus = currentBus;
@@ -174,7 +174,46 @@ public class BusAgent extends Agent {
 
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
-                if(msg.getConversationId().equals("Negotiation")) {
+                if(msg.getConversationId().equals("Collaboration"))
+                {
+                    String passengerName;
+                    int collaboratorDistance;
+
+                    collaboratorDistance = Integer.parseInt(msg.getContent().substring(0, msg.getContent().indexOf(" ")));
+                    passengerName = msg.getContent().substring(msg.getContent().indexOf(" ") + 1);
+
+                    PassengerInfo pi = colResponsesLeft.get(passengerName);
+
+                    if(pi == null)
+                    {
+                        ACLMessage reply = msg.createReply();
+                        reply.setContent("99999 " + passengerName);
+                        myAgent.send(reply);
+                    }
+                    else {
+                        if (pi.getBusDistance() > collaboratorDistance)
+                        {
+                            ACLMessage reply = pi.getReply();
+                            reply.setPerformative(ACLMessage.REFUSE);
+                            reply.setContent("not-available");
+                            myAgent.send(reply);
+                        }
+                        else {
+                            if (pi.getResponsesLeft() == 1)
+                            {
+                                ACLMessage reply = pi.getReply();
+                                reply.setPerformative(ACLMessage.PROPOSE);
+                                reply.setContent(pi.getBusTime() + " " + pi.getBusPrice());
+                                colResponsesLeft.remove(passengerName);
+                                myAgent.send(reply);
+                            }
+                            else
+                                pi.decrementResponsesLeft();
+                        }
+                    }
+                }
+
+                else {
                     String[] args;
                     String startStop, endStop;
                     args = msg.getContent().split(" ");
@@ -186,8 +225,12 @@ public class BusAgent extends Agent {
                     DFAgentDescription endStopTemplate = currentBus.getStopAgentDescription("stop" + endStop);
 
                     int distance = currentBus.getPassengerTripDistance(startStopTemplate, endStopTemplate);
+                    double time = (distance / currentBus.speed) * (1 - this.currentBus.dishonestyDegree);
+                    double price = (currentBus.price * time) / 100;
 
-                    if(currentBus.collaboration == 1) {
+                    ACLMessage reply = msg.createReply();
+
+                    if(currentBus.collaboration == 1 && msg.getConversationId().equals("Proposal")) {
                         DFAgentDescription colTemplate = getTemplate("collaboration", "col");
                         DFAgentDescription busTemplate = getTemplate("bus", null);
 
@@ -206,21 +249,20 @@ public class BusAgent extends Agent {
                                     cfp.addReceiver(name);
                             }
 
-                            cfp.setContent(String.valueOf(distance));
+                            cfp.setContent(distance + " " + msg.getSender().getLocalName());
                             cfp.setConversationId("Collaboration");
                             cfp.setReplyWith("cfp" + System.currentTimeMillis());
                             myAgent.send(cfp);
 
+                            colResponsesLeft.put(msg.getSender().getLocalName(), new PassengerInfo(reply, distance, time, price, results.length - 1));
                         } catch (FIPAException e) {
                             e.printStackTrace();
                         }
-                        //return;
+                        return;
                     }
 
-                    ACLMessage reply = msg.createReply();
-
                     if (availableSeats > 0) {
-                        createReply(reply, args, distance);
+                        createReply(reply, args, time, price);
                     } else {
                         reply.setPerformative(ACLMessage.REFUSE);
                         reply.setContent("not-available");
@@ -228,30 +270,22 @@ public class BusAgent extends Agent {
 
                     myAgent.send(reply);
                 }
-                else if(msg.getConversationId().equals("Collaboration"))
-                {
-                    //System.out.println(getLocalName() + " Collaboration " + msg.getSender().getLocalName());
-                }
             } else {
                 block();
             }
         }
 
-        private void createReply(ACLMessage reply, String[] args, int distance) {
-            double time = (distance / currentBus.speed) * (1 - this.currentBus.dishonestyDegree);
-            double price = (currentBus.price * time) / 100;
+        private void createReply(ACLMessage reply, String[] args, double time, double price) {
 
             if (args.length > 2) {
                 double bestPrice = Double.parseDouble(args[2]);
                 double discountNeeded = 1 - (bestPrice / price);
-                //System.out.println(getLocalName() + ": " + price + "  " + bestPrice + "   " + (discountNeeded + 0.02) + "  " + currentBus.priceFlexibility);
 
                 if ((discountNeeded + 0.02) > currentBus.priceFlexibility) {
                     reply.setPerformative(ACLMessage.REFUSE);
                     reply.setContent("not-available");
                 } else {
                     price = (1 - (discountNeeded + 0.02)) * price;
-                    //System.out.println("New price: " + price);
                     reply.setPerformative(ACLMessage.PROPOSE);
                     reply.setContent(time + " " + price);
                 }
