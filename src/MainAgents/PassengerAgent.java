@@ -186,15 +186,8 @@ public class PassengerAgent extends Agent {
                             if(targetBuses.size() == 1)
                                 step = 4;
 
-                            else {
-                                minPrice = bestProposal.getPrice();
-                                maxPrice = bestProposal.getPrice();
-                                minTime = bestProposal.getTime();
-                                maxTime = bestProposal.getTime();
-                                repliesCnt = 0;
-                                proposals.clear();
-                                step = 2;
-                            }
+                            else
+                                resetVariables();
                         }
                     } else {
                         block();
@@ -247,16 +240,8 @@ public class PassengerAgent extends Agent {
 
                             if (oldProposal.equals(bestProposal))
                                 step = 4;
-                            else {
-                                minPrice = bestProposal.getPrice();
-                                maxPrice = bestProposal.getPrice();
-                                minTime = bestProposal.getTime();
-                                maxTime = bestProposal.getTime();
-                                proposals.clear();
-                                repliesCnt = 0;
-                                step = 2;
-                                System.out.println();
-                            }
+                            else
+                                resetVariables();
                         }
                     }
 
@@ -339,6 +324,17 @@ public class PassengerAgent extends Agent {
                     MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
 
             return cfp;
+        }
+
+        private void resetVariables()
+        {
+            minPrice = bestProposal.getPrice();
+            maxPrice = bestProposal.getPrice();
+            minTime = bestProposal.getTime();
+            maxTime = bestProposal.getTime();
+            proposals.clear();
+            repliesCnt = 0;
+            step = 2;
         }
 
         public boolean done() {
