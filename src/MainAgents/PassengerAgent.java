@@ -142,17 +142,13 @@ public class PassengerAgent extends Agent {
         public void action() {
             switch (step) {
                 case 0:
-                    ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
+                    ACLMessage cfp = setupMessage(ACLMessage.CFP,"Proposal", startStop + " " + endStop);
                     for (AID bus : targetBuses) {
                         cfp.addReceiver(bus);
                     }
-                    cfp.setContent(startStop + " " + endStop);
-                    cfp.setConversationId("Proposal");
-                    cfp.setReplyWith("cfp" + System.currentTimeMillis());
+
                     myAgent.send(cfp);
 
-                    mt = MessageTemplate.and(MessageTemplate.MatchConversationId("Proposal"),
-                            MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
                     mtDone = MessageTemplate.MatchContent("ARRIVED TO DESTINATION");
                     step = 1;
 
@@ -205,19 +201,13 @@ public class PassengerAgent extends Agent {
                     }
                     break;
                 case 2:
-                    cfp = new ACLMessage(ACLMessage.CFP);
+                    cfp = setupMessage(ACLMessage.CFP, "Negotiation", startStop + " " + endStop + " " + bestProposal.getPrice());
 
                     for (AID bus : targetBuses)
                         if (!bestProposal.getBus().equals(bus))
                             cfp.addReceiver(bus);
 
-                    cfp.setContent(startStop + " " + endStop + " " + bestProposal.getPrice());
-                    cfp.setConversationId("Negotiation");
-                    cfp.setReplyWith("cfp" + System.currentTimeMillis());
                     myAgent.send(cfp);
-
-                    mt = MessageTemplate.and(MessageTemplate.MatchConversationId("Negotiation"),
-                            MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
 
                     step = 3;
                     break;
@@ -276,15 +266,11 @@ public class PassengerAgent extends Agent {
 
                     break;
                 case 4:
-                    ACLMessage order = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
+                    ACLMessage order = setupMessage(ACLMessage.ACCEPT_PROPOSAL, "Negotiation", startStop + " " + endStop);
                     order.addReceiver(bestProposal.getBus());
-                    order.setContent(startStop + " " + endStop);
-                    order.setConversationId("Negotiation");
-                    order.setReplyWith("order" + System.currentTimeMillis());
+
                     myAgent.send(order);
 
-                    mt = MessageTemplate.and(MessageTemplate.MatchConversationId("Negotiation"),
-                            MessageTemplate.MatchInReplyTo(order.getReplyWith()));
                     step = 5;
                     break;
 
@@ -340,6 +326,19 @@ public class PassengerAgent extends Agent {
                 }
             }
 
+        }
+
+        private ACLMessage setupMessage(int performative, String conversationId, String content)
+        {
+            ACLMessage cfp = new ACLMessage(performative);
+            cfp.setContent(content);
+            cfp.setConversationId(conversationId);
+            cfp.setReplyWith("cfp" + System.currentTimeMillis());
+
+            mt = MessageTemplate.and(MessageTemplate.MatchConversationId(conversationId),
+                    MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
+
+            return cfp;
         }
 
         public boolean done() {
