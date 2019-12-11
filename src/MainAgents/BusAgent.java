@@ -48,7 +48,7 @@ public class BusAgent extends Agent {
             availableSeats = totalSeats;
             price = Integer.parseInt((String) args[4]);
             dishonestyDegree = Float.parseFloat((String) args[5]) / 10;
-            priceFlexibility = Float.parseFloat((String) args[6]) / (5 / 0.55);
+            priceFlexibility = Float.parseFloat((String) args[6]) / (5 / 0.30);
             collaboration =  Integer.parseInt((String) args[7]);
 
             if (dishonestyDegree < 0 || dishonestyDegree > 5) {
@@ -239,26 +239,28 @@ public class BusAgent extends Agent {
                             colDF = DFService.search(myAgent, colTemplate)[0];
                             DFAgentDescription[] results = DFService.search(myAgent, colDF.getName(), busTemplate);
 
-                            ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
+                            if(results.length > 1) {
+                                ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
 
-                            for(DFAgentDescription bus: results)
-                            {
-                                AID name = bus.getName();
+                                for (DFAgentDescription bus : results) {
+                                    AID name = bus.getName();
 
-                                if(!name.getLocalName().equals(getLocalName()))
-                                    cfp.addReceiver(name);
+                                    if (!name.getLocalName().equals(getLocalName()))
+                                        cfp.addReceiver(name);
+                                }
+
+                                cfp.setContent(distance + " " + msg.getSender().getLocalName());
+                                cfp.setConversationId("Collaboration");
+                                cfp.setReplyWith("cfp" + System.currentTimeMillis());
+                                myAgent.send(cfp);
+
+                                colResponsesLeft.put(msg.getSender().getLocalName(), new PassengerInfo(reply, distance, time, price, results.length - 1));
+
+                                return;
                             }
-
-                            cfp.setContent(distance + " " + msg.getSender().getLocalName());
-                            cfp.setConversationId("Collaboration");
-                            cfp.setReplyWith("cfp" + System.currentTimeMillis());
-                            myAgent.send(cfp);
-
-                            colResponsesLeft.put(msg.getSender().getLocalName(), new PassengerInfo(reply, distance, time, price, results.length - 1));
                         } catch (FIPAException e) {
                             e.printStackTrace();
                         }
-                        return;
                     }
 
                     if (availableSeats > 0) {

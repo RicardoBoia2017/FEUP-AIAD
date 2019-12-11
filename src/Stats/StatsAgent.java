@@ -181,7 +181,7 @@ public class StatsAgent extends Agent {
             printWriter.printf("Current Average Bus Occupancy Rate: %.3f%% \n", this.averageOccupancyRate);
             printWriter.printf("Maximum Average Bus Occupancy Rate: %.3f%% \n", this.maxAverageOccupancyRate);
             printWriter.printf("Total financial gain: %s€ \n", this.totalGain);
-            printWriter.printf("Total number of passangers: %s \n", this.totalNumberOfPassengers);
+            printWriter.printf("Total number of passengers: %s \n", this.totalNumberOfPassengers);
             printWriter.printf("Financial gain per bus:\n");
 
             for (Entry<String, Double> curBus : this.allBusesGain.entrySet()) {

@@ -39,5 +39,5 @@
             <coordinates x="10" y="20"></coordinates>
         </stop>
     </stops>
-    <passangers alpha="100" limit="0" interval="5000"></passangers>
+    <passengers alpha="100" limit="0" interval="5000"></passengers>
 </test>

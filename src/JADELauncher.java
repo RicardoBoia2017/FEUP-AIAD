@@ -143,7 +143,7 @@ public class JADELauncher {
                 e.printStackTrace();
             }
 
-            elem = (Element) doc.getElementsByTagName("passangers").item(0);
+            elem = (Element) doc.getElementsByTagName("passengers").item(0);
             int alpha = Integer.parseInt(elem.getAttribute("alpha"));
             int limit = Integer.parseInt(elem.getAttribute("limit"));
             int interval = Integer.parseInt(elem.getAttribute("interval"));
