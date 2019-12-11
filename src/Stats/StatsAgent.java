@@ -13,7 +13,9 @@ import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
+import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,10 +35,24 @@ public class StatsAgent extends Agent {
     private StatsGUI myGUI;
     private int totalNumberOfPassengers = 0;
     private String testName;
+    private FileWriter csvPassengerFile;
+    public static String csvFile;
 
     public StatsAgent(String testName) {
         this.allBusesGain = new HashMap<>();
         this.testName = testName;
+        StatsAgent.csvFile = "testsResults/" + testName + "_results.csv";
+
+        try {
+            File file = new File(StatsAgent.csvFile);
+            if (file.exists() && file.isFile()){
+                file.delete();
+            }
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     protected void setup() {
@@ -229,5 +245,9 @@ public class StatsAgent extends Agent {
 
     public StatsGUI getMyGUI() {
         return myGUI;
+    }
+
+    public FileWriter getCsvPassengerFile() {
+        return csvPassengerFile;
     }
 }

@@ -1,5 +1,6 @@
 package MainAgents;
 
+import Stats.StatsAgent;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
@@ -11,12 +12,16 @@ import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.Duration;
 import java.time.Instant;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 public class PassengerAgent extends Agent {
 
@@ -27,6 +32,7 @@ public class PassengerAgent extends Agent {
     private double alpha;
     private double estimatedTime;
     private Instant instantOfEstimation;
+    private BusProposal bestProposal;
 
     protected void setup() {
         Object[] args = getArguments();
@@ -120,6 +126,18 @@ public class PassengerAgent extends Agent {
             double timeDeviation = (actualTravelTime - this.estimatedTime) / this.estimatedTime;
 
             this.informStats(String.valueOf(timeDeviation), "time-deviation");
+
+            String csv_output = this.bestProposal.getBus().getLocalName() + "," + this.getLocalName() + "," + this.startStop + "," + this.endStop + "," + this.bestProposal.getPrice() + "," + this.bestProposal.getTime() + "," + String.valueOf(actualTravelTime) + "," + String.valueOf(timeDeviation);
+            FileWriter fileWriter = null;
+            try {
+                fileWriter = new FileWriter(StatsAgent.csvFile,true);
+                PrintWriter printWriter = new PrintWriter(fileWriter);
+                printWriter.printf(csv_output + "\n");
+                printWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 
@@ -311,6 +329,7 @@ public class PassengerAgent extends Agent {
                 }
             }
 
+            ((PassengerAgent)myAgent).setBestProposal(bestProposal);
         }
 
         private ACLMessage setupMessage(int performative, String conversationId, String content)
@@ -365,4 +384,11 @@ public class PassengerAgent extends Agent {
         this.send(message);
     }
 
+    public BusProposal getBestProposal() {
+        return bestProposal;
+    }
+
+    public void setBestProposal(BusProposal bestProposal) {
+        this.bestProposal = bestProposal;
+    }
 }
