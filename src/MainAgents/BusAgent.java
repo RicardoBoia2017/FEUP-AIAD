@@ -315,10 +315,10 @@ public class BusAgent extends Agent {
                 String[] stops;
                 String startStop, endStop;
 
-                stops = msg.getContent().split("");
+                stops = msg.getContent().split(" ");
 
                 startStop = stops[0];
-                endStop = stops[2];
+                endStop = stops[1];
 
                 ACLMessage reply = msg.createReply();
 

@@ -5,19 +5,39 @@
             <coordinates x="20" y="10"></coordinates>
             <speed>4</speed>
             <totalSeats>40</totalSeats>
-            <price>50</price>
+            <price>25</price>
             <dishonestyDegree>0</dishonestyDegree>
-            <priceFlexibility>5</priceFlexibility>
-            <collaboration>0</collaboration>
+            <priceFlexibility>4</priceFlexibility>
+            <collaboration>1</collaboration>
         </bus>
         <bus>
             <name>bus2</name>
             <coordinates x="10" y="15"></coordinates>
             <speed>2</speed>
             <totalSeats>40</totalSeats>
-            <price>50</price>
+            <price>25</price>
             <dishonestyDegree>0</dishonestyDegree>
-            <priceFlexibility>5</priceFlexibility>
+            <priceFlexibility>3</priceFlexibility>
+            <collaboration>1</collaboration>
+        </bus>
+        <bus>
+            <name>bus3</name>
+            <coordinates x="10" y="25"></coordinates>
+            <speed>2</speed>
+            <totalSeats>40</totalSeats>
+            <price>25</price>
+            <dishonestyDegree>0</dishonestyDegree>
+            <priceFlexibility>0</priceFlexibility>
+            <collaboration>0</collaboration>
+        </bus>
+        <bus>
+            <name>bus4</name>
+            <coordinates x="20" y="25"></coordinates>
+            <speed>2</speed>
+            <totalSeats>40</totalSeats>
+            <price>25</price>
+            <dishonestyDegree>0</dishonestyDegree>
+            <priceFlexibility>1.5</priceFlexibility>
             <collaboration>0</collaboration>
         </bus>
     </buses>
@@ -38,6 +58,26 @@
             <name>stop4</name>
             <coordinates x="10" y="20"></coordinates>
         </stop>
+        <stop>
+            <name>stop5</name>
+            <coordinates x="40" y="10"></coordinates>
+        </stop>
+        <stop>
+            <name>stop6</name>
+            <coordinates x="30" y="5"></coordinates>
+        </stop>
+        <stop>
+            <name>stop7</name>
+            <coordinates x="0" y="0"></coordinates>
+        </stop>
+        <stop>
+            <name>stop8</name>
+            <coordinates x="40" y="20"></coordinates>
+        </stop>
+        <stop>
+            <name>stop9</name>
+            <coordinates x="20" y="25"></coordinates>
+        </stop>
     </stops>
-    <passengers alpha="100" limit="0" interval="5000"></passengers>
+    <passengers alpha="0" limit="10000" interval="2500"></passengers>
 </test>

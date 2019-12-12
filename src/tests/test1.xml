@@ -5,79 +5,275 @@
             <coordinates x="20" y="10"></coordinates>
             <speed>4</speed>
             <totalSeats>40</totalSeats>
-            <price>25</price>
+            <price>50</price>
             <dishonestyDegree>0</dishonestyDegree>
-            <priceFlexibility>4</priceFlexibility>
-            <collaboration>1</collaboration>
+            <priceFlexibility>5</priceFlexibility>
+            <collaboration>0</collaboration>
         </bus>
         <bus>
             <name>bus2</name>
             <coordinates x="10" y="15"></coordinates>
             <speed>2</speed>
             <totalSeats>40</totalSeats>
-            <price>25</price>
-            <dishonestyDegree>0</dishonestyDegree>
-            <priceFlexibility>3</priceFlexibility>
+            <price>50</price>
+            <dishonestyDegree>5</dishonestyDegree>
+            <priceFlexibility>5</priceFlexibility>
             <collaboration>1</collaboration>
         </bus>
         <bus>
             <name>bus3</name>
-            <coordinates x="10" y="25"></coordinates>
+            <coordinates x="10" y="15"></coordinates>
             <speed>2</speed>
             <totalSeats>40</totalSeats>
-            <price>25</price>
-            <dishonestyDegree>0</dishonestyDegree>
+            <price>50</price>
+            <dishonestyDegree>1</dishonestyDegree>
             <priceFlexibility>0</priceFlexibility>
             <collaboration>0</collaboration>
         </bus>
         <bus>
             <name>bus4</name>
-            <coordinates x="20" y="25"></coordinates>
+            <coordinates x="10" y="15"></coordinates>
             <speed>2</speed>
             <totalSeats>40</totalSeats>
-            <price>25</price>
+            <price>50</price>
+            <dishonestyDegree>3</dishonestyDegree>
+            <priceFlexibility>1</priceFlexibility>
+            <collaboration>1</collaboration>
+        </bus>
+        <bus>
+            <name>bus5</name>
+            <coordinates x="10" y="15"></coordinates>
+            <speed>2</speed>
+            <totalSeats>40</totalSeats>
+            <price>50</price>
             <dishonestyDegree>0</dishonestyDegree>
-            <priceFlexibility>1.5</priceFlexibility>
+            <priceFlexibility>5</priceFlexibility>
             <collaboration>0</collaboration>
+        </bus>
+        <bus>
+            <name>bus6</name>
+            <coordinates x="10" y="15"></coordinates>
+            <speed>2</speed>
+            <totalSeats>40</totalSeats>
+            <price>50</price>
+            <dishonestyDegree>3</dishonestyDegree>
+            <priceFlexibility>3</priceFlexibility>
+            <collaboration>0</collaboration>
+        </bus>
+        <bus>
+            <name>bus7</name>
+            <coordinates x="10" y="15"></coordinates>
+            <speed>2</speed>
+            <totalSeats>40</totalSeats>
+            <price>50</price>
+            <dishonestyDegree>0</dishonestyDegree>
+            <priceFlexibility>4</priceFlexibility>
+            <collaboration>1</collaboration>
         </bus>
     </buses>
     <stops>
         <stop>
             <name>stop1</name>
-            <coordinates x="10" y="10"></coordinates>
+            <coordinates x="28" y="61"></coordinates>
         </stop>
         <stop>
             <name>stop2</name>
-            <coordinates x="10" y="15"></coordinates>
+            <coordinates x="69" y="99"></coordinates>
         </stop>
         <stop>
             <name>stop3</name>
-            <coordinates x="30" y="20"></coordinates>
+            <coordinates x="64" y="73"></coordinates>
         </stop>
         <stop>
             <name>stop4</name>
-            <coordinates x="10" y="20"></coordinates>
+            <coordinates x="58" y="34"></coordinates>
         </stop>
         <stop>
             <name>stop5</name>
-            <coordinates x="40" y="10"></coordinates>
+            <coordinates x="17" y="98"></coordinates>
         </stop>
         <stop>
             <name>stop6</name>
-            <coordinates x="30" y="5"></coordinates>
+            <coordinates x="97" y="16"></coordinates>
         </stop>
         <stop>
             <name>stop7</name>
-            <coordinates x="0" y="0"></coordinates>
+            <coordinates x="1" y="33"></coordinates>
         </stop>
         <stop>
             <name>stop8</name>
-            <coordinates x="40" y="20"></coordinates>
+            <coordinates x="77" y="18"></coordinates>
         </stop>
         <stop>
             <name>stop9</name>
-            <coordinates x="20" y="25"></coordinates>
+            <coordinates x="32" y="82"></coordinates>
         </stop>
+        <stop>
+            <name>stop10</name>
+            <coordinates x="63" y="7"></coordinates>
+        </stop>
+        <stop>
+            <name>stop11</name>
+            <coordinates x="56" y="86"></coordinates>
+        </stop>
+        <stop>
+            <name>stop12</name>
+            <coordinates x="36" y="93"></coordinates>
+        </stop>
+        <stop>
+            <name>stop13</name>
+            <coordinates x="12" y="22"></coordinates>
+        </stop>
+        <stop>
+            <name>stop14</name>
+            <coordinates x="6" y="42"></coordinates>
+        </stop>
+        <stop>
+            <name>stop15</name>
+            <coordinates x="43" y="35"></coordinates>
+        </stop>
+        <stop>
+            <name>stop16</name>
+            <coordinates x="94" y="72"></coordinates>
+        </stop>
+        <stop>
+            <name>stop17</name>
+            <coordinates x="29" y="67"></coordinates>
+        </stop>
+        <stop>
+            <name>stop18</name>
+            <coordinates x="45" y="50"></coordinates>
+        </stop>
+        <stop>
+            <name>stop19</name>
+            <coordinates x="40" y="88"></coordinates>
+        </stop>
+        <stop>
+            <name>stop20</name>
+            <coordinates x="3" y="48"></coordinates>
+        </stop>
+        <stop>
+            <name>stop21</name>
+            <coordinates x="75" y="53"></coordinates>
+        </stop>
+        <stop>
+            <name>stop22</name>
+            <coordinates x="23" y="57"></coordinates>
+        </stop>
+        <stop>
+            <name>stop23</name>
+            <coordinates x="46" y="24"></coordinates>
+        </stop>
+        <stop>
+            <name>stop24</name>
+            <coordinates x="37" y="95"></coordinates>
+        </stop>
+        <stop>
+            <name>stop25</name>
+            <coordinates x="51" y="96"></coordinates>
+        </stop>
+        <stop>
+            <name>stop26</name>
+            <coordinates x="76" y="84"></coordinates>
+        </stop>
+        <stop>
+            <name>stop27</name>
+            <coordinates x="85" y="92"></coordinates>
+        </stop>
+        <stop>
+            <name>stop28</name>
+            <coordinates x="49" y="83"></coordinates>
+        </stop>
+        <stop>
+            <name>stop29</name>
+            <coordinates x="89" y="19"></coordinates>
+        </stop>
+        <stop>
+            <name>stop30</name>
+            <coordinates x="27" y="13"></coordinates>
+        </stop>
+        <stop>
+            <name>stop31</name>
+            <coordinates x="14" y="62"></coordinates>
+        </stop>
+        <stop>
+            <name>stop32</name>
+            <coordinates x="100" y="66"></coordinates>
+        </stop>
+        <stop>
+            <name>stop33</name>
+            <coordinates x="31" y="11"></coordinates>
+        </stop>
+        <stop>
+            <name>stop34</name>
+            <coordinates x="55" y="59"></coordinates>
+        </stop>
+        <stop>
+            <name>stop35</name>
+            <coordinates x="15" y="71"></coordinates>
+        </stop>
+        <stop>
+            <name>stop36</name>
+            <coordinates x="5" y="79"></coordinates>
+        </stop>
+        <stop>
+            <name>stop37</name>
+            <coordinates x="47" y="21"></coordinates>
+        </stop>
+        <stop>
+            <name>stop38</name>
+            <coordinates x="70" y="30"></coordinates>
+        </stop>
+        <stop>
+            <name>stop39</name>
+            <coordinates x="44" y="87"></coordinates>
+        </stop>
+        <stop>
+            <name>stop40</name>
+            <coordinates x="80" y="38"></coordinates>
+        </stop>
+        <stop>
+            <name>stop41</name>
+            <coordinates x="10" y="60"></coordinates>
+        </stop>
+        <stop>
+            <name>stop42</name>
+            <coordinates x="25" y="90"></coordinates>
+        </stop>
+        <stop>
+            <name>stop43</name>
+            <coordinates x="4" y="54"></coordinates>
+        </stop>
+        <stop>
+            <name>stop44</name>
+            <coordinates x="8" y="2"></coordinates>
+        </stop>
+        <stop>
+            <name>stop45</name>
+            <coordinates x="65" y="74"></coordinates>
+        </stop>
+        <stop>
+            <name>stop46</name>
+            <coordinates x="20" y="91"></coordinates>
+        </stop>
+        <stop>
+            <name>stop47</name>
+            <coordinates x="9" y="68"></coordinates>
+        </stop>
+        <stop>
+            <name>stop48</name>
+            <coordinates x="26" y="41"></coordinates>
+        </stop>
+        <stop>
+            <name>stop49</name>
+            <coordinates x="78" y="52"></coordinates>
+        </stop>
+        <stop>
+            <name>stop50</name>
+            <coordinates x="39" y="81"></coordinates>
+        </stop>
+        
+
     </stops>
-    <passengers alpha="0" limit="30" interval="5000"></passengers>
+    <passengers alpha="100" limit="10000" interval="2000"></passengers>
 </test>
