@@ -449,11 +449,12 @@ public class BusAgent extends Agent {
                     stopDetails.setLeavingPassenger(passengerDestiny);
                 }
 
-                if(passengerDestiny == null && !this.itinerary.isEmpty()){
+                this.itinerary.add(stopDetails);
+                /*if(passengerDestiny == null && !this.itinerary.isEmpty()){
                     this.addToBestItineraryPosition(stopDetails);
                 } else {
                     this.itinerary.add(stopDetails);
-                }
+                }*/
 
             } else if (passengerDestiny != null) {
                 StopDetails.getFirstStopByName(stop.getName().getLocalName(), this.itinerary).setLeavingPassenger(passengerDestiny);
@@ -635,6 +636,7 @@ public class BusAgent extends Agent {
         this.send(message);
     }
 
+    /*
     private void addToBestItineraryPosition(StopDetails newStop) {
         ArrayList<StopDetails> tmpItenerary = new ArrayList<>(this.itinerary);
         ArrayList<StopDetails> bestItenerary = new ArrayList<>();
@@ -663,4 +665,6 @@ public class BusAgent extends Agent {
 
         this.itinerary = new ArrayList<>(bestItenerary);
     }
+    */
+
 }
