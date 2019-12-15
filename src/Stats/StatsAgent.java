@@ -49,6 +49,9 @@ public class StatsAgent extends Agent {
                 file.delete();
             }
             file.createNewFile();
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write("bus,passanger,start,stop,price,expected_time,actual_time,time_deviation\n");
+            fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -50,7 +50,7 @@ public class StopAgent extends df {
 
             setDescriptionOfThisDF(dfd);
 
-            super.showGui();
+            //super.showGui();
 
             try {
                 DFService.register(this, parentName, dfd);
